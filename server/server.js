@@ -23,11 +23,18 @@ function notify(user) {
   if (!pending[user]) { return; }
 
   var context = pending[user].shift();
-  var site = nextSite(user);
-  if (site) {
-    context.request.resume();
-    sendSiteResponse(context.response, site);
-    console.log('Notify: Served site [' + site.site + '] for user [' + user + ']');
+  if (context.request && context.response) {
+    var site = nextSite(user);
+    if (site) {
+      context.request.resume();
+      sendSiteResponse(context.response, site);
+      console.log('Notify: Served site [' + site.site + '] for user [' + user + ']');
+    }
+  }
+  else {
+    // If there were not valid requests and responses, then try again in case we
+    // encountered a connection that timed out.
+    notify(user);
   }
 }
 
@@ -40,6 +47,12 @@ function pause(user, request, response) {
   };
   pending[user].push(context);
 
+  request.connection.setTimeout(60 * 1000);
+  request.connection.on('timeout', function() {
+    context.request = null;
+    context.response = null;
+    console.log('Connection timeout');
+  });
   request.pause();
 
   console.log('Paused request for user [' + user + ']');
