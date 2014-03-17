@@ -11,7 +11,7 @@ function addSite(user, site) {
   if (!sites[user]) { sites[user] = []; }
 
   sites[user].push({site: site});
-  console.log('Added site [' + site + '] for user [' + user + ']');
+  console.log('Added site [%s] for user [%s]', site, user);
 }
 
 function nextSite(user) {
@@ -28,7 +28,7 @@ function notify(user) {
     if (site) {
       context.request.resume();
       sendSiteResponse(context.response, site);
-      console.log('Notify: Served site [' + site.site + '] for user [' + user + ']');
+      console.log('Notify: Served site [%s] for user [%s]', site.site, user);
     }
   }
   else {
@@ -55,7 +55,7 @@ function pause(user, request, response) {
   });
   request.pause();
 
-  console.log('Paused request for user [' + user + ']');
+  console.log('Paused request for user [%s]', user);
 }
 
 function sendSiteResponse(response, site) {
@@ -79,7 +79,7 @@ app.get('/', function(request, response) {
   }
   else {
     sendSiteResponse(response, site);
-    console.log('Get: Served site [' + site.site + '] for user [' + user + ']');
+    console.log('Get: Served site [%s] for user [%s]', site.site, user);
   }
 });
 
