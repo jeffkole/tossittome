@@ -6,16 +6,28 @@ var tossa = {
   requestNextPage: function() {
     var req = new XMLHttpRequest();
     req.open("GET", this.pageUrl, true);
-    req.onload = this.openNextPage.bind(this);
+    req.addEventListener('load', this.openNextPage.bind(this), false);
+    req.addEventListener('error', this.error.bind(this), false);
+    req.addEventListener('abort', this.abort.bind(this), false);
     req.send(null);
   },
 
   openNextPage: function(e) {
+    console.log("Response text: " + e.target.responseText);
     var response = JSON.parse(e.target.responseText);
     console.log("Response site: " + response.site);
     window.open(response.site);
-    var t = this;
-    this.timeout = setTimeout(function() { t.loop(); }, 1000)
+    this.timeout = setTimeout(this.loop.bind(this), 1000);
+  },
+
+  error: function(e) {
+    console.log("Response error: " + e);
+    this.timeout = setTimeout(this.loop.bind(this), 1000);
+  },
+
+  abort: function(e) {
+    console.log("Response abort: " + e);
+    this.timeout = setTimeout(this.loop.bind(this), 1000);
   },
 
   start: function() {
