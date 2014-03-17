@@ -16,7 +16,12 @@ var tossa = {
     console.log("Response text: " + e.target.responseText);
     var response = JSON.parse(e.target.responseText);
     console.log("Response site: " + response.site);
-    window.open(response.site);
+    chrome.tabs.create({
+        'url':    response.site,
+        'active': false
+      }, function(tab) {
+        chrome.windows.update(tab.windowId, {'drawAttention': true});
+      });
     this.timeout = setTimeout(this.loop.bind(this), 1000);
   },
 
