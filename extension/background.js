@@ -2,6 +2,7 @@ var tossa = {
   pageUrl: 'http://localhost:9999/?user=' + encodeURIComponent('jeffkole'),
   timeout: null,
   run: true,
+  numNewTabs: 0,
 
   requestNextPage: function() {
     var req = new XMLHttpRequest();
@@ -22,6 +23,9 @@ var tossa = {
       }, function(tab) {
         chrome.windows.update(tab.windowId, {'drawAttention': true});
       });
+    this.numNewTabs++;
+    this.setBadge(this.numNewTabs);
+
     this.timeout = setTimeout(this.loop.bind(this), 1000);
   },
 
@@ -33,6 +37,15 @@ var tossa = {
   abort: function(e) {
     console.log("Response abort: " + e);
     this.timeout = setTimeout(this.loop.bind(this), 1000);
+  },
+
+  setBadge: function(num) {
+    chrome.browserAction.setBadgeText({'text': num.toString()});
+  },
+
+  resetBadge: function() {
+    this.numNewTabs = 0;
+    this.setBadge('');
   },
 
   start: function() {
@@ -55,3 +68,6 @@ var tossa = {
 }
 
 tossa.start();
+chrome.browserAction.onClicked.addListener(function(tab) {
+  tossa.resetBadge();
+});
