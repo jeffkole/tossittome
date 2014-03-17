@@ -1,8 +1,7 @@
-var http = require('http'),
-    url  = require('url'),
-    host = 'localhost',
-    port = 9999;
+var express = require('express');
 
+var app = express();
+var port = 9999;
 // a hash of usernames to sites (ie, our database)
 var sites = {};
 // a hash of usernames to pending requests
@@ -51,49 +50,48 @@ function pause(user, request, response) {
   console.log('Paused request for user [' + user + ']');
 }
 
-http.createServer(function(request, response) {
-  console.log('Request!');
-  var params = url.parse(request.url, true).query;
-  if (!params || !params.user) {
+app.get('/', function(request, response) {
+  if (!request.query.user) {
     response.writeHead(400);
     response.end();
     return;
   }
 
-  var user = params.user;
-
-  if (request.method == 'GET') {
-    var site  = nextSite(user);
-    if (!site) {
-      pause(user, request, response);
-    }
-    else {
-      response.writeHead(200, {
-        'Content-Type': 'application/jason',
-        'Access-Control-Allow-Origin': '*'
-      });
-      response.write(JSON.stringify(site));
-      response.end();
-      console.log('Get: Served site [' + site.site + '] for user [' + user + ']');
-    }
+  var user = request.query.user;
+  var site = nextSite(user);
+  if (!site) {
+    pause(user, request, response);
   }
-  else if (request.method == 'POST') {
-    if (!params || !params.site) {
-      response.writeHead(400);
-      response.end();
-      return;
-    }
-
-    var site = params.site;
-
-    addSite(user, site);
-    notify(user);
-
+  else {
     response.writeHead(200, {
-      'Content-Type': 'text/plain'
+      'Content-Type': 'application/jason',
+      'Access-Control-Allow-Origin': '*'
     });
-    response.end('OK');
+    response.write(JSON.stringify(site));
+    response.end();
+    console.log('Get: Served site [' + site.site + '] for user [' + user + ']');
   }
-}).listen(port, host);
+});
 
-console.log('Server running at http://' + host + ':' + port);
+app.post('/', function(request, response) {
+  if (!request.query.user || !request.query.site) {
+    response.writeHead(400);
+    response.end();
+    return;
+  }
+
+  var user = request.query.user;
+  var site = request.query.site;
+
+  addSite(user, site);
+  notify(user);
+
+  response.writeHead(200, {
+    'Content-Type': 'text/plain'
+  });
+  response.end('OK');
+});
+
+var server = app.listen(port, function() {
+  console.log('Listening on port %d', server.address().port);
+});
