@@ -26,12 +26,7 @@ function notify(user) {
   var site = nextSite(user);
   if (site) {
     context.request.resume();
-    context.response.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    });
-    context.response.write(JSON.stringify(site));
-    context.response.end();
+    sendSiteResponse(context.response, site);
     console.log('Notify: Served site [' + site.site + '] for user [' + user + ']');
   }
 }
@@ -50,10 +45,17 @@ function pause(user, request, response) {
   console.log('Paused request for user [' + user + ']');
 }
 
+function sendSiteResponse(response, site) {
+  response.
+    set({
+      'Access-Control-Allow-Origin': '*'
+    }).
+    json(200, site);
+}
+
 app.get('/', function(request, response) {
   if (!request.query.user) {
-    response.writeHead(400);
-    response.end();
+    response.send(400);
     return;
   }
 
@@ -63,20 +65,14 @@ app.get('/', function(request, response) {
     pause(user, request, response);
   }
   else {
-    response.writeHead(200, {
-      'Content-Type': 'application/jason',
-      'Access-Control-Allow-Origin': '*'
-    });
-    response.write(JSON.stringify(site));
-    response.end();
+    sendSiteResponse(response, site);
     console.log('Get: Served site [' + site.site + '] for user [' + user + ']');
   }
 });
 
 app.post('/', function(request, response) {
   if (!request.query.user || !request.query.site) {
-    response.writeHead(400);
-    response.end();
+    response.send(400);
     return;
   }
 
@@ -86,10 +82,7 @@ app.post('/', function(request, response) {
   addSite(user, site);
   notify(user);
 
-  response.writeHead(200, {
-    'Content-Type': 'text/plain'
-  });
-  response.end('OK');
+  response.send(200, 'OK');
 });
 
 var server = app.listen(port, function() {
