@@ -20,21 +20,21 @@ function nextSite(user) {
 }
 
 function notify(user) {
+  // No records for the user at all
   if (!pending[user]) { return; }
 
-  var context = pending[user].shift();
-  if (context.request && context.response) {
-    var site = nextSite(user);
-    if (site) {
-      context.request.resume();
-      sendSiteResponse(context.response, site);
-      console.log('Notify: Served site [%s] for user [%s]', site.site, user);
+  var site = nextSite(user);
+  if (site) {
+    var context = pending[user].shift();
+    while (context) {
+      // Active requests for the user
+      if (context.request && context.response) {
+        context.request.resume();
+        sendSiteResponse(context.response, site);
+        console.log('Notify: Served site [%s] for user [%s]', site.site, user);
+      }
+      context = pending[user].shift();
     }
-  }
-  else {
-    // If there were not valid requests and responses, then try again in case we
-    // encountered a connection that timed out.
-    notify(user);
   }
 }
 
@@ -42,7 +42,7 @@ function pause(user, request, response) {
   if (!pending[user]) { pending[user] = []; }
 
   var context = {
-    request: request,
+    request:  request,
     response: response
   };
   pending[user].push(context);
@@ -60,9 +60,7 @@ function pause(user, request, response) {
 
 function sendSiteResponse(response, site) {
   response.
-    set({
-      'Access-Control-Allow-Origin': '*'
-    }).
+    set({ 'Access-Control-Allow-Origin': '*' }).
     json(200, site);
 }
 
