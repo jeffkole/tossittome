@@ -3,24 +3,24 @@ var express = require('express'),
 
 var port      = 9999;
 
-// a hash of usernames to pending requests
+// a hash of tokens to pending requests
 var pending = {};
 
-function notify(user) {
-  // No records for the user at all
-  if (!pending[user]) { return; }
+function notify(token) {
+  // No records for the token at all
+  if (!pending[token]) { return; }
 
-  dao.nextSite(user).
+  dao.nextSite(token).
     onSuccess(function(record) {
-      var context = pending[user].shift();
+      var context = pending[token].shift();
       while (context) {
-        // Active requests for the user
+        // Active requests for the token
         if (context.request && context.response) {
           context.request.resume();
           sendSiteResponse(context.response, record);
-          console.log('Notify: Served site [%s] for user [%s]', record.site, user);
+          console.log('Notify: Served site [%s] for token [%s]', record.site, token);
         }
-        context = pending[user].shift();
+        context = pending[token].shift();
       }
     }).
     onNoSite(function() {
@@ -29,14 +29,14 @@ function notify(user) {
     run();
 }
 
-function pause(user, request, response) {
-  if (!pending[user]) { pending[user] = []; }
+function pause(token, request, response) {
+  if (!pending[token]) { pending[token] = []; }
 
   var context = {
     request:  request,
     response: response
   };
-  pending[user].push(context);
+  pending[token].push(context);
 
   request.connection.setTimeout(60 * 1000);
   request.connection.on('timeout', function() {
@@ -46,7 +46,7 @@ function pause(user, request, response) {
   });
   request.pause();
 
-  console.log('Paused request for user [%s]', user);
+  console.log('Paused request for token [%s]', token);
 }
 
 function sendSiteResponse(response, record) {
@@ -57,36 +57,50 @@ function sendSiteResponse(response, record) {
 
 var app = express();
 
-app.get('/', function(request, response) {
-  if (!request.query.user) {
+app.get('/s', function(request, response) {
+  if (!request.query.token) {
     response.send(400);
     return;
   }
 
-  var user = request.query.user;
-  dao.nextSite(user).
+  var token = request.query.token;
+  dao.nextSite(token).
     onSuccess(function(record) {
       sendSiteResponse(response, record);
-      console.log('Get: Served site [%s] for user [%s]', record.site, user);
+      console.log('Get: Served site [%s] for token [%s]', record.site, token);
     }).
     onNoSite(function() {
-      pause(user, request, response);
+      pause(token, request, response);
     }).
     run();
 });
 
-app.post('/', function(request, response) {
-  if (!request.query.user || !request.query.site) {
+app.post('/s', function(request, response) {
+  if (!request.query.token || !request.query.site) {
     response.send(400);
     return;
   }
 
-  var user = request.query.user;
+  var token = request.query.token;
   var site = request.query.site;
 
-  dao.addSite(user, site).
+  dao.addSite(token, site).
     onSuccess(function() {
-      notify(user);
+      notify(token);
+      response.send(200, 'OK');
+    }).
+    run();
+});
+
+app.post('/u', function(request, response) {
+  if (!request.query.email) {
+    response.send(400);
+    return;
+  }
+
+  var email = request.query.email;
+  dao.addUser(email).
+    onSuccess(function() {
       response.send(200, 'OK');
     }).
     run();
