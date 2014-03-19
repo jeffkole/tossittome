@@ -18,26 +18,39 @@ var getConnection = function() {
   return connection;
 };
 
+var getUserId = function(connection, token, onSuccess, onFailure) {
+  connection.query(
+    'select id from users where token=? limit 1',
+    token,
+    function(error, results) {
+      if (error) { throw error; }
+      if (results.length > 0) {
+        var record = results[0];
+        onSuccess(record.id);
+      }
+      else {
+        onFailure();
+      }
+    });
+};
+
 exports.addSite = function(token, site) {
   var _onSuccessFn;
   var _run = function() {
     var connection = getConnection();
-    connection.query(
-      'select id from users where token=? limit 1',
-      token,
-      function(error, results) {
-        if (error) { throw error; }
-        var record = results[0];
-        connection.query(
-          'insert into sites (user_id, site) values (?, ?)',
-          [record.id, site],
-          function(error, results) {
-            if (error) { throw error; }
-            console.log('Added site [%s] for token [%s] (row %d)', site, token, results.insertId);
-            _onSuccessFn();
-          });
-        connection.end();
-      });
+    getUserId(connection, token, function(id) {
+      connection.query(
+        'insert into sites (user_id, site) values (?, ?)',
+        [id, site],
+        function(error, results) {
+          if (error) { throw error; }
+          console.log('Added site [%s] for token [%s] (row %d)', site, token, results.insertId);
+          _onSuccessFn();
+          connection.end();
+        });
+    }, function() {
+      connection.end();
+    });
   };
 
   return {
@@ -56,51 +69,47 @@ exports.nextSite = function(token) {
       _onNoSiteFn;
   var _run = function() {
     var connection = getConnection();
-    connection.query(
-      'select id from users where token=? limit 1',
-      token,
-      function(error, results) {
+    getUserId(connection, token, function(id) {
+      connection.beginTransaction(function(error) {
         if (error) { throw error; }
-        var record = results[0];
 
-        connection.beginTransaction(function(error) {
-          if (error) { throw error; }
+        connection.query(
+          'select id, site from sites where user_id=? and served_at is null order by created_at limit 1 for update',
+          id,
+          function(error, results) {
+            if (error) {
+              connection.rollback(function() { throw error; });
+            }
 
-          connection.query(
-            'select id, site from sites where user_id=? and served_at is null order by created_at limit 1 for update',
-            record.id,
-            function(error, results) {
-              if (error) {
-                connection.rollback(function() { throw error; });
-              }
+            if (results.length > 0) {
+              var record = results[0];
+              console.log('Next record for token [%s] is [%j]', token, record);
+              _onSuccessFn(record);
 
-              if (results.length > 0) {
-                var record = results[0];
-                console.log('Next record for token [%s] is [%j]', token, record);
-                _onSuccessFn(record);
-
-                connection.query(
-                  'update sites set served_at=now() where id=?',
-                  record.id,
-                  function(error, results) {
+              connection.query(
+                'update sites set served_at=now() where id=?',
+                record.id,
+                function(error, results) {
+                  if (error) {
+                    connection.rollback(function() { throw error; });
+                  }
+                  console.log('Recorded serving for row %d', record.id);
+                  connection.commit(function(error) {
                     if (error) {
                       connection.rollback(function() { throw error; });
                     }
-                    console.log('Recorded serving for row %d', record.id);
-                    connection.commit(function(error) {
-                      if (error) {
-                        connection.rollback(function() { throw error; });
-                      }
-                      connection.end();
-                    });
+                    connection.end();
                   });
-              }
-              else {
-                _onNoSiteFn();
-              }
-            });
-        });
+                });
+            }
+            else {
+              _onNoSiteFn();
+            }
+          });
       });
+    }, function() {
+      connection.end()
+    });
   };
 
   return {
