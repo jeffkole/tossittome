@@ -1,5 +1,5 @@
 var tossa = {
-  pageUrl: 'http://localhost:9999/?user=' + encodeURIComponent('jeffkole'),
+  pageUrl: 'http://localhost:9999/catch?token=w4fCsmIlw4zCsMKMasKGwqQsPEDCjQpzH8Ksw67CvA',
   timeout: null,
   run: true,
   numNewTabs: 0,

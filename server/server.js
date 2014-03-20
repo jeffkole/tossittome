@@ -57,7 +57,9 @@ function sendSiteResponse(response, record) {
 
 var app = express();
 
-app.get('/s', function(request, response) {
+app.use(express.static(__dirname + '/public'));
+
+app.get('/catch', function(request, response) {
   if (!request.query.token) {
     response.send(400);
     return;
@@ -75,19 +77,20 @@ app.get('/s', function(request, response) {
     run();
 });
 
-app.post('/s', function(request, response) {
-  if (!request.query.token || !request.query.site) {
+app.get('/toss', function(request, response) {
+  if (!request.query.t || !request.query.s) {
     response.send(400);
     return;
   }
 
-  var token = request.query.token;
-  var site = request.query.site;
+  var token = request.query.t;
+  var site  = request.query.s;
 
   dao.addSite(token, site).
     onSuccess(function() {
       notify(token);
-      response.send(200, 'OK');
+      response.set('Content-Type', 'text/javascript');
+      response.sendfile('public/toss_response.js');
     }).
     run();
 });
