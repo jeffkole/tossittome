@@ -3,9 +3,9 @@ var db     = require('mysql'),
     base64 = require('js-base64').Base64;
 
 var db_host   = 'localhost',
-    db_user   = 'tossa',
+    db_user   = 'tossittome',
     db_pass   = 'password',
-    db_schema = 'tossa';
+    db_schema = 'tossittome';
 
 var getConnection = function() {
   var connection = db.createConnection({

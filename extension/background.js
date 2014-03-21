@@ -1,4 +1,4 @@
-var tossa = {
+var tossittome = {
   pageUrl: 'http://localhost:9999/catch?token=w4fCsmIlw4zCsMKMasKGwqQsPEDCjQpzH8Ksw67CvA',
   timeout: null,
   run: true,
@@ -67,7 +67,7 @@ var tossa = {
   }
 }
 
-tossa.start();
+tossittome.start();
 chrome.browserAction.onClicked.addListener(function(tab) {
-  tossa.resetBadge();
+  tossittome.resetBadge();
 });

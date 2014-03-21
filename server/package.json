@@ -1,6 +1,6 @@
 {
-  "name": "tossa-server",
-  "description": "The server component of tossa",
+  "name": "tossittome-server",
+  "description": "The server component of tossitto.me",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
