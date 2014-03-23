@@ -18,15 +18,15 @@ var getConnection = function() {
   return connection;
 };
 
-var getUserId = function(connection, token, onSuccess, onFailure) {
+var fetchUserByToken = function(connection, token, onSuccess, onFailure) {
   connection.query(
-    'select id from users where token=? limit 1',
+    'select id, email, token, created_at from users where token=? limit 1',
     token,
     function(error, results) {
       if (error) { throw error; }
       if (results.length > 0) {
-        var record = results[0];
-        onSuccess(record.id);
+        var user = results[0];
+        onSuccess(user);
       }
       else {
         onFailure();
@@ -38,10 +38,10 @@ exports.addSite = function(token, site) {
   var _onSuccessFn;
   var _run = function() {
     var connection = getConnection();
-    getUserId(connection, token, function(id) {
+    fetchUserByToken(connection, token, function(user) {
       connection.query(
         'insert into sites (user_id, site) values (?, ?)',
-        [id, site],
+        [user.id, site],
         function(error, results) {
           if (error) { throw error; }
           console.log('Added site [%s] for token [%s] (row %d)', site, token, results.insertId);
@@ -69,13 +69,13 @@ exports.nextSite = function(token) {
       _onNoSiteFn;
   var _run = function() {
     var connection = getConnection();
-    getUserId(connection, token, function(id) {
+    fetchUserByToken(connection, token, function(user) {
       connection.beginTransaction(function(error) {
         if (error) { throw error; }
 
         connection.query(
           'select id, site from sites where user_id=? and served_at is null order by created_at limit 1 for update',
-          id,
+          user.id,
           function(error, results) {
             if (error) {
               connection.rollback(function() { throw error; });
@@ -127,19 +127,24 @@ exports.nextSite = function(token) {
   };
 };
 
-exports.addUser = function(email) {
+exports.addUser = function(email, password) {
   var _onSuccessFn;
   var _run = function() {
     var rawToken = crypto.randomBytes(8).toString() + ':' + email;
     var token = base64.encodeURI(crypto.createHash('sha1').update(rawToken).digest('binary'));
     var connection = getConnection();
     connection.query(
-      'insert into users (email, token) values (?, ?)',
-      [email, token],
+      'insert into users (email, password, token) values (?, ?, ?)',
+      [email, password, token],
       function(error, results) {
         if (error) { throw error; }
         console.log('Added user [%s] as row %d', email, results.insertId);
-        _onSuccessFn();
+        _onSuccessFn({
+          id       : results.insertId,
+          email    : email,
+          password : password,
+          token    : token
+        });
         connection.end();
       });
   };
@@ -154,3 +159,42 @@ exports.addUser = function(email) {
     }
   };
 };
+
+exports.fetchUserByEmail = function(email) {
+  var _onSuccessFn;
+  var _onFailureFn;
+  var _run = function() {
+    var connection = getConnection();
+    connection.query(
+        'select id, email, password, token, created_at from users where email=? limit 1',
+        email,
+        function(error, results) {
+          if (error) { throw error; }
+          if (results.length > 0) {
+            var user = results[0];
+            console.log('Found user: %j', user);
+            _onSuccessFn(user);
+          }
+          else {
+            console.log('No user found for email %s', email);
+            _onFailureFn();
+          }
+          connection.end();
+        });
+  };
+
+  return {
+    onSuccess: function(onSuccessFn) {
+      _onSuccessFn = onSuccessFn;
+      return this;
+    },
+    onFailure: function(onFailureFn) {
+      _onFailureFn = onFailureFn;
+      return this;
+    },
+    run: function() {
+      _run();
+    }
+  };
+};
+

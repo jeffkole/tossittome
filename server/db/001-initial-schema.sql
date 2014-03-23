@@ -1,6 +1,7 @@
 create table if not exists users (
   id         bigint unsigned not null auto_increment primary key,
   email      varchar(128) not null unique key,
+  password   varchar(128) not null,
   token      varchar(128) not null unique key,
   created_at timestamp not null default current_timestamp
 );
