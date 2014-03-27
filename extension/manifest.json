@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Tossa",
+  "name": "TossItToMe",
   "description": "Tosses URLs from here to there.",
   "version": "1.0",
 
@@ -13,6 +13,6 @@
     "default_icon": {
       "19": "images/icon.png"
     },
-    "default_title": "Tossa"
+    "default_title": "TossItToMe"
   }
 }
