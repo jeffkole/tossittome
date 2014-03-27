@@ -54,9 +54,12 @@ var tossittome = {
     this.loop();
 
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-      console.log('sending response');
-      console.log(this.catches);
-      sendResponse(this.catches);
+      if (message.action === 'getCatches') {
+        sendResponse(this.catches);
+      }
+      else if (message.action == 'resetCatches') {
+        this.catches = [];
+      }
     }.bind(this));
   },
 
