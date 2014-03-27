@@ -6,6 +6,7 @@
     <form action="/login" method="post">
       email: <input type="text" name="email" /><br/>
       password: <input type="password" name="password" /><br/>
+      <input type="hidden" name="page" value="{{ page }}"/>
       <input type="submit" name="login" value="login" />
     </form>
   </body>

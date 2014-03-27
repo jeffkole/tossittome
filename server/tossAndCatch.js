@@ -1,3 +1,4 @@
+var config;
 var dao;
 
 // a hash of tokens to pending requests
@@ -52,6 +53,7 @@ function sendSiteResponse(response, record) {
     json(200, record);
 }
 
+// Invoked by the extension
 function catcher(request, response) {
   if (!request.query.token) {
     response.send(400);
@@ -70,11 +72,22 @@ function catcher(request, response) {
   run();
 }
 
+// Invoked by the bookmarklet
 function tosser(request, response) {
+  if (!request.cookies.token) {
+    console.log('User not logged in. Sending to login');
+    response.render('toss_login.js', {
+      host: config.host
+    });
+    return;
+  }
+
   if (!request.query.t || !request.query.s) {
     response.send(400);
     return;
   }
+
+  // TODO: validate the token and cookie are the same
 
   var token = request.query.t;
   var site  = request.query.s;
@@ -85,13 +98,39 @@ function tosser(request, response) {
       response.set('Content-Type', 'text/javascript');
       response.sendfile('public/toss_response.js');
     }).
-  run();
+    run();
 }
 
-function setup(app, _dao) {
+function getAddPage(request, response) {
+  response.render('add', {
+    page: request.query.page
+  });
+}
+
+function postAddPage(request, response) {
+  if (!request.body.page) {
+    response.send(400);
+    return;
+  }
+
+  var token = request.cookies.token;
+  var page  = request.body.page;
+
+  dao.addSite(token, page).
+    onSuccess(function() {
+      notify(token);
+      response.redirect(page);
+    }).
+    run();
+}
+
+function setup(app, _config, _dao) {
+  config = _config;
   dao = _dao;
   app.get('/catch', catcher);
   app.get('/toss', tosser);
+  app.get('/add', getAddPage);
+  app.post('/add', postAddPage);
 }
 
 module.exports = setup;

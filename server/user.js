@@ -20,7 +20,7 @@ function hashPassword(plain, salt) {
   return (salt + hashed);
 }
 
-function login(email, password, response) {
+function login(email, password, page, response) {
   var failureFn = function() {
     response.send(400);
   };
@@ -29,7 +29,12 @@ function login(email, password, response) {
     onSuccess(function(user) {
       if (validatePassword(password, user.password)) {
         response.cookie('token', user.token);
-        response.redirect('/bookmarklet');
+        if (page) {
+          response.redirect('/add?page=' + encodeURIComponent(page));
+        }
+        else {
+          response.redirect('/bookmarklet');
+        }
       }
       else {
         console.log('Invalid password: %s', password);
@@ -41,7 +46,9 @@ function login(email, password, response) {
 }
 
 function getLogin(request, response) {
-  response.render('login');
+  response.render('login', {
+    page: request.query.page
+  });
 }
 
 function postLogin(request, response) {
@@ -53,8 +60,9 @@ function postLogin(request, response) {
 
   var email    = request.body.email;
   var password = request.body.password;
+  var page     = request.body.page;
 
-  login(email, password, response);
+  login(email, password, page, response);
 }
 
 function getLogout(request, response) {

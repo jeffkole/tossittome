@@ -3,11 +3,6 @@ var engines = require('consolidate');
 var config;
 
 function getBookmarklet(request, response) {
-  if (!request.cookies.token) {
-    response.redirect('/');
-    return;
-  }
-
   engines.hogan(__dirname + '/views/bookmarklet.js', {
       host  : config.host,
       token : request.cookies.token
