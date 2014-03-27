@@ -14,7 +14,15 @@ var tossittome = {
       var ul = document.getElementById('site_list');
       catches.forEach(function(caught) {
         var li = document.createElement('li');
-        li.innerText = caught.site;
+        var a = document.createElement('a');
+        a.innerText = caught.site;
+        a.href = '#';
+        a.addEventListener('click', function(e) {
+          chrome.tabs.update(caught.tabId, {'active': true});
+          chrome.windows.update(caught.windowId, {'focused': true});
+          e.stopPropogation();
+        }, false);
+        li.appendChild(a);
         ul.appendChild(li);
       });
     });

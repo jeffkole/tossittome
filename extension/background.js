@@ -22,6 +22,8 @@ var tossittome = {
         'active': false
       }, function(tab) {
         chrome.windows.update(tab.windowId, {'drawAttention': true});
+        response.tabId = tab.id;
+        response.windowId = tab.windowId;
       });
     this.saveCatch(response);
 
