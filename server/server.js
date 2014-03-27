@@ -1,11 +1,13 @@
 var express = require('express'),
     engines = require('consolidate'),
-    config  = require('./config'),
     dao     = require('./dao');
 
 var port      = 9999;
 
 var app = express();
+
+var config = require('./config')(app);
+dao.setConfig(config);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
@@ -17,8 +19,6 @@ app.engine('html', engines.hogan);
 // set .html as the default extension
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
-
-config(app);
 
 app.get('/', function(request, response) {
   response.render('index', {

@@ -2,17 +2,14 @@ var db     = require('mysql'),
     crypto = require('crypto'),
     base64 = require('js-base64').Base64;
 
-var db_host   = 'localhost',
-    db_user   = 'tossittome',
-    db_pass   = 'password',
-    db_schema = 'tossittome';
+var config;
 
 var getConnection = function() {
   var connection = db.createConnection({
-    host     : db_host,
-    user     : db_user,
-    password : db_pass,
-    database : db_schema
+    host     : config.db.host,
+    user     : config.db.user,
+    password : config.db.password,
+    database : config.db.schema
   });
   connection.connect();
   return connection;
@@ -198,3 +195,6 @@ exports.fetchUserByEmail = function(email) {
   };
 };
 
+exports.setConfig = function(_config) {
+  config = _config;
+};
