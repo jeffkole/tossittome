@@ -45,7 +45,12 @@ function login(email, password, page, response) {
     run();
 }
 
+function logout(response) {
+  response.clearCookie('token');
+}
+
 function getLogin(request, response) {
+  logout(response);
   response.render('login', {
     page: request.query.page
   });
@@ -66,11 +71,12 @@ function postLogin(request, response) {
 }
 
 function getLogout(request, response) {
-  response.clearCookie('token');
+  logout(response);
   response.redirect('/');
 }
 
 function getRegister(request, response) {
+  logout(response);
   response.render('register');
 }
 

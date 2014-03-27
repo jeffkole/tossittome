@@ -87,10 +87,16 @@ function tosser(request, response) {
     return;
   }
 
-  // TODO: validate the token and cookie are the same
-
   var token = request.query.t;
   var site  = request.query.s;
+
+  if (token != request.cookies.token) {
+    console.log('Mismatched tokens');
+    response.render('toss_login.js', {
+      host: config.host
+    });
+    return;
+  }
 
   dao.addSite(token, site).
     onSuccess(function() {
