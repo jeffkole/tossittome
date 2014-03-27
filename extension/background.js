@@ -2,7 +2,7 @@ var tossittome = {
   pageUrl: 'http://localhost:9999/catch?token=w4fCsmIlw4zCsMKMasKGwqQsPEDCjQpzH8Ksw67CvA',
   timeout: null,
   run: true,
-  numNewTabs: 0,
+  catches: [],
 
   requestNextPage: function() {
     var req = new XMLHttpRequest();
@@ -23,8 +23,7 @@ var tossittome = {
       }, function(tab) {
         chrome.windows.update(tab.windowId, {'drawAttention': true});
       });
-    this.numNewTabs++;
-    this.setBadge(this.numNewTabs);
+    this.saveCatch(response);
 
     this.timeout = setTimeout(this.loop.bind(this), 1000);
   },
@@ -39,18 +38,24 @@ var tossittome = {
     this.timeout = setTimeout(this.loop.bind(this), 1000);
   },
 
-  setBadge: function(num) {
-    chrome.browserAction.setBadgeText({'text': num.toString()});
+  saveCatch: function(response) {
+    this.catches.push(response);
+    this.setBadge(this.catches.length);
   },
 
-  resetBadge: function() {
-    this.numNewTabs = 0;
-    this.setBadge('');
+  setBadge: function(num) {
+    chrome.browserAction.setBadgeText({'text': num.toString()});
   },
 
   start: function() {
     this.run = true;
     this.loop();
+
+    chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+      console.log('sending response');
+      console.log(this.catches);
+      sendResponse(this.catches);
+    }.bind(this));
   },
 
   loop: function() {
@@ -68,6 +73,3 @@ var tossittome = {
 }
 
 tossittome.start();
-chrome.browserAction.onClicked.addListener(function(tab) {
-  tossittome.resetBadge();
-});
