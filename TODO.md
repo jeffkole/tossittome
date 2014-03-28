@@ -1,4 +1,3 @@
-* Change 'site' to 'page'
 * Add page title to the record that is stored
 * Make bookmarklet work with https
 * Add local storage for extension to persist across sessions
