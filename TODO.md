@@ -1,4 +1,7 @@
 * Change 'site' to 'page'
 * Add page title to the record that is stored
-* Make extension and bookmarklet use cookie for login info
 * Make bookmarklet work with https
+* Add local storage for extension to persist across sessions
+* Defocus 'clear' link on popup
+* Check origin for 'chrome-extension' only
+* Do back-off for server errors in background.js
