@@ -1,5 +1,9 @@
 <!doctype html>
-<html>
+<!--
+For some reason the clear link has focus when the popup renders; setting
+tabindex to 1 for the html element blurs the focus from the anchor.
+-->
+<html tabindex="1">
   <head>
     <title>TossItToMe</title>
     <style>
