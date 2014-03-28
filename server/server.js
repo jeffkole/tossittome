@@ -11,7 +11,6 @@ var config = require('./config')(app);
 dao.setConfig(config);
 
 app.use(express.static(__dirname + '/public'));
-app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(express.logger());
 
@@ -32,8 +31,8 @@ app.get('/', function(request, response) {
   }
 });
 
-require('./user')(app, dao);
-require('./tossAndCatch')(app, auth, config, dao);
+require('./user')(app, express, dao);
+require('./tossAndCatch')(app, express, auth, config, dao);
 require('./bookmarklet')(app, auth, config);
 
 var server = app.listen(port, function() {

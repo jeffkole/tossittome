@@ -129,7 +129,7 @@ function postAddPage(request, response) {
     run();
 }
 
-function setup(app, auth, _config, _dao) {
+function setup(app, express, auth, _config, _dao) {
   config = _config;
   dao = _dao;
   app.get('/catch', function(request, response, next) {
@@ -141,7 +141,7 @@ function setup(app, auth, _config, _dao) {
     }, catcher);
   app.get('/toss', tosser);
   app.get('/add', auth.protect(), getAddPage);
-  app.post('/add', auth.protect(), postAddPage);
+  app.post('/add', express.bodyParser(), auth.protect(), postAddPage);
 }
 
 module.exports = setup;
