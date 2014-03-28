@@ -76,13 +76,16 @@ function tosser(request, response) {
     return;
   }
 
-  if (!request.query.t || !request.query.u) {
+  if (!request.query.t ||
+      !request.query.u ||
+      !request.query.i) {
     response.send(400);
     return;
   }
 
   var token = request.query.t;
   var url   = request.query.u;
+  var title = request.query.i;
 
   if (token != request.cookies.token) {
     console.log('Mismatched tokens');
@@ -92,7 +95,7 @@ function tosser(request, response) {
     return;
   }
 
-  dao.addPage(token, url).
+  dao.addPage(token, url, title).
     onSuccess(function() {
       notify(token);
       response.set('Content-Type', 'text/javascript');
@@ -103,20 +106,22 @@ function tosser(request, response) {
 
 function getAddPage(request, response) {
   response.render('add', {
-    url: request.query.url
+    url   : request.query.url,
+    title : request.query.title
   });
 }
 
 function postAddPage(request, response) {
-  if (!request.body.url) {
+  if (!request.body.url || !request.body.title) {
     response.send(400);
     return;
   }
 
   var token = request.cookies.token;
   var url   = request.body.url;
+  var title = request.body.title;
 
-  dao.addPage(token, url).
+  dao.addPage(token, url, title).
     onSuccess(function() {
       notify(token);
       response.redirect(url);

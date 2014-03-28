@@ -42,7 +42,8 @@ function logout(response) {
 function getLogin(request, response) {
   logout(response);
   response.render('login', {
-    url: request.query.url
+    url   : request.query.url,
+    title : request.query.title
   });
 }
 
@@ -74,12 +75,13 @@ function postLogin(request, response) {
   var email    = request.body.email;
   var password = request.body.password;
   var url      = request.body.url;
+  var title    = request.body.title;
 
   login(email, password,
       function(user) {
         response.cookie('token', user.token);
-        if (url) {
-          response.redirect('/add?url=' + encodeURIComponent(url));
+        if (url && title) {
+          response.redirect('/add?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title));
         }
         else {
           response.redirect('/bookmarklet');

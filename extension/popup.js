@@ -31,7 +31,7 @@ var tossItToMePop = {
           catches.forEach(function(caught) {
             var li = document.createElement('li');
             var a = document.createElement('a');
-            a.innerText = caught.url;
+            a.innerText = caught.title || caught.url;
             a.href = '#';
             a.addEventListener('click', function(e) {
               chrome.tabs.update(caught.tabId, {'active': true});

@@ -31,14 +31,14 @@ var fetchUserByToken = function(connection, token, onSuccess, onFailure) {
     });
 };
 
-exports.addPage = function(token, url) {
+exports.addPage = function(token, url, title) {
   var _onSuccessFn;
   var _run = function() {
     var connection = getConnection();
     fetchUserByToken(connection, token, function(user) {
       connection.query(
-        'insert into pages (user_id, url) values (?, ?)',
-        [user.id, url],
+        'insert into pages (user_id, url, title) values (?, ?, ?)',
+        [user.id, url, title],
         function(error, results) {
           if (error) { throw error; }
           console.log('Added page [%s] for token [%s] (row %d)', url, token, results.insertId);
@@ -71,7 +71,7 @@ exports.nextPage = function(token) {
         if (error) { throw error; }
 
         connection.query(
-          'select id, url from pages where user_id=? and served_at is null order by created_at limit 1 for update',
+          'select id, url, title from pages where user_id=? and served_at is null order by created_at limit 1 for update',
           user.id,
           function(error, results) {
             if (error) {
