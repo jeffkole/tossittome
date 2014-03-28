@@ -132,13 +132,7 @@ function postAddPage(request, response) {
 function setup(app, express, auth, _config, _dao) {
   config = _config;
   dao = _dao;
-  app.get('/catch', function(request, response, next) {
-      response.set({
-        'Access-Control-Allow-Origin': request.get('origin'),
-        'Access-Control-Allow-Credentials': 'true'
-      });
-      next();
-    }, catcher);
+  app.get('/catch', auth.allowOrigin(), catcher);
   app.get('/toss', tosser);
   app.get('/add', auth.protect(), getAddPage);
   app.post('/add', express.bodyParser(), auth.protect(), postAddPage);
