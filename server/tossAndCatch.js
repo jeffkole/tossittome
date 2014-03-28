@@ -8,7 +8,7 @@ function notify(token) {
   // No records for the token at all
   if (!pending[token]) { return; }
 
-  dao.nextSite(token).
+  dao.nextPage(token).
     onSuccess(function(record) {
       var context = pending[token].shift();
       while (context) {
@@ -16,13 +16,13 @@ function notify(token) {
         if (context.request && context.response) {
           context.request.resume();
           context.response.json(200, record);
-          console.log('Notify: Served site [%s] for token [%s]', record.site, token);
+          console.log('Notify: Served page [%s] for token [%s]', record.url, token);
         }
         context = pending[token].shift();
       }
     }).
-    onNoSite(function() {
-      // nothing to do if there is no site
+    onNoPage(function() {
+      // nothing to do if there is no page
     }).
     run();
 }
@@ -55,12 +55,12 @@ function catcher(request, response) {
   }
 
   var token = request.cookies.token;
-  dao.nextSite(token).
+  dao.nextPage(token).
     onSuccess(function(record) {
       response.json(200, record);
-      console.log('Get: Served site [%s] for token [%s]', record.site, token);
+      console.log('Get: Served page [%s] for token [%s]', record.url, token);
     }).
-    onNoSite(function() {
+    onNoPage(function() {
       pause(token, request, response);
     }).
     run();
@@ -76,13 +76,13 @@ function tosser(request, response) {
     return;
   }
 
-  if (!request.query.t || !request.query.s) {
+  if (!request.query.t || !request.query.u) {
     response.send(400);
     return;
   }
 
   var token = request.query.t;
-  var site  = request.query.s;
+  var url   = request.query.u;
 
   if (token != request.cookies.token) {
     console.log('Mismatched tokens');
@@ -92,7 +92,7 @@ function tosser(request, response) {
     return;
   }
 
-  dao.addSite(token, site).
+  dao.addPage(token, url).
     onSuccess(function() {
       notify(token);
       response.set('Content-Type', 'text/javascript');
@@ -103,23 +103,23 @@ function tosser(request, response) {
 
 function getAddPage(request, response) {
   response.render('add', {
-    page: request.query.page
+    url: request.query.url
   });
 }
 
 function postAddPage(request, response) {
-  if (!request.body.page) {
+  if (!request.body.url) {
     response.send(400);
     return;
   }
 
   var token = request.cookies.token;
-  var page  = request.body.page;
+  var url   = request.body.url;
 
-  dao.addSite(token, page).
+  dao.addPage(token, url).
     onSuccess(function() {
       notify(token);
-      response.redirect(page);
+      response.redirect(url);
     }).
     run();
 }

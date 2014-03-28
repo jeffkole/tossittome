@@ -42,7 +42,7 @@ function logout(response) {
 function getLogin(request, response) {
   logout(response);
   response.render('login', {
-    page: request.query.page
+    url: request.query.url
   });
 }
 
@@ -73,13 +73,13 @@ function postLogin(request, response) {
 
   var email    = request.body.email;
   var password = request.body.password;
-  var page     = request.body.page;
+  var url      = request.body.url;
 
   login(email, password,
       function(user) {
         response.cookie('token', user.token);
-        if (page) {
-          response.redirect('/add?page=' + encodeURIComponent(page));
+        if (url) {
+          response.redirect('/add?url=' + encodeURIComponent(url));
         }
         else {
           response.redirect('/bookmarklet');

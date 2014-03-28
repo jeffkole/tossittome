@@ -1,4 +1,4 @@
 (function() {
-  var page = document.location.href;
-  document.location = 'http://{{ host }}/login?page=' + encodeURIComponent(page);
+  var url = document.location.href;
+  document.location = 'http://{{ host }}/login?url=' + encodeURIComponent(url);
 })();

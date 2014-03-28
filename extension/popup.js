@@ -27,11 +27,11 @@ var tossItToMePop = {
           var catches = tossItToMeBg.getCatches();
           console.log('catches:', catches);
           document.getElementById('num_caught').innerText = catches.length.toString();
-          var ul = document.getElementById('site_list');
+          var ul = document.getElementById('page_list');
           catches.forEach(function(caught) {
             var li = document.createElement('li');
             var a = document.createElement('a');
-            a.innerText = caught.site;
+            a.innerText = caught.url;
             a.href = '#';
             a.addEventListener('click', function(e) {
               chrome.tabs.update(caught.tabId, {'active': true});
@@ -51,7 +51,7 @@ var tossItToMePop = {
   },
 
   clearLinks: function(tossItToMeBg) {
-    document.getElementById('site_list').innerHTML = '';
+    document.getElementById('page_list').innerHTML = '';
     document.getElementById('num_caught').innerText = '0';
     tossItToMeBg.resetCatches();
   },

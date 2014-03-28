@@ -31,17 +31,17 @@ var fetchUserByToken = function(connection, token, onSuccess, onFailure) {
     });
 };
 
-exports.addSite = function(token, site) {
+exports.addPage = function(token, url) {
   var _onSuccessFn;
   var _run = function() {
     var connection = getConnection();
     fetchUserByToken(connection, token, function(user) {
       connection.query(
-        'insert into sites (user_id, site) values (?, ?)',
-        [user.id, site],
+        'insert into pages (user_id, url) values (?, ?)',
+        [user.id, url],
         function(error, results) {
           if (error) { throw error; }
-          console.log('Added site [%s] for token [%s] (row %d)', site, token, results.insertId);
+          console.log('Added page [%s] for token [%s] (row %d)', url, token, results.insertId);
           _onSuccessFn();
           connection.end();
         });
@@ -61,9 +61,9 @@ exports.addSite = function(token, site) {
   };
 };
 
-exports.nextSite = function(token) {
+exports.nextPage = function(token) {
   var _onSuccessFn,
-      _onNoSiteFn;
+      _onNoPageFn;
   var _run = function() {
     var connection = getConnection();
     fetchUserByToken(connection, token, function(user) {
@@ -71,7 +71,7 @@ exports.nextSite = function(token) {
         if (error) { throw error; }
 
         connection.query(
-          'select id, site from sites where user_id=? and served_at is null order by created_at limit 1 for update',
+          'select id, url from pages where user_id=? and served_at is null order by created_at limit 1 for update',
           user.id,
           function(error, results) {
             if (error) {
@@ -84,7 +84,7 @@ exports.nextSite = function(token) {
               _onSuccessFn(record);
 
               connection.query(
-                'update sites set served_at=now() where id=?',
+                'update pages set served_at=now() where id=?',
                 record.id,
                 function(error, results) {
                   if (error) {
@@ -100,7 +100,7 @@ exports.nextSite = function(token) {
                 });
             }
             else {
-              _onNoSiteFn();
+              _onNoPageFn();
             }
           });
       });
@@ -114,8 +114,8 @@ exports.nextSite = function(token) {
       _onSuccessFn = onSuccessFn;
       return this;
     },
-    onNoSite: function(onNoSiteFn) {
-      _onNoSiteFn = onNoSiteFn;
+    onNoPage: function(onNoPageFn) {
+      _onNoPageFn = onNoPageFn;
       return this;
     },
     run: function() {

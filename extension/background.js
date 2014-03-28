@@ -26,9 +26,9 @@ var tossItToMeBg = {
     else if (e.target.status == 200) {
       console.log("Response text: " + e.target.responseText);
       var response = JSON.parse(e.target.responseText);
-      console.log("Response site: " + response.site);
+      console.log("Response url: " + response.url);
       chrome.tabs.create({
-        'url':    response.site,
+        'url':    response.url,
         'active': false
       }, function(tab) {
         chrome.windows.update(tab.windowId, {'drawAttention': true});

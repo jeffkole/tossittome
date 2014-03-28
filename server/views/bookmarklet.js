@@ -6,7 +6,7 @@ function titom1(){
   try{
     if(!b)throw(0);
     d.title='(Tossing...) '+d.title;
-    s.setAttribute('src',l.protocol+'//{{ host }}/toss?s='+encodeURIComponent(l.href)+'&t={{ token }}');
+    s.setAttribute('src',l.protocol+'//{{ host }}/toss?u='+encodeURIComponent(l.href)+'&t={{ token }}');
     b.appendChild(s);
   }catch(e){
     alert('Please wait until the page has loaded.');
