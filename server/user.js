@@ -20,28 +20,18 @@ function hashPassword(plain, salt) {
   return (salt + hashed);
 }
 
-function login(email, password, page, response) {
-  var failureFn = function() {
-    response.send(400);
-  };
-
+function login(email, password, onSuccessFn, onFailureFn) {
   dao.fetchUserByEmail(email).
     onSuccess(function(user) {
       if (validatePassword(password, user.password)) {
-        response.cookie('token', user.token);
-        if (page) {
-          response.redirect('/add?page=' + encodeURIComponent(page));
-        }
-        else {
-          response.redirect('/bookmarklet');
-        }
+        onSuccessFn(user);
       }
       else {
         console.log('Invalid password: %s', password);
-        failureFn();
+        onFailureFn();
       }
     }).
-    onFailure(failureFn).
+    onFailure(onFailureFn).
     run();
 }
 
@@ -56,6 +46,24 @@ function getLogin(request, response) {
   });
 }
 
+function xhrLogin(request, response) {
+  if (!request.query.email || !request.query.password) {
+    response.send(400);
+    return;
+  }
+
+  var email    = request.query.email;
+  var password = request.query.password;
+
+  login(email, password,
+      function(user) {
+        response.json(200, {token: user.token});
+      },
+      function() {
+        response.send(400);
+      });
+}
+
 function postLogin(request, response) {
   console.log('Attempted login with %j', request.body);
   if (!request.body.email || !request.body.password) {
@@ -67,7 +75,19 @@ function postLogin(request, response) {
   var password = request.body.password;
   var page     = request.body.page;
 
-  login(email, password, page, response);
+  login(email, password,
+      function(user) {
+        response.cookie('token', user.token);
+        if (page) {
+          response.redirect('/add?page=' + encodeURIComponent(page));
+        }
+        else {
+          response.redirect('/bookmarklet');
+        }
+      },
+      function() {
+        response.send(400);
+      });
 }
 
 function getLogout(request, response) {
@@ -101,6 +121,9 @@ function setup(app, _dao) {
   dao = _dao;
   app.get('/login', getLogin);
   app.post('/login', postLogin);
+
+  app.get('/xhr/login', xhrLogin);
+
   app.get('/logout', getLogout);
   app.get('/register', getRegister);
   app.post('/register', postRegister);

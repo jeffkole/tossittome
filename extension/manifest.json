@@ -15,5 +15,10 @@
     },
     "default_title": "TossItToMe",
     "default_popup": "popup.html"
-  }
+  },
+
+  "permissions": [
+    "cookies",
+    "*://localhost/"
+  ]
 }

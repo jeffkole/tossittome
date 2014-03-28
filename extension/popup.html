@@ -8,12 +8,12 @@
         overflow-x: hidden;
       }
 
-      img {
-        margin: 5px;
-        border: 2px solid black;
-        vertical-align: middle;
-        width: 75px;
-        height: 75px;
+      #pages {
+        display: none;
+      }
+
+      #login {
+        display: none;
       }
     </style>
 
@@ -27,9 +27,19 @@
   </head>
   <body>
     <h1>TossItToMe</h1>
-    <h2>Caught <span id="num_caught">0</span> sites so far. <a id="clear_link" href="#">Clear</a></h2>
-    <ul id="site_list">
-    </ul>
+    <div id="pages">
+      <h2>Caught <span id="num_caught">0</span> sites so far. <a id="clear_link" href="#">Clear</a></h2>
+      <ul id="site_list">
+      </ul>
+    </div>
+    <div id="login">
+      <h3>Login</h3>
+      <form id="login_form">
+        email: <input type="text" name="email" /><br/>
+        password: <input type="password" name="password" /><br/>
+        <input type="submit" name="login" value="login" />
+      </form>
+    </div>
   </body>
 </html>
 

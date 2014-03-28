@@ -1,12 +1,15 @@
-var tossittome = {
-  pageUrl: 'http://localhost:9999/catch?token=w4fCsmIlw4zCsMKMasKGwqQsPEDCjQpzH8Ksw67CvA',
+var tossItToMeBg = {
+  tossItToMeUrl: 'http://localhost:9999',
+  pageUri: '/catch',
   timeout: null,
   run: true,
   catches: [],
 
   requestNextPage: function() {
     var req = new XMLHttpRequest();
-    req.open("GET", this.pageUrl, true);
+    // Send cookies
+    req.withCredentials = true;
+    req.open("GET", this.tossItToMeUrl + this.pageUri, true);
     req.addEventListener('load', this.openNextPage.bind(this), false);
     req.addEventListener('error', this.error.bind(this), false);
     req.addEventListener('abort', this.abort.bind(this), false);
@@ -14,10 +17,17 @@ var tossittome = {
   },
 
   openNextPage: function(e) {
-    console.log("Response text: " + e.target.responseText);
-    var response = JSON.parse(e.target.responseText);
-    console.log("Response site: " + response.site);
-    chrome.tabs.create({
+    console.log('response:', e.target);
+    if (e.target.status == 401) {
+      // Initiate login
+      console.log('unauthorized');
+      this.stop();
+    }
+    else if (e.target.status == 200) {
+      console.log("Response text: " + e.target.responseText);
+      var response = JSON.parse(e.target.responseText);
+      console.log("Response site: " + response.site);
+      chrome.tabs.create({
         'url':    response.site,
         'active': false
       }, function(tab) {
@@ -25,9 +35,13 @@ var tossittome = {
         response.tabId = tab.id;
         response.windowId = tab.windowId;
       });
-    this.saveCatch(response);
-
-    this.timeout = setTimeout(this.loop.bind(this), 1000);
+      this.saveCatch(response);
+      this.timeout = setTimeout(this.loop.bind(this), 1000);
+    }
+    else {
+      console.log('Response was errorful');
+      this.error(e);
+    }
   },
 
   error: function(e) {
@@ -49,18 +63,18 @@ var tossittome = {
     chrome.browserAction.setBadgeText({'text': num.toString()});
   },
 
+  getCatches: function() {
+    return this.catches;
+  },
+
+  resetCatches: function() {
+    this.catches = [];
+    this.setBadge('');
+  },
+
   start: function() {
     this.run = true;
     this.loop();
-
-    chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-      if (message.action === 'getCatches') {
-        sendResponse(this.catches);
-      }
-      else if (message.action == 'resetCatches') {
-        this.catches = [];
-      }
-    }.bind(this));
   },
 
   loop: function() {
@@ -77,4 +91,4 @@ var tossittome = {
   }
 }
 
-tossittome.start();
+tossItToMeBg.start();

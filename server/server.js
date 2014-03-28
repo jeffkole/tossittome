@@ -13,7 +13,7 @@ dao.setConfig(config);
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(auth.protect(['/add', '/bookmarklet']));
+app.use(express.logger());
 
 // assign the hogan engine to .html and .js files
 app.engine('html', engines.hogan);
@@ -33,8 +33,8 @@ app.get('/', function(request, response) {
 });
 
 require('./user')(app, dao);
-require('./tossAndCatch')(app, config, dao);
-require('./bookmarklet')(app, config);
+require('./tossAndCatch')(app, auth, config, dao);
+require('./bookmarklet')(app, auth, config);
 
 var server = app.listen(port, function() {
   console.log('Listening on port %d', server.address().port);

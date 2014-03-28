@@ -15,7 +15,7 @@ function notify(token) {
         // Active requests for the token
         if (context.request && context.response) {
           context.request.resume();
-          sendSiteResponse(context.response, record);
+          context.response.json(200, record);
           console.log('Notify: Served site [%s] for token [%s]', record.site, token);
         }
         context = pending[token].shift();
@@ -47,29 +47,23 @@ function pause(token, request, response) {
   console.log('Paused request for token [%s]', token);
 }
 
-function sendSiteResponse(response, record) {
-  response.
-    set({ 'Access-Control-Allow-Origin': '*' }).
-    json(200, record);
-}
-
 // Invoked by the extension
 function catcher(request, response) {
-  if (!request.query.token) {
-    response.send(400);
+  if (!request.cookies.token) {
+    response.send(401, 'Not authorized');
     return;
   }
 
-  var token = request.query.token;
+  var token = request.cookies.token;
   dao.nextSite(token).
     onSuccess(function(record) {
-      sendSiteResponse(response, record);
+      response.json(200, record);
       console.log('Get: Served site [%s] for token [%s]', record.site, token);
     }).
-  onNoSite(function() {
-    pause(token, request, response);
-  }).
-  run();
+    onNoSite(function() {
+      pause(token, request, response);
+    }).
+    run();
 }
 
 // Invoked by the bookmarklet
@@ -130,13 +124,19 @@ function postAddPage(request, response) {
     run();
 }
 
-function setup(app, _config, _dao) {
+function setup(app, auth, _config, _dao) {
   config = _config;
   dao = _dao;
-  app.get('/catch', catcher);
+  app.get('/catch', function(request, response, next) {
+      response.set({
+        'Access-Control-Allow-Origin': request.get('origin'),
+        'Access-Control-Allow-Credentials': 'true'
+      });
+      next();
+    }, catcher);
   app.get('/toss', tosser);
-  app.get('/add', getAddPage);
-  app.post('/add', postAddPage);
+  app.get('/add', auth.protect(), getAddPage);
+  app.post('/add', auth.protect(), postAddPage);
 }
 
 module.exports = setup;

@@ -22,9 +22,9 @@ function getBookmarklet(request, response) {
     });
 }
 
-function setup(app, _config) {
+function setup(app, auth, _config) {
   config = _config;
-  app.get('/bookmarklet', getBookmarklet);
+  app.get('/bookmarklet', auth.protect(), getBookmarklet);
 }
 
 module.exports = setup;
