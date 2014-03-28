@@ -2,7 +2,7 @@ var engines = require('consolidate');
 
 var config;
 
-function getBookmarklet(request, response) {
+function renderLoggedInHome(request, response) {
   engines.hogan(__dirname + '/views/bookmarklet.js', {
       host  : config.host,
       token : request.cookies.token
@@ -22,9 +22,22 @@ function getBookmarklet(request, response) {
     });
 }
 
-function setup(app, auth, _config) {
+function renderAnonymousHome(request, response) {
+  response.render('index');
+}
+
+function getHome(request, response) {
+  if (request.cookies.token) {
+    renderLoggedInHome(request, response);
+  }
+  else {
+    renderAnonymousHome(request, response);
+  }
+}
+
+function setup(app, _config) {
   config = _config;
-  app.get('/bookmarklet', auth.protect(), getBookmarklet);
+  app.get('/', getHome);
 }
 
 module.exports = setup;

@@ -22,18 +22,9 @@ app.engine('js',   engines.hogan);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-app.get('/', function(request, response) {
-  if (request.cookies.token) {
-    response.redirect('/bookmarklet');
-  }
-  else {
-    response.render('index');
-  }
-});
-
+require('./home')(app, config);
 require('./user')(app, express, dao);
 require('./tossAndCatch')(app, express, auth, config, dao);
-require('./bookmarklet')(app, auth, config);
 
 var server = app.listen(port, function() {
   console.log('Listening on port %d', server.address().port);

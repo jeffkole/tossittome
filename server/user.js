@@ -84,7 +84,7 @@ function postLogin(request, response) {
           response.redirect('/add?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title));
         }
         else {
-          response.redirect('/bookmarklet');
+          response.redirect('/');
         }
       },
       function() {
@@ -114,7 +114,7 @@ function postRegister(request, response) {
   dao.addUser(email, hashPassword(password)).
     onSuccess(function(user) {
       response.cookie('token', user.token);
-      response.redirect('/bookmarklet');
+      response.redirect('/');
     }).
   run();
 }
