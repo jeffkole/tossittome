@@ -1,5 +1,5 @@
 var tossItToMeBg = {
-  tossItToMeUrl: 'http://localhost:9999',
+  tossItToMeUrl: 'http://{{ host }}',
   pageUri: '/catch',
   timeout: null,
   run: true,

@@ -1,0 +1,14 @@
+{
+  "name": "TossItToMe",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "3.6.0",
+    "gulp-replace": "^0.2.0",
+    "gulp-clean": "^0.2.4",
+    "gulp-exec": "^1.0.4",
+    "gulp-util": "^2.2.14",
+    "q": "^1.0.1",
+    "map-stream": "^0.1.0",
+    "gulp-filter": "^0.3.1"
+  }
+}
