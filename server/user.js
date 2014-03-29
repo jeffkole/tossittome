@@ -119,12 +119,12 @@ function postRegister(request, response) {
   run();
 }
 
-function setup(app, express, _dao) {
+function setup(app, express, auth, _dao) {
   dao = _dao;
   app.get('/login', getLogin);
   app.post('/login', express.bodyParser(), postLogin);
 
-  app.get('/xhr/login', xhrLogin);
+  app.get('/xhr/login', auth.allowOrigin(), xhrLogin);
 
   app.get('/logout', getLogout);
   app.get('/register', getRegister);

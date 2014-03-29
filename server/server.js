@@ -3,7 +3,7 @@ var express = require('express'),
     dao     = require('./dao'),
     auth    = require('./auth');
 
-var port      = 9999;
+var port    = 9999;
 
 var app = express();
 
@@ -23,7 +23,7 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 require('./home')(app, config);
-require('./user')(app, express, dao);
+require('./user')(app, express, auth, dao);
 require('./tossAndCatch')(app, express, auth, config, dao);
 
 var server = app.listen(port, function() {

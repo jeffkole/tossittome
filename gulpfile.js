@@ -20,8 +20,8 @@ var resolve = function(deferred) {
 }
 
 var hosts = {
-  'dev'  : 'localhost:9999',
-  'prod' : 'tossitto.me'
+  'dev'  : { 'hostAndPort': 'localhost:9999', 'host': 'localhost' },
+  'prod' : { 'hostAndPort': 'tossitto.me',    'host': 'tossitto.me' }
 };
 
 gulp.task('clean', function(cb) {
@@ -36,7 +36,8 @@ gulp.task('pack-extensions', ['clean'], function() {
     var notImageFilter = filter('!**/*.png');
     gulp.src('extension/**')
         .pipe(notImageFilter)
-        .pipe(replace(/{{ host }}/g, hosts[env]))
+        .pipe(replace(/{{ host }}/g, hosts[env]['host']))
+        .pipe(replace(/{{ hostAndPort }}/g, hosts[env]['hostAndPort']))
         .pipe(notImageFilter.restore())
         .pipe(gulp.dest('build/dist/extension/' + env))
         .pipe(resolve(deferred));

@@ -1,8 +1,8 @@
 var tossItToMeBg = {
-  tossItToMeUrl: 'http://{{ host }}',
+  tossItToMeUrl: 'http://{{ hostAndPort }}',
   pageUri: '/catch',
   timeout: null,
-  run: true,
+  run: false,
   catches: [],
 
   requestNextPage: function() {
@@ -73,8 +73,10 @@ var tossItToMeBg = {
   },
 
   start: function() {
-    this.run = true;
-    this.loop();
+    if (!this.run) {
+      this.run = true;
+      this.loop();
+    }
   },
 
   loop: function() {

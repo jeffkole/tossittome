@@ -35,9 +35,15 @@ function getHome(request, response) {
   }
 }
 
+function getExtension(request, response) {
+  response.set('Content-Type', 'application/x-chrome-extension');
+  response.sendfile('extension/dev.crx');
+}
+
 function setup(app, _config) {
   config = _config;
   app.get('/', getHome);
+  app.get('/extension.crx', getExtension);
 }
 
 module.exports = setup;
