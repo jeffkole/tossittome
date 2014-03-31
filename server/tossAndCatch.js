@@ -99,7 +99,7 @@ function tosser(request, response) {
     onSuccess(function() {
       notify(token);
       response.set('Content-Type', 'text/javascript');
-      response.sendfile('public/toss_response.js');
+      response.sendfile(__dirname + '/public/toss_response.js');
     }).
     run();
 }
