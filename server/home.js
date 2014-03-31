@@ -37,7 +37,7 @@ function getHome(request, response) {
 
 function getExtension(request, response) {
   response.set('Content-Type', 'application/x-chrome-extension');
-  response.sendfile(__dirname + '/extension/extension.crx');
+  response.download(__dirname + '/extension/extension.crx', 'tossittome.crx');
 }
 
 function setup(app, _config) {
