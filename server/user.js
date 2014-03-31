@@ -27,7 +27,7 @@ function login(email, password, onSuccessFn, onFailureFn) {
         onSuccessFn(user);
       }
       else {
-        console.log('Invalid password: %s', password);
+        console.log('Invalid password');
         onFailureFn();
       }
     }).
@@ -66,7 +66,7 @@ function xhrLogin(request, response) {
 }
 
 function postLogin(request, response) {
-  console.log('Attempted login with %j', request.body);
+  console.log('Attempted login with email %s', request.body.email);
   if (!request.body.email || !request.body.password) {
     response.send(400);
     return;

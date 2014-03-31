@@ -169,7 +169,6 @@ exports.fetchUserByEmail = function(email) {
           if (error) { throw error; }
           if (results.length > 0) {
             var user = results[0];
-            console.log('Found user: %j', user);
             _onSuccessFn(user);
           }
           else {

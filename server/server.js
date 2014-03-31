@@ -3,8 +3,6 @@ var express = require('express'),
     dao     = require('./dao'),
     auth    = require('./auth');
 
-var port    = 9999;
-
 var app = express();
 
 var config = require('./config')(app);
@@ -26,6 +24,6 @@ require('./home')(app, config);
 require('./user')(app, express, auth, dao);
 require('./tossAndCatch')(app, express, auth, config, dao);
 
-var server = app.listen(port, function() {
+var server = app.listen(config.port, function() {
   console.log('Listening on port %d', server.address().port);
 });

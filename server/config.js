@@ -2,6 +2,7 @@ var merge = require('object-merge');
 
 var config = {
   host: 'localhost:9999',
+  port: 9999,
 
   db: {
     host     : 'localhost',
