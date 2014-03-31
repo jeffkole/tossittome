@@ -67,57 +67,16 @@ NAME="Toss It To Me"
 NODE_BIN_DIR=/usr/bin
 NODE_PATH=/usr/lib/node_modules
 APPLICATION_DIRECTORY=/var/www/tossittome/current
-APPLICATION_START=server.js
-PIDFILE=/var/run/tossittome/tossittome.pid
-LOGDIR=/var/log/tossittome
 USER=
  
-# Add node to the path for situations in which the environment is passed.
-PATH=$NODE_BIN_DIR:$PATH
-# Export all environment variables that must be visible for the Node.js
-# application process forked by Forever. It will not see any of the other
-# variables defined in this script.
-export NODE_PATH=$NODE_PATH
- 
 start() {
-    echo "Starting $NAME"
-    # We're calling forever directly without using start-stop-daemon for the
-    # sake of simplicity when it comes to environment, and because this way
-    # the script will work whether it is executed directly or via the service
-    # utility.
-    #
-    # The minUptime and spinSleepTime settings stop Forever from thrashing if
-    # the application fails immediately on launch. This is generally necessary to
-    # avoid loading development servers to the point of failure every time 
-    # someone makes an error in application initialization code, or bringing down
-    # production servers the same way if a database or other critical service
-    # suddenly becomes inaccessible.
-    #
-    # The pidfile contains the child process pid, not the forever process pid.
-    # We're only using it as a marker for whether or not the process is
-    # running.
-    export NODE_ENV=production
-    daemon --user $USER \
-        forever --pidFile $PIDFILE --sourceDir $APPLICATION_DIRECTORY \
-            -a -l $LOGDIR/toss.log --minUptime 5000 --spinSleepTime 2000 \
-            start $APPLICATION_START
+    daemon --user $USER $APPLICATION_DIRECTORY/bin/start
     RETVAL=$?
 }
  
 stop() {
-    if [ -f $PIDFILE ]; then
-        echo "Shutting down $NAME"
-        # Tell Forever to stop the process. Note that doing it this way means
-        # that each application that runs as a service must have a different
-        # start file name, regardless of which directory it is in.
-        runuser -s /bin/bash $USER -c "forever stop $APPLICATION_START"
-        # Get rid of the pidfile, since Forever won't do that.
-        rm -f $PIDFILE
-        RETVAL=$?
-    else
-        echo "$NAME is not running."
-        RETVAL=0
-    fi
+    runuser -s /bin/bash $USER -c "$APPLICATION_DIRECTORY/bin/stop"
+    RETVAL=$?
 }
  
 restart() {

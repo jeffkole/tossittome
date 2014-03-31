@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+APPLICATION_START=server.js
+PIDFILE=/var/run/tossittome/tossittome.pid
+
+if [ -f $PIDFILE ]; then
+  echo "Shutting down tossittome"
+  forever stop $APPLICATION_START
+  rm -f $PIDFILE
+else
+  echo "tossittome is not running"
+fi
+
+exit $?

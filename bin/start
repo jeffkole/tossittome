@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+APPLICATION_DIRECTORY=/var/www/tossittome/current/server
+APPLICATION_START=server.js
+PIDFILE=/var/run/tossittome/tossittome.pid
+LOGDIR=/var/log/tossittome
+
+export NODE_ENV=production
+
+echo "Starting tossittome"
+forever --pidFile $PIDFILE --sourceDir $APPLICATION_DIRECTORY \
+  -a -l $LOGDIR/toss.log --minUptime 5000 --spinSleepTime 2000 \
+  start $APPLICATION_START
+
+exit $?

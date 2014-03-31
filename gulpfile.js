@@ -55,51 +55,22 @@ var packExtension = function(env) {
     return deferred.promise;
   };
 };
-
-gulp.task('pack-extensions', ['clean'], function() {
-  Object.keys(hosts).forEach(function(env) {
-    gutil.log('Env: ' + env);
-    copyExtension(env)()
-      .then(packExtension(env))
-      .done();
-  });
-});
-
-var copyServer = function(env) {
-  return function() {
-    var deferred = Q.defer();
-    gulp.src('server/**')
-        .pipe(gulp.dest('build/dist/server/' + env))
-        .pipe(resolve(deferred));
-    return deferred.promise;
-  };
-};
-var copyExtensionToServer = function(env) {
+var putPackIntoServer = function(env) {
   return function() {
     var deferred = Q.defer();
     gulp.src('build/dist/extension/' + env + '.crx')
         .pipe(rename('extension.crx'))
-        .pipe(gulp.dest('build/dist/server/' + env + '/extension'))
-        .pipe(resolve(deferred));
-    return deferred.promise;
-  };
-};
-var tarServer = function(env) {
-  return function() {
-    var deferred = Q.defer();
-    gulp.src('build/dist/server/' + env)
-        // gulp-tar screws up the tarfile (perhaps the paths are too long for
-        // nested node_modules, so just use tar from the command-line
-        .pipe(exec('tar czf build/dist/<%= options.env %>-server.tgz -C <%= file.path %> .', { env: env }))
+        .pipe(gulp.dest('server/extension'))
         .pipe(resolve(deferred));
     return deferred.promise;
   };
 };
 
-gulp.task('dist', function() {
+gulp.task('pack-extension', ['clean'], function() {
   var env = 'prod';
-  copyServer(env)()
-    .then(copyExtensionToServer(env))
-    .then(tarServer(env))
+  gutil.log('Env: ' + env);
+  copyExtension(env)()
+    .then(packExtension(env))
+    .then(putPackIntoServer(env))
     .done();
 });
