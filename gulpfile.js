@@ -27,28 +27,43 @@ var hosts = {
   'prod' : { 'hostAndPort': 'tossitto.me',    'host': 'tossitto.me' }
 };
 
-gulp.task('clean', function(cb) {
+gulp.task('clean', function() {
   return gulp.src('build', { read: false })
       .pipe(clean());
 });
 
-gulp.task('pack-extensions', ['clean'], function() {
-  Object.keys(hosts).forEach(function(env) {
-    gutil.log('Env: ' + env);
+var copyExtension = function(env) {
+  return function() {
     var deferred = Q.defer();
     var notImageFilter = filter('!**/*.png');
     gulp.src('extension/**')
+        .pipe(logFile())
         .pipe(notImageFilter)
         .pipe(replace(/{{ host }}/g, hosts[env]['host']))
         .pipe(replace(/{{ hostAndPort }}/g, hosts[env]['hostAndPort']))
         .pipe(notImageFilter.restore())
         .pipe(gulp.dest('build/dist/extension/' + env))
         .pipe(resolve(deferred));
-    deferred.promise.then(function() {
-      gulp.src('build/dist/extension/' + env)
-          .pipe(logFile())
-          .pipe(exec('./bin/pack_extension.sh <%= file.path %> ~/.ssh/tossittome.pem'));
-      }).done();
+    return deferred.promise;
+  };
+};
+var packExtension = function(env) {
+  return function() {
+    var deferred = Q.defer();
+    gulp.src('build/dist/extension/' + env)
+        .pipe(logFile())
+        .pipe(exec('./bin/pack_extension.sh <%= file.path %> ~/.ssh/tossittome.pem'))
+        .pipe(resolve(deferred));
+    return deferred.promise;
+  };
+};
+
+gulp.task('pack-extensions', ['clean'], function() {
+  Object.keys(hosts).forEach(function(env) {
+    gutil.log('Env: ' + env);
+    copyExtension(env)()
+      .then(packExtension(env))
+      .done();
   });
 });
 
@@ -61,7 +76,7 @@ var copyServer = function(env) {
     return deferred.promise;
   };
 };
-var copyExtension = function(env) {
+var copyExtensionToServer = function(env) {
   return function() {
     var deferred = Q.defer();
     gulp.src('build/dist/extension/' + env + '.crx')
@@ -86,7 +101,7 @@ var tarServer = function(env) {
 gulp.task('dist', function() {
   var env = 'prod';
   copyServer(env)()
-    .then(copyExtension(env))
+    .then(copyExtensionToServer(env))
     .then(tarServer(env))
     .done();
 });
