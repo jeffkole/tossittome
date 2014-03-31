@@ -19,7 +19,7 @@ function setup(app) {
 
     config.db.schema   = 'tossittome_prod';
 
-    production = require('./production_secrets.json');
+    production = require(process.env.HOME + '/.ssh/production_secrets.json');
     config = merge(config, production);
   }
   return config;
