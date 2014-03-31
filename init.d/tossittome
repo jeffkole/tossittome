@@ -36,7 +36,7 @@
 # uncommented by those who want to edit this script to add more functionality.
 # Note that this is Ubuntu-specific. The scripts and script location are different on
 # RPM-based distributions.
-# . /lib/lsb/init-functions
+. /etc/rc.d/init.d/functions
  
 # The example environment variables below assume that Node.js is 
 # installed into /home/node/local/node by building from source as outlined 
@@ -68,8 +68,9 @@ NODE_BIN_DIR=/usr/bin
 NODE_PATH=/usr/lib/node_modules
 APPLICATION_DIRECTORY=/var/www/tossittome/current
 APPLICATION_START=server.js
-PIDFILE=/var/run/tossittome.pid
+PIDFILE=/var/run/tossittome/tossittome.pid
 LOGDIR=/var/log/tossittome
+USER=
  
 # Add node to the path for situations in which the environment is passed.
 PATH=$NODE_BIN_DIR:$PATH
@@ -95,10 +96,11 @@ start() {
     # The pidfile contains the child process pid, not the forever process pid.
     # We're only using it as a marker for whether or not the process is
     # running.
-    NODE_ENV=production \
+    export NODE_ENV=production
+    daemon --user $USER \
         forever --pidFile $PIDFILE --sourceDir $APPLICATION_DIRECTORY \
             -a -l $LOGDIR/toss.log --minUptime 5000 --spinSleepTime 2000 \
-            start $APPLICATION_START &
+            start $APPLICATION_START
     RETVAL=$?
 }
  
@@ -108,7 +110,7 @@ stop() {
         # Tell Forever to stop the process. Note that doing it this way means
         # that each application that runs as a service must have a different
         # start file name, regardless of which directory it is in.
-        forever stop $APPLICATION_START
+        runuser -s /bin/bash $USER -c "forever stop $APPLICATION_START"
         # Get rid of the pidfile, since Forever won't do that.
         rm -f $PIDFILE
         RETVAL=$?
@@ -133,7 +135,7 @@ status() {
     # On Ubuntu, this isn't even necessary. To find out whether the service is
     # running, use "service my-application status" which bypasses this script
     # entirely provided you used the service utility to start the process.
-    forever list
+    runuser -s /bin/bash $USER -c "forever list"
     RETVAL=$?
 }
  
