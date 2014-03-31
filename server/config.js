@@ -1,3 +1,4 @@
+var merge = require('object-merge');
 
 var config = {
   host: 'localhost:9999',
@@ -15,8 +16,10 @@ function setup(app) {
   if ('production' == app.get('env')) {
     config.host = 'tossitto.me';
 
-    config.db.host     = 'bigdbmachine.tossitto.me';
-    config.db.password = 'secure_password';
+    config.db.schema   = 'tossittome_prod';
+
+    production = require('./production_secrets.json');
+    config = merge(config, production);
   }
   return config;
 }
