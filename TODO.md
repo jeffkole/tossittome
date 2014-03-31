@@ -5,3 +5,5 @@
 * Add error handling to popup login
 * Cross out links for closed tabs in popup
 * Ensure db access errors are properly handled
+* Make cookie expire in a long time
+* Make toss_login.js use host header
