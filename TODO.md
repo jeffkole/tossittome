@@ -8,4 +8,3 @@
 * Make cookie expire in a long time
 * Make toss_login.js use host header
 * Add apple-touch-icon-precomposed.png, apple-touch-icon.png, and favicon.ico
-* Make deploys occur with a git push
