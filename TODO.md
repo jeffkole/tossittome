@@ -7,5 +7,4 @@
 * Ensure db access errors are properly handled
 * Make cookie expire in a long time
 * Make toss_login.js use host header
-* Pass real host through proxy
 * Add apple-touch-icon-precomposed.png, apple-touch-icon.png, and favicon.ico
