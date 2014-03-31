@@ -3,11 +3,9 @@ var gulp    = require('gulp'),
     clean   = require('gulp-clean'),
     exec    = require('gulp-exec'),
     filter  = require('gulp-filter'),
-    gzip    = require('gulp-gzip'),
     map     = require('map-stream'),
     rename  = require('gulp-rename'),
     replace = require('gulp-replace'),
-    tar     = require('gulp-tar'),
     Q       = require('q');
 
 var logFile = function() {
@@ -89,10 +87,10 @@ var copyExtensionToServer = function(env) {
 var tarServer = function(env) {
   return function() {
     var deferred = Q.defer();
-    gulp.src('**', { 'cwd': process.cwd() + '/build/dist/server/' + env })
-        .pipe(tar(env + '-server.tar'))
-        .pipe(gzip())
-        .pipe(gulp.dest('build/dist'))
+    gulp.src('build/dist/server/' + env)
+        // gulp-tar screws up the tarfile (perhaps the paths are too long for
+        // nested node_modules, so just use tar from the command-line
+        .pipe(exec('tar czf build/dist/<%= options.env %>-server.tgz -C <%= file.path %> .', { env: env }))
         .pipe(resolve(deferred));
     return deferred.promise;
   };
