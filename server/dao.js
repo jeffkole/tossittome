@@ -101,6 +101,7 @@ exports.nextPage = function(token) {
             }
             else {
               _onNoPageFn();
+              connection.end();
             }
           });
       });
