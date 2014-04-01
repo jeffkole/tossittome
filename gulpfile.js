@@ -37,8 +37,8 @@ var copyExtension = function(env) {
     gulp.src('extension/**')
         .pipe(logFile())
         .pipe(notImageFilter)
-        .pipe(replace(/{{ host }}/g, hosts[env]['host']))
-        .pipe(replace(/{{ hostAndPort }}/g, hosts[env]['hostAndPort']))
+        .pipe(replace(/localhost:9999/g, hosts[env]['hostAndPort']))
+        .pipe(replace(/localhost/g,      hosts[env]['host']))
         .pipe(notImageFilter.restore())
         .pipe(gulp.dest('build/dist/extension/' + env))
         .pipe(resolve(deferred));

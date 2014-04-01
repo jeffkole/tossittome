@@ -1,5 +1,5 @@
 var tossItToMeBg = {
-  tossItToMeUrl: 'http://{{ hostAndPort }}',
+  tossItToMeUrl: 'http://localhost:9999',
   pageUri: '/catch',
   request: null,
 

@@ -23,6 +23,6 @@
     "alarms",
     "cookies",
     "storage",
-    "*://{{ host }}/"
+    "*://localhost/"
   ]
 }
