@@ -26,16 +26,21 @@ var tossItToMeBg = {
     else if (e.target.status == 200) {
       console.log("Response text: " + e.target.responseText);
       var response = JSON.parse(e.target.responseText);
-      console.log("Response url: " + response.url);
-      chrome.tabs.create({
-        'url':    response.url,
-        'active': false
-      }, function(tab) {
-        chrome.windows.update(tab.windowId, {'drawAttention': true});
-        response.tabId = tab.id;
-        response.windowId = tab.windowId;
-      });
-      this.saveCatch(response);
+      if (response.noCatches) {
+        console.log('No catches... carry on');
+      }
+      else {
+        console.log("Response url: " + response.url);
+        chrome.tabs.create({
+          'url':    response.url,
+          'active': false
+        }, function(tab) {
+          chrome.windows.update(tab.windowId, {'drawAttention': true});
+          response.tabId = tab.id;
+          response.windowId = tab.windowId;
+        });
+        this.saveCatch(response);
+      }
       this.timeout = setTimeout(this.loop.bind(this), 1000);
     }
     else {

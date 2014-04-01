@@ -11,6 +11,8 @@ function notify(token) {
   dao.nextPage(token).
     onSuccess(function(record) {
       var context = pending[token].shift();
+      // TODO: even if there are no active contexts, the db record is marked as
+      // served.  FIXME!
       while (context) {
         // Active requests for the token
         if (context.request && context.response) {
@@ -61,7 +63,8 @@ function catcher(request, response) {
       console.log('Get: Served page [%s] for token [%s]', record.url, token);
     }).
     onNoPage(function() {
-      pause(token, request, response);
+      // pause(token, request, response);
+      response.json(200, { noCatches: true });
     }).
     run();
 }
@@ -97,7 +100,7 @@ function tosser(request, response) {
 
   dao.addPage(token, url, title).
     onSuccess(function() {
-      notify(token);
+      // notify(token);
       response.set('Content-Type', 'text/javascript');
       response.sendfile(__dirname + '/public/toss_response.js');
     }).
@@ -123,7 +126,7 @@ function postAddPage(request, response) {
 
   dao.addPage(token, url, title).
     onSuccess(function() {
-      notify(token);
+      // notify(token);
       response.redirect(url);
     }).
     run();
