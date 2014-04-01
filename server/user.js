@@ -1,6 +1,9 @@
 var crypto  = require('crypto'),
     base64  = require('js-base64').Base64;
 
+// Keep cookie active for 1 year
+var cookieAge = 1000 * 60 * 60 * 24 * 365;
+
 var dao;
 
 function validatePassword(plain, hashed) {
@@ -79,7 +82,7 @@ function postLogin(request, response) {
 
   login(email, password,
       function(user) {
-        response.cookie('token', user.token);
+        response.cookie('token', user.token, { maxAge: cookieAge });
         if (url && title) {
           response.redirect('/add?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title));
         }
@@ -113,7 +116,7 @@ function postRegister(request, response) {
 
   dao.addUser(email, hashPassword(password)).
     onSuccess(function(user) {
-      response.cookie('token', user.token);
+      response.cookie('token', user.token, { maxAge: cookieAge });
       response.redirect('/');
     }).
   run();
