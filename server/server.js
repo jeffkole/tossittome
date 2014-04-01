@@ -20,7 +20,7 @@ app.engine('js',   engines.hogan);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-require('./home')(app, config);
+require('./home')(app, config, dao);
 require('./user')(app, express, auth, dao);
 require('./tossAndCatch')(app, express, auth, config, dao);
 

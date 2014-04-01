@@ -31,6 +31,7 @@ exports.fetchUserByToken = function(token) {
           if (error) { throw error; }
           if (results.length > 0) {
             var user = results[0];
+            console.log('Found user %j', user);
             _onSuccessFn(user);
           }
           else {

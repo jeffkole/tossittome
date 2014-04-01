@@ -1,6 +1,7 @@
 var engines = require('consolidate');
 
 var config;
+var dao;
 
 function renderLoggedInHome(request, response) {
   engines.hogan(__dirname + '/views/bookmarklet.js', {
@@ -28,7 +29,16 @@ function renderAnonymousHome(request, response) {
 
 function getHome(request, response) {
   if (request.cookies.token) {
-    renderLoggedInHome(request, response);
+    dao.fetchUserByToken(request.cookies.token).
+      onSuccess(function(user) {
+        renderLoggedInHome(request, response);
+      }).
+      onFailure(function() {
+        // Clear the fraudulent cookie
+        response.clearCookie('token');
+        renderAnonymousHome(request, response);
+      }).
+      run();
   }
   else {
     renderAnonymousHome(request, response);
@@ -40,8 +50,9 @@ function getExtension(request, response) {
   response.download(__dirname + '/extension/extension.crx', 'tossittome.crx');
 }
 
-function setup(app, _config) {
+function setup(app, _config, _dao) {
   config = _config;
+  dao = _dao;
   app.get('/', getHome);
   app.get('/extension.crx', getExtension);
 }
