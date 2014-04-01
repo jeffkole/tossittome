@@ -8,3 +8,6 @@
 * Make cookie expire in a long time
 * Make toss_login.js use host header
 * Add apple-touch-icon-precomposed.png, apple-touch-icon.png, and favicon.ico
+* Verify token against db on homepage load with cookie
+* Debug extension not reviving after sleep
+* Check that log does not increase too much
