@@ -75,14 +75,15 @@ var tossItToMePop = {
       if (e.target.status == 200) {
         var cookies = JSON.parse(e.target.responseText);
         console.log('setting cookies:', cookies);
-        for (var key in cookies) {
+        cookies.forEach(function(cookie) {
           chrome.cookies.set({
-            url   : tossItToMeBg.tossItToMeUrl + '/',
-            name  : key,
-            value : cookies[key]
-            // TODO: set cookie expiration
+            url            : tossItToMeBg.tossItToMeUrl + '/',
+            name           : cookie.name,
+            value          : cookie.value,
+            // Chrome uses seconds, not milliseconds for cookies
+            expirationDate : (cookie.expirationDate / 1000)
           });
-        }
+        });
         document.getElementById('pages').style.display = 'block';
         document.getElementById('login').style.display = 'none';
       }

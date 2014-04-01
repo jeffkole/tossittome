@@ -61,7 +61,9 @@ function xhrLogin(request, response) {
 
   login(email, password,
       function(user) {
-        response.json(200, {token: user.token});
+        response.json(200, [
+            { name: 'token', value: user.token, expirationDate: (Date.now() + cookieAge) }
+          ]);
       },
       function() {
         response.send(400);
