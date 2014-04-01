@@ -1,11 +1,10 @@
 var tossItToMeBg = {
   tossItToMeUrl: 'http://{{ hostAndPort }}',
   pageUri: '/catch',
-  timeout: null,
-  run: false,
-  catches: [],
+  request: null,
 
   requestNextPage: function() {
+    console.log('request next page');
     var req = new XMLHttpRequest();
     // Send cookies
     req.withCredentials = true;
@@ -14,6 +13,7 @@ var tossItToMeBg = {
     req.addEventListener('error', this.error.bind(this), false);
     req.addEventListener('abort', this.abort.bind(this), false);
     req.send(null);
+    this.request = req;
   },
 
   openNextPage: function(e) {
@@ -27,6 +27,7 @@ var tossItToMeBg = {
       console.log("Response text: " + e.target.responseText);
       var response = JSON.parse(e.target.responseText);
       if (response.noCatches) {
+        // No catches, so nothing to do
         console.log('No catches... carry on');
       }
       else {
@@ -41,61 +42,85 @@ var tossItToMeBg = {
         });
         this.saveCatch(response);
       }
-      this.timeout = setTimeout(this.loop.bind(this), 1000);
     }
     else {
       console.log('Response was errorful');
       this.error(e);
     }
+    this.request = null;
   },
 
   error: function(e) {
-    console.log("Response error: " + e);
-    this.timeout = setTimeout(this.loop.bind(this), 1000);
+    console.log('Response error', e);
+    this.request = null;
   },
 
   abort: function(e) {
-    console.log("Response abort: " + e);
-    this.timeout = setTimeout(this.loop.bind(this), 1000);
+    console.log('Response abort', e);
+    this.request = null;
   },
 
   saveCatch: function(response) {
-    this.catches.push(response);
-    this.setBadge(this.catches.length);
+    chrome.storage.local.get('catches', function(catches) {
+      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
+      console.log('catches', catches);
+      if (catches.catches) {
+        catches.catches.push(response);
+        chrome.storage.local.set(catches);
+        this.setBadge(catches.catches.length);
+      }
+    }.bind(this));
   },
 
   setBadge: function(num) {
     chrome.browserAction.setBadgeText({'text': num.toString()});
   },
 
-  getCatches: function() {
-    return this.catches;
+  withCatches: function(doWithCatches) {
+    chrome.storage.local.get('catches', function(catches) {
+      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
+      doWithCatches(catches.catches);
+    });
   },
 
   resetCatches: function() {
-    this.catches = [];
-    this.setBadge('');
+    chrome.storage.local.set({'catches': []}, function() {
+      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
+      this.setBadge('');
+    }.bind(this));
   },
 
   start: function() {
-    if (!this.run) {
-      this.run = true;
-      this.loop();
-    }
-  },
-
-  loop: function() {
-    if (this.run) {
-      this.requestNextPage();
-    }
+    console.log('Creating catcher alarm');
+    chrome.alarms.create('catcher', { periodInMinutes : 1 });
   },
 
   stop: function() {
-    this.run = false;
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
+    console.log('Clearing catcher alarm');
+    chrome.alarms.clear('catcher');
   }
 }
 
+chrome.runtime.onInstalled.addListener(function() {
+  console.log('TossItToMe installed');
+  chrome.storage.local.set({'catches': []});
+});
+
+chrome.runtime.onSuspend.addListener(function() {
+  console.log('About to suspend TossItToMe');
+  if (tossItToMeBg.request && tossItToMeBg.request.readyState != 4) {
+    tossItToMeBg.request.abort();
+    tossItToMeBg.request = null;
+  }
+});
+
 tossItToMeBg.start();
+chrome.alarms.onAlarm.addListener(function() {
+  tossItToMeBg.requestNextPage();
+});
+chrome.cookies.onChanged.addListener(function(info) {
+  if (!info.removed) {
+    // If a cookie was created, then restart the poller
+    tossItToMeBg.start();
+  }
+});

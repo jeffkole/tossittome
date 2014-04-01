@@ -24,24 +24,25 @@ var tossItToMePop = {
         name : 'token'
       }, function(cookie) {
         if (cookie) {
-          var catches = tossItToMeBg.getCatches();
-          console.log('catches:', catches);
-          document.getElementById('num_caught').innerText = catches.length.toString();
-          var ul = document.getElementById('page_list');
-          catches.forEach(function(caught) {
-            var li = document.createElement('li');
-            var a = document.createElement('a');
-            a.innerText = caught.title || caught.url;
-            a.href = '#';
-            a.addEventListener('click', function(e) {
-              chrome.tabs.update(caught.tabId, {'active': true});
-              chrome.windows.update(caught.windowId, {'focused': true});
-              e.stopPropogation();
-            }, false);
-            li.appendChild(a);
-            ul.appendChild(li);
+          tossItToMeBg.withCatches(function(catches) {
+            console.log('catches:', catches);
+            document.getElementById('num_caught').innerText = catches.length.toString();
+            var ul = document.getElementById('page_list');
+            catches.forEach(function(caught) {
+              var li = document.createElement('li');
+              var a = document.createElement('a');
+              a.innerText = caught.title || caught.url;
+              a.href = '#';
+              a.addEventListener('click', function(e) {
+                chrome.tabs.update(caught.tabId, {'active': true});
+                chrome.windows.update(caught.windowId, {'focused': true});
+                e.stopPropogation();
+              }, false);
+              li.appendChild(a);
+              ul.appendChild(li);
+            });
+            document.getElementById('pages').style.display = 'block';
           });
-          document.getElementById('pages').style.display = 'block';
         }
         else {
           document.getElementById('login').style.display = 'block';
@@ -79,11 +80,11 @@ var tossItToMePop = {
             url   : tossItToMeBg.tossItToMeUrl + '/',
             name  : key,
             value : cookies[key]
+            // TODO: set cookie expiration
           });
         }
         document.getElementById('pages').style.display = 'block';
         document.getElementById('login').style.display = 'none';
-        tossItToMeBg.start();
       }
     };
   }

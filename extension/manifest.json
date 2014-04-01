@@ -6,7 +6,8 @@
   "version": "1.0",
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
 
   "browser_action": {
@@ -19,7 +20,9 @@
   },
 
   "permissions": [
+    "alarms",
     "cookies",
+    "storage",
     "*://{{ host }}/"
   ]
 }
