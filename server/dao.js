@@ -15,39 +15,68 @@ var getConnection = function() {
   return connection;
 };
 
-var fetchUserByToken = function(connection, token, onSuccess, onFailure) {
-  connection.query(
-    'select id, email, token, created_at from users where token=? limit 1',
-    token,
-    function(error, results) {
-      if (error) { throw error; }
-      if (results.length > 0) {
-        var user = results[0];
-        onSuccess(user);
-      }
-      else {
-        onFailure();
-      }
-    });
+exports.fetchUserByToken = function(token) {
+  var _onSuccessFn;
+  var _onFailureFn;
+  var _run = function(connection) {
+    var opened = false;
+    if (!connection) {
+      opened = true;
+      connection = getConnection();
+    }
+    connection.query(
+        'select id, email, token, created_at from users where token=? limit 1',
+        token,
+        function(error, results) {
+          if (error) { throw error; }
+          if (results.length > 0) {
+            var user = results[0];
+            _onSuccessFn(user);
+          }
+          else {
+            _onFailureFn();
+          }
+          if (opened) {
+            connection.end();
+          }
+        });
+  };
+
+  return {
+    onSuccess: function(onSuccessFn) {
+      _onSuccessFn = onSuccessFn;
+      return this;
+    },
+    onFailure: function(onFailureFn) {
+      _onFailureFn = onFailureFn;
+      return this;
+    },
+    run: function(connection) {
+      _run(connection);
+    }
+  };
 };
 
 exports.addPage = function(token, url, title) {
   var _onSuccessFn;
   var _run = function() {
     var connection = getConnection();
-    fetchUserByToken(connection, token, function(user) {
-      connection.query(
-        'insert into pages (user_id, url, title) values (?, ?, ?)',
-        [user.id, url, title],
-        function(error, results) {
-          if (error) { throw error; }
-          console.log('Added page [%s] for token [%s] (row %d)', url, token, results.insertId);
-          _onSuccessFn();
-          connection.end();
-        });
-    }, function() {
-      connection.end();
-    });
+    exports.fetchUserByToken(token).
+      onSuccess(function(user) {
+        connection.query(
+          'insert into pages (user_id, url, title) values (?, ?, ?)',
+          [user.id, url, title],
+          function(error, results) {
+            if (error) { throw error; }
+            console.log('Added page [%s] for token [%s] (row %d)', url, token, results.insertId);
+            _onSuccessFn();
+            connection.end();
+          });
+      }).
+      onFailure(function() {
+        connection.end();
+      }).
+      run(connection);
   };
 
   return {
@@ -66,48 +95,51 @@ exports.nextPage = function(token) {
       _onNoPageFn;
   var _run = function() {
     var connection = getConnection();
-    fetchUserByToken(connection, token, function(user) {
-      connection.beginTransaction(function(error) {
-        if (error) { throw error; }
+    exports.fetchUserByToken(token).
+      onSuccess(function(user) {
+        connection.beginTransaction(function(error) {
+          if (error) { throw error; }
 
-        connection.query(
-          'select id, url, title from pages where user_id=? and served_at is null order by created_at limit 1 for update',
-          user.id,
-          function(error, results) {
-            if (error) {
-              connection.rollback(function() { throw error; });
-            }
+          connection.query(
+            'select id, url, title from pages where user_id=? and served_at is null order by created_at limit 1 for update',
+            user.id,
+            function(error, results) {
+              if (error) {
+                connection.rollback(function() { throw error; });
+              }
 
-            if (results.length > 0) {
-              var record = results[0];
-              console.log('Next record for token [%s] is [%j]', token, record);
-              _onSuccessFn(record);
+              if (results.length > 0) {
+                var record = results[0];
+                console.log('Next record for token [%s] is [%j]', token, record);
+                _onSuccessFn(record);
 
-              connection.query(
-                'update pages set served_at=now() where id=?',
-                record.id,
-                function(error, results) {
-                  if (error) {
-                    connection.rollback(function() { throw error; });
-                  }
-                  console.log('Recorded serving for row %d', record.id);
-                  connection.commit(function(error) {
+                connection.query(
+                  'update pages set served_at=now() where id=?',
+                  record.id,
+                  function(error, results) {
                     if (error) {
                       connection.rollback(function() { throw error; });
                     }
-                    connection.end();
+                    console.log('Recorded serving for row %d', record.id);
+                    connection.commit(function(error) {
+                      if (error) {
+                        connection.rollback(function() { throw error; });
+                      }
+                      connection.end();
+                    });
                   });
-                });
-            }
-            else {
-              _onNoPageFn();
-              connection.end();
-            }
-          });
-      });
-    }, function() {
-      connection.end()
-    });
+              }
+              else {
+                _onNoPageFn();
+                connection.end();
+              }
+            });
+        });
+      }).
+      onFailure(function() {
+        connection.end()
+      }).
+      run(connection);
   };
 
   return {
