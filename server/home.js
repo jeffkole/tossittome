@@ -1,26 +1,27 @@
-var engines = require('consolidate');
+var fs    = require('fs'),
+    hogan = require('hogan.js');
 
 var config;
 var dao;
 
+var bookmarkletTemplate =
+  hogan.compile(fs.readFileSync(__dirname + '/views/bookmarklet.js', { encoding: 'UTF-8' }));
+
 function renderLoggedInHome(request, response) {
-  engines.hogan(__dirname + '/views/bookmarklet.js', {
-      host  : config.host,
-      token : request.cookies.token
-    },
-    function(error, content) {
-      if (error) { throw error; }
-      var code = content.
-        replace(/\n/g, " ").
-        replace(/\s{2,}/g, " ").
-        replace(/{\s/g, "{").
-        replace(/\s}/g, "}").
-        replace(/,\s/g, ",").
-        replace(/;\s/g, ";");
-      response.render('bookmarklet', {
-        code: code
-      });
-    });
+  var content = bookmarkletTemplate.render({
+    host  : config.host,
+    token : request.cookies.token
+  });
+  var code = content.
+    replace(/\n/g, " ").
+    replace(/\s{2,}/g, " ").
+    replace(/{\s/g, "{").
+    replace(/\s}/g, "}").
+    replace(/,\s/g, ",").
+    replace(/;\s/g, ";");
+  response.render('bookmarklet', {
+    code: code
+  });
 }
 
 function renderAnonymousHome(request, response) {

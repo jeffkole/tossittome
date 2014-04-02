@@ -74,7 +74,8 @@ function tosser(request, response) {
   if (!request.cookies.token) {
     console.log('User not logged in. Sending to login');
     response.render('toss_login.js', {
-      host: config.host
+      host: config.host,
+      layout: null
     });
     return;
   }
@@ -93,7 +94,8 @@ function tosser(request, response) {
   if (token != request.cookies.token) {
     console.log('Mismatched tokens');
     response.render('toss_login.js', {
-      host: config.host
+      host: config.host,
+      layout: null
     });
     return;
   }

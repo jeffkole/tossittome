@@ -1,14 +1,7 @@
-<html>
-  <head>
-    <title>TossItTo.Me</title>
-  </head>
-  <body>
-    <form action="/login" method="post">
-      email: <input type="text" name="email" /><br/>
-      password: <input type="password" name="password" /><br/>
-      <input type="hidden" name="url" value="{{ url }}"/>
-      <input type="hidden" name="title" value="{{ title }}"/>
-      <input type="submit" name="login" value="login" />
-    </form>
-  </body>
-</html>
+<form action="/login" method="post">
+  email: <input type="text" name="email" /><br/>
+  password: <input type="password" name="password" /><br/>
+  <input type="hidden" name="url" value="{{ url }}"/>
+  <input type="hidden" name="title" value="{{ title }}"/>
+  <input type="submit" name="login" value="login" />
+</form>
