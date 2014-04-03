@@ -12,6 +12,16 @@ dao.setConfig(config);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.cookieParser());
+express.logger.token('remote-addr', function(request) {
+  // Add access to X-Real-IP for proxied apps as the first option
+  if (request.get('X-Real-IP')) return request.get('X-Real-IP');
+  // Below is copied from connect/lib/middleware/logger.js
+  if (request.ip) return request.ip;
+  if (request._remoteAddress) return request._remoteAddress;
+  var sock = request.socket;
+  if (sock.socket) return sock.socket.remoteAddress;
+  return sock.remoteAddress;
+});
 app.use(express.logger());
 
 // assign the hogan engine to .html and .js files
