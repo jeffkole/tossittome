@@ -25,22 +25,24 @@ var tossItToMeBg = {
     }
     else if (e.target.status == 200) {
       console.log("Response text: " + e.target.responseText);
-      var response = JSON.parse(e.target.responseText);
-      if (response.noCatches) {
+      var responses = JSON.parse(e.target.responseText);
+      if (responses.noCatches) {
         // No catches, so nothing to do
         console.log('No catches... carry on');
       }
       else {
-        console.log("Response url: " + response.url);
-        chrome.tabs.create({
-          'url':    response.url,
-          'active': false
-        }, function(tab) {
-          chrome.windows.update(tab.windowId, {'drawAttention': true});
-          response.tabId = tab.id;
-          response.windowId = tab.windowId;
+        responses.forEach(function(response) {
+          console.log("Response url: " + response.url);
+          chrome.tabs.create({
+            'url':    response.url,
+            'active': false
+          }, function(tab) {
+            chrome.windows.update(tab.windowId, {'drawAttention': true});
+            response.tabId = tab.id;
+            response.windowId = tab.windowId;
+          });
         });
-        this.saveCatch(response);
+        this.saveCatch(responses);
       }
     }
     else {
@@ -60,14 +62,13 @@ var tossItToMeBg = {
     this.request = null;
   },
 
-  saveCatch: function(response) {
+  saveCatch: function(responses) {
     chrome.storage.local.get('catches', function(catches) {
       if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
       console.log('catches', catches);
       if (catches.catches) {
-        catches.catches.push(response);
-        chrome.storage.local.set(catches);
-        this.setBadge(catches.catches.length);
+        chrome.storage.local.set({'catches': catches.catches.concat(responses)});
+        this.setBadge(catches.catches.length + responses.length);
       }
     }.bind(this));
   },

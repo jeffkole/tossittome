@@ -102,7 +102,7 @@ exports.nextPage = function(token) {
           if (error) { throw error; }
 
           connection.query(
-            'select id, url, title from pages where user_id=? and served_at is null order by created_at limit 1 for update',
+            'select id, url, title from pages where user_id=? and served_at is null order by created_at for update',
             user.id,
             function(error, results) {
               if (error) {
@@ -110,18 +110,21 @@ exports.nextPage = function(token) {
               }
 
               if (results.length > 0) {
-                var record = results[0];
-                console.log('Next record for token [%s] is [%j]', token, record);
-                _onSuccessFn(record);
-
+                console.log('Next records for token [%s] are [%j]', token, results);
+                _onSuccessFn(results);
+                var ids = results.map(function(r) { return r.id });
+                var qqs = '?';
+                for (var i = 1; i < ids.length; i++) {
+                  qqs += ',?';
+                }
                 connection.query(
-                  'update pages set served_at=now() where id=?',
-                  record.id,
+                  'update pages set served_at=now() where id in (' + qqs + ')',
+                  ids,
                   function(error, results) {
                     if (error) {
                       connection.rollback(function() { throw error; });
                     }
-                    console.log('Recorded serving for row %d', record.id);
+                    console.log('Recorded serving for rows %j', ids);
                     connection.commit(function(error) {
                       if (error) {
                         connection.rollback(function() { throw error; });
@@ -132,7 +135,12 @@ exports.nextPage = function(token) {
               }
               else {
                 _onNoPageFn();
-                connection.end();
+                connection.commit(function(error) {
+                  if (error) {
+                    connection.rollback(function() { throw error; });
+                  }
+                  connection.end();
+                });
               }
             });
         });

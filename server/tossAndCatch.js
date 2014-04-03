@@ -9,7 +9,7 @@ function notify(token) {
   if (!pending[token]) { return; }
 
   dao.nextPage(token).
-    onSuccess(function(record) {
+    onSuccess(function(records) {
       var context = pending[token].shift();
       // TODO: even if there are no active contexts, the db record is marked as
       // served.  FIXME!
@@ -17,8 +17,8 @@ function notify(token) {
         // Active requests for the token
         if (context.request && context.response) {
           context.request.resume();
-          context.response.json(200, record);
-          console.log('Notify: Served page [%s] for token [%s]', record.url, token);
+          context.response.json(200, records);
+          console.log('Notify: Served pages %j for token [%s]', records.map(function(r) { return r.id; }), token);
         }
         context = pending[token].shift();
       }
@@ -58,9 +58,9 @@ function catcher(request, response) {
 
   var token = request.cookies.token;
   dao.nextPage(token).
-    onSuccess(function(record) {
-      response.json(200, record);
-      console.log('Get: Served page [%s] for token [%s]', record.url, token);
+    onSuccess(function(records) {
+      response.json(200, records);
+      console.log('Get: Served pages %j for token [%s]', records.map(function(r) { return r.id; }), token);
     }).
     onNoPage(function() {
       // pause(token, request, response);
