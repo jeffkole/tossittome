@@ -27,12 +27,15 @@ app.set('views', __dirname + '/views');
 // used.
 //
 // Read in all the partials
-var partials = {};
-fs.readdirSync(__dirname + '/views/partials').forEach(function(partial) {
-  var name = path.basename(partial, path.extname(partial));
-  partials[name] = 'partials/' + partial;
-});
-app.set('partials', partials); // { head: 'partials/head.html' });
+var partialsDir = __dirname + '/views/partials';
+if (fs.exists(partialsDir)) {
+  var partials = {};
+  fs.readdirSync(partialsDir).forEach(function(partial) {
+    var name = path.basename(partial, path.extname(partial));
+    partials[name] = 'partials/' + partial;
+  });
+  app.set('partials', partials); // { head: 'partials/head.html' });
+}
 // Set the default layout
 app.set('layout', 'layouts/default.html');
 
