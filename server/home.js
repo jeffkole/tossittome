@@ -18,7 +18,8 @@ function renderLoggedInHome(request, response) {
     replace(/{\s/g, "{").
     replace(/\s}/g, "}").
     replace(/,\s/g, ",").
-    replace(/;\s/g, ";");
+    replace(/;\s/g, ";").
+    trim();
   response.render('bookmarklet', {
     code: code
   });

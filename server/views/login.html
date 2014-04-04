@@ -1,7 +1,14 @@
-<form action="/login" method="post">
-  email: <input type="text" name="email" /><br/>
-  password: <input type="password" name="password" /><br/>
+<section class="measure-narrow wrap">
+<form class="clearfix form form-stacked" action="/login" method="post">
+  <label for="email">Email:</label>
+  <input class="input" type="text" name="email" placeholder="foo@bar.com"/>
+
+  <label for="password">Password:</label>
+  <input class="input" type="password" name="password" placeholder="password"/>
+
+  <input class="button" type="submit" name="login" value="Login" />
+
   <input type="hidden" name="url" value="{{ url }}"/>
   <input type="hidden" name="title" value="{{ title }}"/>
-  <input type="submit" name="login" value="login" />
 </form>
+</section>

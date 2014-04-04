@@ -1,3 +1,4 @@
 build
 server/extension
 server/production_secrets.json
+server/public/css

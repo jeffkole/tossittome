@@ -12,6 +12,8 @@
     "gulp-filter": "^0.3.1",
     "gulp-rename": "^1.2.0",
     "gulp-tar": "^0.1.1",
-    "gulp-gzip": "0.0.5"
+    "gulp-gzip": "0.0.5",
+    "gulp-sass": "^0.7.1",
+    "gulp-nodemon": "^1.0.2"
   }
 }

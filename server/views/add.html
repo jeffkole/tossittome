@@ -1,5 +1,11 @@
-<form action="/add" method="post">
-  page: <input type="text" name="url" value="{{ url }}" /><br/>
-  title: <input type="text" name="title" value="{{ title }}" /><br/>
-  <input type="submit" name="add" value="add page" />
+<section class="measure-narrow wrap">
+<form class="clearfix form form-stacked" action="/add" method="post">
+  <label for="page">Page:</label>
+  <input class="input" type="text" name="url" value="{{ url }}" placeholder="http://tossitto.me" />
+
+  <label for="title">Title:</label>
+  <input class="input" type="text" name="title" value="{{ title }}" placeholder="TossItToMe" />
+
+  <input class="button" type="submit" name="add" value="Add Page" />
 </form>
+</section>

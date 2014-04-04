@@ -4,8 +4,10 @@ var gulp    = require('gulp'),
     exec    = require('gulp-exec'),
     filter  = require('gulp-filter'),
     map     = require('map-stream'),
+    nodemon = require('gulp-nodemon'),
     rename  = require('gulp-rename'),
     replace = require('gulp-replace'),
+    sass    = require('gulp-sass'),
     Q       = require('q');
 
 var logFile = function() {
@@ -74,3 +76,20 @@ gulp.task('pack-extension', ['clean'], function() {
     .then(putPackIntoServer(env))
     .done();
 });
+
+gulp.task('scss', function() {
+  gulp.src('server/scss/**/*.scss')
+      .pipe(sass())
+      .pipe(gulp.dest('server/public/css/'));
+});
+
+gulp.task('run', ['scss'], function() {
+  nodemon({
+      script: 'server/server.js',
+      ext   : 'js',
+      env   : { 'NODE_ENV': 'development' }
+    });
+  gulp.watch('server/scss/**/*.scss', ['scss']);
+});
+
+gulp.task('default', ['run']);
