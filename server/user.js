@@ -66,7 +66,7 @@ function xhrLogin(request, response) {
           ]);
       },
       function() {
-        response.send(400);
+        response.json(200, { invalidUser: true });
       });
 }
 

@@ -19,6 +19,10 @@ tabindex to 1 for the html element blurs the focus from the anchor.
       #login {
         display: none;
       }
+
+      #login_error {
+        display: none;
+      }
     </style>
 
     <!--
@@ -38,6 +42,7 @@ tabindex to 1 for the html element blurs the focus from the anchor.
     </div>
     <div id="login">
       <h3>Login</h3>
+      <p id="login_error"></p>
       <form id="login_form">
         email: <input type="text" name="email" /><br/>
         password: <input type="password" name="password" /><br/>

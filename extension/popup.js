@@ -59,33 +59,47 @@ var tossItToMePop = {
 
   login: function(tossItToMeBg) {
     console.log('login attempt');
+    document.getElementById('login_error').style.display = 'none';
     var loginForm = document.getElementById('login_form');
-    var url = tossItToMeBg.tossItToMeUrl + this.loginUri +
-      '?email=' + encodeURIComponent(loginForm.email.value) +
-      '&password=' + encodeURIComponent(loginForm.password.value);
-    var request = new XMLHttpRequest();
-    request.open('GET', url, true);
-    request.addEventListener('load', this.processLogin(tossItToMeBg).bind(this), false);
-    request.send(null);
+    if (!loginForm.email.value.trim() || !loginForm.password.value.trim()) {
+      document.getElementById('login_error').innerText = 'Please enter a valid email and password.';
+      document.getElementById('login_error').style.display = 'block';
+    }
+    else {
+      var url = tossItToMeBg.tossItToMeUrl + this.loginUri +
+        '?email=' + encodeURIComponent(loginForm.email.value) +
+        '&password=' + encodeURIComponent(loginForm.password.value);
+      var request = new XMLHttpRequest();
+      request.open('GET', url, true);
+      request.addEventListener('load', this.processLogin(tossItToMeBg).bind(this), false);
+      request.send(null);
+    }
   },
 
   processLogin: function(tossItToMeBg) {
     return function(e) {
       console.log('login!', e);
       if (e.target.status == 200) {
-        var cookies = JSON.parse(e.target.responseText);
-        console.log('setting cookies:', cookies);
-        cookies.forEach(function(cookie) {
-          chrome.cookies.set({
-            url            : tossItToMeBg.tossItToMeUrl + '/',
-            name           : cookie.name,
-            value          : cookie.value,
-            // Chrome uses seconds, not milliseconds for cookies
-            expirationDate : (cookie.expirationDate / 1000)
+        var response = JSON.parse(e.target.responseText);
+        if (response.invalidUser) {
+          document.getElementById('login_error').innerText = 'Invalid email or password. Try again.';
+          document.getElementById('login_error').style.display = 'block';
+        }
+        else {
+          var cookies = response;
+          console.log('setting cookies:', cookies);
+          cookies.forEach(function(cookie) {
+            chrome.cookies.set({
+              url            : tossItToMeBg.tossItToMeUrl + '/',
+              name           : cookie.name,
+              value          : cookie.value,
+              // Chrome uses seconds, not milliseconds for cookies
+              expirationDate : (cookie.expirationDate / 1000)
+            });
           });
-        });
-        document.getElementById('pages').style.display = 'block';
-        document.getElementById('login').style.display = 'none';
+          document.getElementById('pages').style.display = 'block';
+          document.getElementById('login').style.display = 'none';
+        }
       }
     };
   }
