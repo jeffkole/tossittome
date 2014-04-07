@@ -52,7 +52,7 @@ var packExtension = function(env) {
     var deferred = Q.defer();
     gulp.src('build/dist/extension/' + env)
         .pipe(logFile())
-        .pipe(exec('./bin/pack_extension.sh <%= file.path %> ~/.ssh/tossittome.pem'))
+        .pipe(exec('./bin/pack_extension.sh <%= file.path %> ~/.ssh/tossittome/extension.pem'))
         .pipe(resolve(deferred));
     return deferred.promise;
   };
