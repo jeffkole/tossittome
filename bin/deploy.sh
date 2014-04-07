@@ -15,6 +15,10 @@ APP_DIR=$1; shift
 VERSION_DIR=$1; shift
 SHA=$(basename ${VERSION_DIR})
 
+cd ${VERSION_DIR}
+./node_modules/.bin/gulp pack-extension
+./node_modules/.bin/gulp scss
+
 # Recreate current link
 cd ${APP_DIR}
 rm -f current && ln -s .versions/${SHA} current
