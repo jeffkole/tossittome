@@ -1,4 +1,12 @@
 <section class="measure-narrow wrap">
+{{#error}}
+  {{#invalidEmail}}
+  <p>Please be sure to enter a valid email address and a password.</p>
+  {{/invalidEmail}}
+  {{#duplicateEmail}}
+  <p>Please use a different email address.</p>
+  {{/duplicateEmail}}
+{{/error}}
 <form class="clearfix form form-stacked" action="/register" method="post">
   <label for="email">Email:</label>
   <input class="input" type="text" name="email" placeholder="foo@bar.com" />

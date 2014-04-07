@@ -1,4 +1,7 @@
 <section class="measure-narrow wrap">
+{{#error}}
+<p>Sorry, the email address or password you entered did not match our records. Please try again.</p>
+{{/error}}
 <form class="clearfix form form-stacked" action="/login" method="post">
   <label for="email">Email:</label>
   <input class="input" type="text" name="email" placeholder="foo@bar.com"/>

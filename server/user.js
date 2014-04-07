@@ -71,9 +71,11 @@ function xhrLogin(request, response) {
 }
 
 function postLogin(request, response) {
-  console.log('Attempted login with email %s', request.body.email);
+  console.log('Attempted login with email "%s"', request.body.email);
   if (!request.body.email || !request.body.password) {
-    response.send(400);
+    response.render('login', {
+      error: true
+    });
     return;
   }
 
@@ -93,7 +95,9 @@ function postLogin(request, response) {
         }
       },
       function() {
-        response.send(400);
+        response.render('login', {
+          error: true
+        });
       });
 }
 
@@ -109,7 +113,11 @@ function getRegister(request, response) {
 
 function postRegister(request, response) {
   if (!request.body.email || !request.body.password) {
-    response.send(400);
+    response.render('register', {
+      error: {
+        invalidEmail: true
+      }
+    });
     return;
   }
 
@@ -121,7 +129,14 @@ function postRegister(request, response) {
       response.cookie('token', user.token, { maxAge: cookieAge });
       response.redirect('/');
     }).
-  run();
+    onFailure(function() {
+      response.render('register', {
+        error: {
+          duplicateEmail: true
+        }
+      });
+    }).
+    run();
 }
 
 function setup(app, express, auth, _dao) {

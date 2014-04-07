@@ -168,29 +168,41 @@ exports.nextPage = function(token) {
 
 exports.addUser = function(email, password) {
   var _onSuccessFn;
+  var _onFailureFn;
   var _run = function() {
     var rawToken = crypto.randomBytes(8).toString() + ':' + email;
     var token = base64.encodeURI(crypto.createHash('sha1').update(rawToken).digest('binary'));
     var connection = getConnection();
     connection.query(
-      'insert into users (email, password, token) values (?, ?, ?)',
-      [email, password, token],
+      'insert into users (email, password, token) ' +
+      'select ?, ?, ? from dual where not exists (select 1 from users where email=?)',
+      [email, password, token, email],
       function(error, results) {
         if (error) { throw error; }
-        console.log('Added user [%s] as row %d', email, results.insertId);
-        _onSuccessFn({
-          id       : results.insertId,
-          email    : email,
-          password : password,
-          token    : token
-        });
-        connection.end();
+        if (results.affectedRows == 0) {
+          _onFailureFn();
+          connection.end();
+        }
+        else {
+          console.log('Added user [%s] as row %d', email, results.insertId);
+          _onSuccessFn({
+            id       : results.insertId,
+            email    : email,
+            password : password,
+            token    : token
+          });
+          connection.end();
+        }
       });
   };
 
   return {
     onSuccess: function(onSuccessFn) {
       _onSuccessFn = onSuccessFn;
+      return this;
+    },
+    onFailure: function(onFailureFn) {
+      _onFailureFn = onFailureFn;
       return this;
     },
     run: function() {
