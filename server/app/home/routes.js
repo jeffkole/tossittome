@@ -1,0 +1,66 @@
+var fs      = require('fs'),
+    hogan   = require('hogan.js'),
+    path    = require('path'),
+    config  = require('toss/common/config'),
+    db      = require('toss/common/db'),
+    userDao = require('toss/user/dao');
+
+var bookmarkletTemplate =
+  hogan.compile(fs.readFileSync(path.normalize(path.join(__dirname, '../../views/bookmarklet.js')), { encoding: 'UTF-8' }));
+
+function renderLoggedInHome(request, response) {
+  var content = bookmarkletTemplate.render({
+    host  : config.host,
+    token : request.cookies.token
+  });
+  var code = content.
+    replace(/\n/g, " ").
+    replace(/\s{2,}/g, " ").
+    replace(/{\s/g, "{").
+    replace(/\s}/g, "}").
+    replace(/,\s/g, ",").
+    replace(/;\s/g, ";").
+    trim();
+  response.render('bookmarklet', {
+    code: code
+  });
+}
+
+function renderAnonymousHome(request, response) {
+  response.render('index');
+}
+
+function getHome(request, response) {
+  if (request.cookies.token) {
+    var connection = db.getConnection();
+    userDao.fetchUserByToken(connection, request.cookies.token, function(error, user) {
+      if (error) {
+        response.send(500, error);
+      }
+      else if (user.noResults) {
+        // Clear the fraudulent cookie
+        response.clearCookie('token');
+        renderAnonymousHome(request, response);
+      }
+      else {
+        renderLoggedInHome(request, response);
+      }
+      db.closeConnection(connection);
+    });
+  }
+  else {
+    renderAnonymousHome(request, response);
+  }
+}
+
+function getExtension(request, response) {
+  response.set('Content-Type', 'application/x-chrome-extension');
+  response.download(path.normalize(path.join(__dirname, '../../extension/extension.crx')), 'tossittome.crx');
+}
+
+function setup(app) {
+  app.get('/', getHome);
+  app.get('/extension.crx', getExtension);
+}
+
+module.exports = setup;

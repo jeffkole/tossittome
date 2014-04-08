@@ -1,9 +1,12 @@
 var gulp    = require('gulp'),
     gutil   = require('gulp-util'),
+    args    = require('yargs').argv,
     clean   = require('gulp-clean'),
     exec    = require('gulp-exec'),
     filter  = require('gulp-filter'),
+    jshint  = require('gulp-jshint'),
     map     = require('map-stream'),
+    mocha   = require('gulp-mocha'),
     nodemon = require('gulp-nodemon'),
     rename  = require('gulp-rename'),
     replace = require('gulp-replace'),
@@ -83,6 +86,16 @@ gulp.task('scss', function() {
       .pipe(gulp.dest('server/public/css/'));
 });
 
+gulp.task('lint', function() {
+  var files = ['server/server.js', 'server/app/**/*.js'];
+  if (args.t || args.test) {
+    files = files.concat(['test/server/app/**/*.js', 'test/server/test/*.js']);
+  }
+  gulp.src(files)
+      .pipe(jshint())
+      .pipe(jshint.reporter('default'));
+});
+
 gulp.task('run', ['scss'], function() {
   nodemon({
       script: 'server/server.js',
@@ -90,6 +103,22 @@ gulp.task('run', ['scss'], function() {
       env   : { 'NODE_ENV': 'development' }
     });
   gulp.watch('server/scss/**/*.scss', ['scss']);
+});
+
+gulp.task('test', function() {
+  process.env.NODE_ENV = 'test';
+  var options = {
+    reporter: 'spec',
+    ignoreLeaks: false
+  };
+  if (args.g || args.grep) {
+    options.grep = args.g || args.grep;
+  }
+  gulp.src('test/server/app/**/*.js')
+      .pipe(mocha(options));
+  if (args.w || args.watch) {
+    gulp.watch(['server/app/**/*.js', 'test/server/app/**/*.js'], ['test']);
+  }
 });
 
 gulp.task('default', ['run']);

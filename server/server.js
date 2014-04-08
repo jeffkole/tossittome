@@ -2,13 +2,11 @@ var express = require('express'),
     fs      = require('fs'),
     hogan   = require('hogan-express'),
     path    = require('path'),
-    dao     = require('./dao'),
-    auth    = require('./auth');
+    auth    = require('toss/common/auth'),
+    config  = require('toss/common/config'),
+    log     = require('toss/common/log');
 
 var app = express();
-
-var config = require('./config')(app);
-dao.setConfig(config);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.cookieParser());
@@ -38,7 +36,7 @@ app.set('views', __dirname + '/views');
 //
 // Read in all the partials
 var partialsDir = __dirname + '/views/partials';
-if (fs.exists(partialsDir)) {
+if (fs.existsSync(partialsDir)) {
   var partials = {};
   fs.readdirSync(partialsDir).forEach(function(partial) {
     var name = path.basename(partial, path.extname(partial));
@@ -49,10 +47,10 @@ if (fs.exists(partialsDir)) {
 // Set the default layout
 app.set('layout', 'layouts/default.html');
 
-require('./home')(app, config, dao);
-require('./user')(app, express, auth, dao);
-require('./tossAndCatch')(app, express, auth, config, dao);
+require('toss/home/routes')(app);
+require('toss/user/routes')(app, express, auth);
+require('toss/page/routes')(app, express, auth);
 
 var server = app.listen(config.port, function() {
-  console.log('Listening on port %d', server.address().port);
+  log.info('Listening on port %d', server.address().port);
 });
