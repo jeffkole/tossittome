@@ -82,7 +82,7 @@ gulp.task('pack-extension', ['clean'], function() {
 });
 
 gulp.task('scss', function() {
-  gulp.src('server/scss/**/*.scss')
+  return gulp.src('server/scss/**/*.scss')
       .pipe(sass())
       .pipe(gulp.dest('server/public/css/'));
 });
@@ -92,7 +92,7 @@ gulp.task('lint', function() {
   if (args.t || args.test) {
     files = files.concat(['test/server/app/**/*.js', 'test/server/test/*.js']);
   }
-  gulp.src(files)
+  return gulp.src(files)
       .pipe(jshint())
       .pipe(jshint.reporter('default'));
 });
@@ -105,7 +105,7 @@ gulp.task('bump', function() {
   if (args.M || args.major) {
     type = 'major';
   }
-  gulp.src('package.json')
+  return gulp.src('package.json')
       .pipe(bump({ type: type }))
       .pipe(gulp.dest('./'));
 });
