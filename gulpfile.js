@@ -1,6 +1,7 @@
 var gulp    = require('gulp'),
     gutil   = require('gulp-util'),
     args    = require('yargs').argv,
+    bump    = require('gulp-bump'),
     clean   = require('gulp-clean'),
     exec    = require('gulp-exec'),
     filter  = require('gulp-filter'),
@@ -94,6 +95,19 @@ gulp.task('lint', function() {
   gulp.src(files)
       .pipe(jshint())
       .pipe(jshint.reporter('default'));
+});
+
+gulp.task('bump', function() {
+  var type = 'patch';
+  if (args.m || args.minor) {
+    type = 'minor';
+  }
+  if (args.M || args.major) {
+    type = 'major';
+  }
+  gulp.src('package.json')
+      .pipe(bump({ type: type }))
+      .pipe(gulp.dest('./'));
 });
 
 gulp.task('run', ['scss'], function() {

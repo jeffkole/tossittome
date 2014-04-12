@@ -1,7 +1,7 @@
 {
   "name": "TossItToMe",
   "description": "A Chrome extension to toss pages from here to there",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "devDependencies": {
     "gulp": "3.6.0",
     "gulp-replace": "^0.2.0",
@@ -23,7 +23,8 @@
     "rewire": "^2.0.0",
     "node-mocks-http": "^1.0.3",
     "sinon": "^1.9.1",
-    "gulp-jshint": "^1.5.3"
+    "gulp-jshint": "^1.5.3",
+    "gulp-bump": "^0.1.7"
   },
   "repository": {
     "type": "git",
