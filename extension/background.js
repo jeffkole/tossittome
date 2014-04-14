@@ -4,45 +4,30 @@ var tossItToMeBg = {
   request: null,
 
   requestNextPage: function() {
-    console.log('request next page');
     var req = new XMLHttpRequest();
     // Send cookies
     req.withCredentials = true;
     req.open("GET", this.tossItToMeUrl + this.pageUri, true);
-    req.addEventListener('load', this.openNextPage.bind(this), false);
+    req.addEventListener('load', this.load.bind(this), false);
     req.addEventListener('error', this.error.bind(this), false);
     req.addEventListener('abort', this.abort.bind(this), false);
     req.send(null);
     this.request = req;
   },
 
-  openNextPage: function(e) {
-    console.log('response:', e.target);
+  load: function(e) {
     if (e.target.status == 401) {
       // Initiate login
-      console.log('unauthorized');
       this.stop();
     }
     else if (e.target.status == 200) {
-      console.log("Response text: " + e.target.responseText);
       var responses = JSON.parse(e.target.responseText);
       if (responses.noCatches) {
         // No catches, so nothing to do
         console.log('No catches... carry on');
       }
       else {
-        responses.forEach(function(response) {
-          console.log("Response url: " + response.url);
-          chrome.tabs.create({
-            'url':    response.url,
-            'active': false
-          }, function(tab) {
-            chrome.windows.update(tab.windowId, {'drawAttention': true});
-            response.tabId = tab.id;
-            response.windowId = tab.windowId;
-          });
-        });
-        this.saveCatch(responses);
+        this.openPages(responses);
       }
     }
     else {
@@ -62,10 +47,91 @@ var tossItToMeBg = {
     this.request = null;
   },
 
+  openPages: function(pages) {
+    chrome.storage.sync.get({
+      destination: 'toss_window'
+    }, function(options) {
+      if (options.destination === 'toss_window') {
+        chrome.storage.local.get({'catches': []}, function(data) {
+          var catches = data.catches;
+          var windowStats = {};
+          var count = 0;
+          if (catches.length > 0) {
+            catches.forEach(function(page) {
+              chrome.tabs.query({'url': page.tabUrl}, function(tabs) {
+                tabs.forEach(function(tab) {
+                  if (windowStats[tab.windowId] === undefined) {
+                    windowStats[tab.windowId] = 1;
+                  }
+                  else {
+                    windowStats[tab.windowId]++;
+                  }
+                });
+                count++;
+                // All done, now see which window won
+                if (count === catches.length) {
+                  var highCount = -1;
+                  var winningWindowId = -3;
+                  Object.keys(windowStats).forEach(function(windowId) {
+                    if (windowStats[windowId] > highCount) {
+                      winningWindowId = windowId;
+                      highCount = windowStats[windowId];
+                    }
+                  });
+                  winningWindowId = parseInt(winningWindowId);
+                  if (winningWindowId === -3) {
+                    tossItToMeBg.openPagesInNewWindow(pages);
+                  }
+                  else {
+                    tossItToMeBg.openPagesInWindow(pages, winningWindowId);
+                  }
+                }
+              });
+            });
+          }
+          else {
+            tossItToMeBg.openPagesInNewWindow(pages);
+          }
+        });
+      }
+      else {
+        tossItToMeBg.openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
+      }
+    });
+  },
+
+  openPagesInNewWindow: function(pages) {
+    chrome.windows.create({'focused': false}, function(win) {
+      tossItToMeBg.openPagesInWindow(pages, win.id);
+    });
+  },
+
+  openPagesInWindow: function(pages, windowId) {
+    var count = 0;
+    pages.forEach(function(page) {
+      console.log("Page url: " + page.url);
+      chrome.tabs.create({
+        'windowId': windowId,
+        'url':      page.url,
+        'active':   false
+      }, function(tab) {
+        chrome.windows.update(tab.windowId, {'drawAttention': true});
+        page.tabId = tab.id;
+        page.windowId = tab.windowId;
+        // The final URL of the page may be different from the one loaded during
+        // the catch, so capture that
+        page.tabUrl = tab.url;
+        count++;
+        if (count === pages.length) {
+          tossItToMeBg.saveCatch(pages);
+        }
+      });
+    });
+  },
+
   saveCatch: function(responses) {
     chrome.storage.local.get('catches', function(catches) {
       if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
-      console.log('catches', catches);
       if (catches.catches) {
         chrome.storage.local.set({'catches': catches.catches.concat(responses)});
         this.setBadge(catches.catches.length + responses.length);
@@ -92,6 +158,7 @@ var tossItToMeBg = {
   },
 
   start: function() {
+    console.log('Starting');
     console.log('Creating catcher alarm');
     chrome.alarms.create('catcher', { periodInMinutes : 1 });
   },
@@ -125,3 +192,10 @@ chrome.cookies.onChanged.addListener(function(info) {
     tossItToMeBg.start();
   }
 });
+
+
+var tosser = {
+  simulate: function() {
+    tossItToMeBg.load({target:{status:200, responseText:'[{"url":"http://kolesky.com","title":"Kolesky!"}]'}});
+  }
+};

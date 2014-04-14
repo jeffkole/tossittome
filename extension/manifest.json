@@ -3,13 +3,15 @@
 
   "name": "TossItToMe",
   "description": "Tosses URLs from here to there.",
-  "version": "1.0",
+  "version": "1.1.0",
 
   "icons": {
     "16" : "images/icon-16.png",
     "48" : "images/icon-48.png",
     "128": "images/icon-128.png"
   },
+
+  "options_page": "options.html",
 
   "background": {
     "scripts": ["background.js"],
@@ -29,6 +31,7 @@
     "alarms",
     "cookies",
     "storage",
+    "tabs",
     "*://localhost/"
   ]
 }
