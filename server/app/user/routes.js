@@ -136,7 +136,7 @@ function setup(app, express, auth) {
   app.get('/login', getLogin);
   app.post('/login', express.bodyParser(), postLogin);
 
-  app.get('/xhr/login', auth.allowOrigin(), xhrLogin);
+  app.get('/xhr/login', auth.allowOrigin(true), xhrLogin);
 
   app.get('/logout', getLogout);
   app.get('/register', getRegister);

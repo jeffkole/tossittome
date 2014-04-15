@@ -1,21 +1,27 @@
 var pageDao = require('toss/page/dao'),
     userDao = require('toss/user/dao');
 
-function addPage(connection, token, url, title, cb) {
-  userDao.fetchUserByToken(connection, token, function(error, user) {
+function addPage(connection, tosserToken, catcherToken, url, title, cb) {
+  userDao.fetchUserByToken(connection, tosserToken, function(error, tosser) {
     if (error) {
       return cb(error);
     }
-    if (user.noResults) {
+    if (tosser.noResults) {
       return cb(null, { noResults: true });
     }
-    pageDao.insertPage(connection, user.id, url, title, function(error, page) {
+    userDao.fetchUserByToken(connection, catcherToken, function(error, catcher) {
       if (error) {
         return cb(error);
       }
-      else {
-        return cb(null, page);
+      if (catcher.noResults) {
+        return cb(null, { noResults: true });
       }
+      pageDao.insertPage(connection, tosser.id, catcher.id, url, title, function(error, page) {
+        if (error) {
+          return cb(error);
+        }
+        return cb(null, page);
+      });
     });
   });
 }

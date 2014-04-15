@@ -1,23 +1,21 @@
 var log = require('toss/common/log');
 
-function insertPage(connection, userId, url, title, cb) {
+function insertPage(connection, tosserId, catcherId, url, title, cb) {
   connection.query(
-      'insert into pages (user_id, url, title) values (?, ?, ?)',
-      [userId, url, title],
+      'insert into pages (user_id, catcher_id, url, title) values (?, ?, ?, ?)',
+      [tosserId, catcherId, url, title],
       function(error, results) {
         if (error) {
-          cb(error);
+          return cb(error);
         }
-        else {
-          cb(null, { id: results.insertId });
-        }
+        return cb(null, { id: results.insertId });
       });
 }
 
-function fetchNextPages(connection, userId, cb) {
+function fetchNextPages(connection, catcherId, cb) {
   connection.query(
-      'select id, url, title from pages where user_id=? and served_at is null order by created_at for update',
-      userId,
+      'select id, url, title from pages where catcher_id=? and served_at is null order by created_at for update',
+      catcherId,
       function(error, pages) {
         if (error) {
           return cb(error);
@@ -26,7 +24,7 @@ function fetchNextPages(connection, userId, cb) {
           return cb(null, { noResults: true });
         }
 
-        log.info('Next records for user [%s] are [%j]', userId, pages);
+        log.info('Next records for user [%s] are [%j]', catcherId, pages);
         var ids = pages.map(function(r) { return r.id; });
         var qqs = '?';
         for (var i = 1; i < ids.length; i++) {

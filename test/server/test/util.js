@@ -15,6 +15,14 @@ function handle(error) {
   }
 }
 
+function deleteCatchers(done) {
+  var connection = db.getConnection();
+  connection.query('delete from catchers', function(error) {
+    if (error) { throw error; }
+    db.closeConnection(connection, done);
+  });
+}
+
 function deleteUsers(done) {
   var connection = db.getConnection();
   connection.query('delete from users', function(error) {
@@ -32,9 +40,10 @@ function deletePages(done) {
 }
 
 module.exports = {
-  pass        : pass,
-  fail        : fail,
-  handle      : handle,
-  deleteUsers : deleteUsers,
-  deletePages : deletePages
+  pass            : pass,
+  fail            : fail,
+  handle          : handle,
+  deleteCatchers  : deleteCatchers,
+  deleteUsers     : deleteUsers,
+  deletePages     : deletePages
 };

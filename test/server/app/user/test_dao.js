@@ -23,6 +23,25 @@ describe('UserDAO', function() {
     token    : 'GGGG'
   };
 
+  before(function(done) {
+    var connection = db.getConnection();
+    userDao.insertUser(connection, testUser2.email, testUser2.password, testUser2.token, function(error, user) {
+      util.handle(error);
+      if (user.duplicateEmail) {
+        util.fail();
+      }
+      testUser2.id = user.id;
+      userDao.insertUser(connection, testUser3.email, testUser3.password, testUser3.token, function(error, user) {
+        util.handle(error);
+        if (user.duplicateEmail) {
+          util.fail();
+        }
+        testUser3.id = user.id;
+        db.closeConnection(connection, done);
+      });
+    });
+  });
+
   describe('#insertUser()', function() {
     it('should add a user with a unique email', function(done) {
       var connection = db.getConnection();
@@ -47,17 +66,6 @@ describe('UserDAO', function() {
   });
 
   describe('#fetchUserByToken()', function() {
-    before(function(done) {
-      var connection = db.getConnection();
-      userDao.insertUser(connection, testUser2.email, testUser2.password, testUser2.token, function(error, user) {
-        util.handle(error);
-        if (user.duplicateEmail) {
-          util.fail();
-        }
-        db.closeConnection(connection, done);
-      });
-    });
-
     it('should find a user with the right token', function(done) {
       var connection = db.getConnection();
       userDao.fetchUserByToken(connection, testUser2.token, function(error, user) {
@@ -82,17 +90,6 @@ describe('UserDAO', function() {
   });
 
   describe('#fetchUserByEmail()', function() {
-    before(function(done) {
-      var connection = db.getConnection();
-      userDao.insertUser(connection, testUser3.email, testUser3.password, testUser3.token, function(error, user) {
-        util.handle(error);
-        if (user.duplicateEmail) {
-          util.fail();
-        }
-        db.closeConnection(connection, done);
-      });
-    });
-
     it('should find a user with the right email', function(done) {
       var connection = db.getConnection();
       userDao.fetchUserByEmail(connection, testUser3.email, function(error, user) {
@@ -114,5 +111,51 @@ describe('UserDAO', function() {
         db.closeConnection(connection, done);
       });
     });
+  });
+
+  describe('#fetchUserById()', function() {
+    it('should find a user with the right id', function(done) {
+      var connection = db.getConnection();
+      userDao.fetchUserById(connection, testUser3.id, function(error, user) {
+        util.handle(error);
+        user.should.have.property('id', testUser3.id);
+        user.should.have.property('email', testUser3.email);
+        user.should.have.property('password', testUser3.password);
+        user.should.have.property('token', testUser3.token);
+        db.closeConnection(connection, done);
+      });
+    });
+    it('should return a noResults message', function(done) {
+      var connection = db.getConnection();
+      userDao.fetchUserById(connection, -1, function(error, user) {
+        util.handle(error);
+        user.should.have.property('noResults');
+        user.noResults.should.be.true;
+        db.closeConnection(connection, done);
+      });
+    });
+    it('should return multiple users if requested as arguments', function(done) {
+      var connection = db.getConnection();
+      userDao.fetchUserById(connection, testUser3.id, testUser2.id, function(error, users) {
+        util.handle(error);
+        users.should.be.an.Array;
+        users.length.should.eql(2);
+        users[0].should.have.property('id', testUser2.id);
+        users[1].should.have.property('id', testUser3.id);
+        db.closeConnection(connection, done);
+      });
+    });
+    it('should return multiple users if requested as array', function(done) {
+      var connection = db.getConnection();
+      userDao.fetchUserById(connection, [testUser3.id, testUser2.id], function(error, users) {
+        util.handle(error);
+        users.should.be.an.Array;
+        users.length.should.eql(2);
+        users[0].should.have.property('id', testUser2.id);
+        users[1].should.have.property('id', testUser3.id);
+        db.closeConnection(connection, done);
+      });
+    });
+
   });
 });

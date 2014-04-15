@@ -1,10 +1,11 @@
-var config = require('toss/common/config'),
-    db     = require('toss/common/db'),
-    log    = require('toss/common/log'),
-    page   = require('toss/page/page');
+var catcher = require('toss/catcher/catcher'),
+    config  = require('toss/common/config'),
+    db      = require('toss/common/db'),
+    log     = require('toss/common/log'),
+    page    = require('toss/page/page');
 
 // Invoked by the extension
-function catcher(request, response) {
+function getNextPages(request, response) {
   if (!request.cookies.token) {
     response.send(401, 'Not authorized');
     return;
@@ -41,14 +42,25 @@ function catcher(request, response) {
   });
 }
 
+function renderTossLogin(response) {
+  response.setHeader('Content-Type', 'application/javascript');
+  response.render('toss_login.js', {
+    host: config.host,
+    layout: null
+  });
+}
+
+function renderCatchSelection(response, locals) {
+  locals.layout = null;
+  response.setHeader('Content-Type', 'application/javascript');
+  response.render('catcher_selection.js', locals);
+}
+
 // Invoked by the bookmarklet
-function tosser(request, response) {
+function initiateToss(request, response) {
   if (!request.cookies.token) {
     log.info('User not logged in. Sending to login');
-    response.render('toss_login.js', {
-      host: config.host,
-      layout: null
-    });
+    renderTossLogin(response);
     return;
   }
 
@@ -59,36 +71,103 @@ function tosser(request, response) {
     return;
   }
 
-  var token = request.query.t;
-  var url   = request.query.u;
-  var title = request.query.i;
+  var tosserToken  = request.query.t;
+  var url          = request.query.u;
+  var title        = request.query.i;
 
-  if (token != request.cookies.token) {
+  if (tosserToken != request.cookies.token) {
     log.info('Mismatched tokens');
-    response.render('toss_login.js', {
-      host: config.host,
-      layout: null
-    });
+    renderTossLogin(response);
     return;
   }
 
   var connection = db.getConnection();
-  page.addPage(connection, token, url, title, function(error, page) {
+  catcher.getCatchers(connection, tosserToken, function(error, catchers) {
     if (error) {
       response.send(500, error);
+      db.closeConnection(connection);
     }
-    else if (page.noResults) {
-      response.send(400);
+    else if (catchers.noTosser) {
+      log.info('No tosser found with token "%s"', tosserToken);
+      renderTossLogin(response);
+      db.closeConnection(connection);
     }
     else {
-      response.render('toss_response.js', {
-        layout: null
+      // Take the tosser to the next step in the process... selecting a catcher
+      renderCatchSelection(response, {
+        host: config.host,
+        url: url,
+        title: title,
+        tosserToken: tosserToken,
+        hasCatchers: (catchers.length > 1),
+        catchers: catchers
       });
+      db.closeConnection(connection);
     }
-    db.closeConnection(connection);
   });
 }
 
+// Called by the bookmarklet upon choosing a catcher
+function completeToss(request, response) {
+  if (!request.query.t ||
+      !request.query.u ||
+      !request.query.i ||
+      !request.query.c) {
+    response.send(400);
+    return;
+  }
+
+  var tosserToken  = request.query.t;
+  var url          = request.query.u;
+  var title        = request.query.i;
+  var catcherToken = request.query.c;
+
+  var connection = db.getConnection();
+  catcher.checkCatchAuthorization(connection, tosserToken, catcherToken, function(error, catchers) {
+    if (error) {
+      response.send(500, error);
+      db.closeConnection(connection);
+    }
+    else if (catchers.noTosser || catchers.noCatcher) {
+      response.send(400, 'Bad request');
+      db.closeConnection(connection);
+    }
+    else if (catchers.notAuthorized) {
+      response.send(401, 'Not authorized');
+      db.closeConnection(connection);
+    }
+    else {
+      connection.beginTransaction(function(error) {
+        if (error) {
+          response.send(500, error);
+          db.closeConnection(connection);
+        }
+        else {
+          page.addPage(connection, tosserToken, catcherToken, url, title, function(error, page) {
+            if (error) {
+              response.send(500, error);
+            }
+            else if (page.noResults) {
+              response.send(400);
+            }
+            else {
+              response.send(200);
+            }
+            connection.commit(function(error) {
+              db.closeConnection(connection, function() {
+                if (error) {
+                  throw error;
+                }
+              });
+            });
+          });
+        }
+      });
+    }
+  });
+}
+
+// TODO: add ability to choose a catcher
 function getAddPage(request, response) {
   response.render('add', {
     url   : request.query.url,
@@ -96,34 +175,54 @@ function getAddPage(request, response) {
   });
 }
 
+// TODO: add ability to choose a catcher
 function postAddPage(request, response) {
   if (!request.body.url || !request.body.title) {
     response.send(400);
     return;
   }
 
-  var token = request.cookies.token;
-  var url   = request.body.url;
-  var title = request.body.title;
+  var tosserToken  = request.cookies.token;
+  var url          = request.body.url;
+  var title        = request.body.title;
+  // For backwards compatibility, just use the tosser as the catcher
+  var catcherToken = request.body.catcherToken || tosserToken;
 
   var connection = db.getConnection();
-  page.addPage(connection, token, url, title, function(error, page) {
+  connection.beginTransaction(function(error) {
     if (error) {
       response.send(500, error);
-    }
-    else if (page.noResults) {
-      response.send(400);
+      db.closeConnection(connection);
     }
     else {
-      response.redirect(url);
+      page.addPage(connection, tosserToken, catcherToken, url, title, function(error, page) {
+        if (error) {
+          response.send(500, error);
+        }
+        else if (page.noResults) {
+          response.send(400);
+        }
+        else {
+          response.redirect(url);
+        }
+        connection.commit(function(error) {
+          db.closeConnection(connection, function() {
+            if (error) {
+              throw error;
+            }
+          });
+        });
+      });
     }
-    db.closeConnection(connection);
   });
 }
 
 function setup(app, express, auth) {
-  app.get('/catch', auth.allowOrigin(), catcher);
-  app.get('/toss', tosser);
+  app.get('/catch', auth.allowOrigin(true), getNextPages);
+
+  app.get('/toss', initiateToss);
+  app.get('/toss/new', auth.allowOrigin(), completeToss);
+
   app.get('/add', auth.protect(), getAddPage);
   app.post('/add', express.bodyParser(), auth.protect(), postAddPage);
 }

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.2.0
+------
+### Server
+* Adds abiity to toss to someone else.
+
 v1.1.0
 ------
 ### Extension

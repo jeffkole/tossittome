@@ -10,7 +10,7 @@ describe('PageDAO', function() {
   describe('#insertPage()', function() {
     it('should insert a new page', function(done) {
       var connection = db.getConnection();
-      pageDao.insertPage(connection, 1, 'http://tossitto.me', 'Tossing Left and Right', function(error, page) {
+      pageDao.insertPage(connection, 1, 2, 'http://tossitto.me', 'Tossing Left and Right', function(error, page) {
         util.handle(error);
         page.should.have.property('id');
         page.id.should.be.a.Number;
@@ -22,7 +22,7 @@ describe('PageDAO', function() {
   describe('#fetchNextPages', function() {
     it('should return noResults when there are no pages', function(done) {
       var connection = db.getConnection();
-      pageDao.fetchNextPages(connection, 2, function(error, pages) {
+      pageDao.fetchNextPages(connection, 3, function(error, pages) {
         util.handle(error);
         pages.should.have.property('noResults');
         db.closeConnection(connection, done);
@@ -30,9 +30,9 @@ describe('PageDAO', function() {
     });
     it('should return multiple results and mark them as served', function(done) {
       var connection = db.getConnection();
-      pageDao.insertPage(connection, 1, 'http://tossitto.us', 'Tossing Across the States', function(error, page) {
+      pageDao.insertPage(connection, 1, 2, 'http://tossitto.us', 'Tossing Across the States', function(error, page) {
         util.handle(error);
-        pageDao.fetchNextPages(connection, 1, function(error, pages) {
+        pageDao.fetchNextPages(connection, 2, function(error, pages) {
           util.handle(error);
           pages.should.be.an.Array;
           pages.length.should.equal(2);
