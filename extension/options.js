@@ -14,15 +14,19 @@ var tossItToMeOptions = {
     var destinations = document.getElementsByName('destination');
     for (var i = 0; i < destinations.length; i++) {
       if (destinations[i].checked) {
-        chrome.storage.sync.set({ destination: destinations[i].value }, function() {
-          var status = document.getElementById('status');
-          status.textContent = 'Options saved.';
-          setTimeout(function() {
-            status.textContent = '';
-          }, 750);
-        });
+        this.saveDestination(destinations[i].value);
       }
     }
+  },
+
+  saveDestination: function(destination) {
+    chrome.storage.sync.set({ destination: destination }, function() {
+      var status = document.getElementById('status');
+      status.textContent = 'Options saved.';
+      setTimeout(function() {
+        status.textContent = '';
+      }, 750);
+    });
   },
 
   restoreOptions: function() {

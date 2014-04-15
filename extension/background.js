@@ -167,7 +167,7 @@ var tossItToMeBg = {
     console.log('Clearing catcher alarm');
     chrome.alarms.clear('catcher');
   }
-}
+};
 
 chrome.runtime.onInstalled.addListener(function() {
   console.log('TossItToMe installed');

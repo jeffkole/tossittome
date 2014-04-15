@@ -88,7 +88,7 @@ gulp.task('scss', function() {
 });
 
 gulp.task('lint', function() {
-  var files = ['server/server.js', 'server/app/**/*.js'];
+  var files = ['server/server.js', 'server/app/**/*.js', 'extension/*.js'];
   if (args.t || args.test) {
     files = files.concat(['test/server/app/**/*.js', 'test/server/test/*.js']);
   }
