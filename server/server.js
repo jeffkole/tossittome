@@ -3,12 +3,13 @@ var express = require('express'),
     hogan   = require('hogan-express'),
     path    = require('path'),
     config  = require('toss/common/config'),
+    error   = require('toss/common/error'),
     log     = require('toss/common/log');
 
 var app = express();
 
+// Map the static assets to whatever is in the 'public' folder
 app.use(express.static(__dirname + '/public'));
-app.use(express.cookieParser());
 express.logger.token('remote-addr', function(request) {
   // Add access to X-Real-IP for proxied apps as the first option
   if (request.get('X-Real-IP')) return request.get('X-Real-IP');
@@ -20,6 +21,7 @@ express.logger.token('remote-addr', function(request) {
   return sock.remoteAddress;
 });
 app.use(express.logger());
+app.use(express.cookieParser());
 
 // assign the hogan engine to .html and .js files
 app.engine('html', hogan);
@@ -49,6 +51,18 @@ app.set('layout', 'layouts/default.html');
 require('toss/home/routes')(app);
 require('toss/user/routes')(app, express);
 require('toss/page/routes')(app, express);
+
+app.get('/403', function(req, res, next) {
+  var err = new Error('Forced not allowed');
+  err.status = 403;
+  next(err);
+});
+app.get('/500', function(req, res, next) {
+  next(new Error('Forced error'));
+});
+
+app.use(error.fourOhFourHandler());
+app.use(error.errorHandler());
 
 var server = app.listen(config.port, function() {
   log.info('Listening on port %d', server.address().port);

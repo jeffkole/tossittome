@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.2.2
+------
+### Server
+* Adds improved error handling
+
 v1.2.1
 ------
 ### Extension

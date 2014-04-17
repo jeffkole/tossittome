@@ -1,0 +1,12 @@
+<h3>An error has occurred!</h3>
+<p>Why don't you wander on <a href="/">home</a> now?</p>
+
+{{#error}}
+{{#stack}}
+<pre style="display: none">Stack trace:
+{{ stack }}</pre>
+{{/stack}}
+{{^stack}}
+<pre style="display: none">Message: {{ message }}</pre>
+{{/stack}}
+{{/error}}
