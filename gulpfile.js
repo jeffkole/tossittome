@@ -87,15 +87,21 @@ gulp.task('scss', function() {
       .pipe(gulp.dest('server/public/css/'));
 });
 
-gulp.task('lint', function() {
+gulp.task('lint-src', function() {
   var files = ['server/server.js', 'server/app/**/*.js', 'extension/*.js'];
-  if (args.t || args.test) {
-    files = files.concat(['test/server/app/**/*.js', 'test/server/test/*.js']);
-  }
   return gulp.src(files)
       .pipe(jshint())
       .pipe(jshint.reporter('default'));
 });
+
+gulp.task('lint-test', function() {
+  var files =['test/server/app/**/*.js', 'test/server/test/*.js'];
+  return gulp.src(files)
+      .pipe(jshint({'expr': true})) // turn of the warning that results from using 'should'
+      .pipe(jshint.reporter('default'));
+});
+
+gulp.task('lint', ['lint-src', 'lint-test']);
 
 gulp.task('bump', function() {
   var type = 'patch';
