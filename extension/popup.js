@@ -66,8 +66,10 @@ var tossItToMePop = {
       document.getElementById('login_error').style.display = 'block';
     }
     else {
+      var manifest = chrome.runtime.getManifest();
       var url = tossItToMeBg.tossItToMeUrl + this.loginUri +
-        '?email=' + encodeURIComponent(loginForm.email.value) +
+        '?v=' + manifest.version +
+        '&email=' + encodeURIComponent(loginForm.email.value) +
         '&password=' + encodeURIComponent(loginForm.password.value);
       var request = new XMLHttpRequest();
       request.open('GET', url, true);

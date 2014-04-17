@@ -3,7 +3,7 @@
 
   "name": "TossItToMe",
   "description": "Tosses URLs from here to there.",
-  "version": "1.1.0",
+  "version": "1.1.1",
 
   "icons": {
     "16" : "images/icon-16.png",

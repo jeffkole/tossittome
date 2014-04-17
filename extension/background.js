@@ -4,10 +4,11 @@ var tossItToMeBg = {
   request: null,
 
   requestNextPage: function() {
+    var manifest = chrome.runtime.getManifest();
     var req = new XMLHttpRequest();
     // Send cookies
     req.withCredentials = true;
-    req.open("GET", this.tossItToMeUrl + this.pageUri, true);
+    req.open("GET", this.tossItToMeUrl + this.pageUri + '?v=' + manifest.version, true);
     req.addEventListener('load', this.load.bind(this), false);
     req.addEventListener('error', this.error.bind(this), false);
     req.addEventListener('abort', this.abort.bind(this), false);

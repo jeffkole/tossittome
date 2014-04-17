@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.2.1
+------
+### Extension
+* Sends extension version with requests to the server.
+
 v1.2.0
 ------
 ### Server
