@@ -46,7 +46,7 @@ function getNextPages(request, response) {
 function renderTossLogin(response) {
   response.setHeader('Content-Type', 'application/javascript');
   response.render('toss_login.js', {
-    host: config.host,
+    host: request.get('host'),
     layout: null
   });
 }
@@ -96,7 +96,7 @@ function initiateToss(request, response) {
     else {
       // Take the tosser to the next step in the process... selecting a catcher
       renderCatchSelection(response, {
-        host: config.host,
+        host: request.get('host'),
         url: url,
         title: title,
         tosserToken: tosserToken,

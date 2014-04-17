@@ -11,7 +11,7 @@ var bookmarkletTemplate =
 
 function renderLoggedInHome(request, response) {
   var content = bookmarkletTemplate.render({
-    host  : config.host,
+    host  : request.get('host'),
     token : request.cookies.token
   });
   var code = content.
