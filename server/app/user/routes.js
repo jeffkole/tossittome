@@ -1,4 +1,5 @@
-var db       = require('toss/common/db'),
+var auth     = require('toss/common/auth'),
+    db       = require('toss/common/db'),
     log      = require('toss/common/log'),
     login    = require('toss/user/login'),
     register = require('toss/user/register');
@@ -132,7 +133,7 @@ function postRegister(request, response) {
   });
 }
 
-function setup(app, express, auth) {
+function setup(app, express) {
   app.get('/login', getLogin);
   app.post('/login', express.bodyParser(), postLogin);
 

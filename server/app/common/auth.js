@@ -1,3 +1,6 @@
+var db      = require('toss/common/db'),
+    userDao = require('toss/user/dao');
+
 function protect() {
   return function(request, response, next) {
     if (request.cookies.token) {
@@ -5,6 +8,31 @@ function protect() {
     }
     else {
       response.redirect('/');
+    }
+  };
+}
+
+function populateUser() {
+  return function(request, response, next) {
+    if (request.cookies.token) {
+      var connection = db.getConnection();
+      userDao.fetchUserByToken(connection, request.cookies.token, function(error, user) {
+        if (error) {
+          response.send(500, error);
+        }
+        else if (user.noResults) {
+          // Clear the fraudulent cookie
+          response.clearCookie('token');
+        }
+        else {
+          response.locals.user = user;
+        }
+        db.closeConnection(connection);
+        next();
+      });
+    }
+    else {
+      next();
     }
   };
 }
@@ -26,6 +54,7 @@ function allowOrigin(extensionOnly) {
 }
 
 module.exports = {
-  protect     : protect,
-  allowOrigin : allowOrigin
+  protect      : protect,
+  populateUser : populateUser,
+  allowOrigin  : allowOrigin
 };

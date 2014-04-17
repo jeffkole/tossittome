@@ -1,4 +1,5 @@
 var catcher = require('toss/catcher/catcher'),
+    auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     log     = require('toss/common/log'),
@@ -217,14 +218,14 @@ function postAddPage(request, response) {
   });
 }
 
-function setup(app, express, auth) {
+function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
   app.get('/toss/new', auth.allowOrigin(), completeToss);
 
-  app.get('/add', auth.protect(), getAddPage);
-  app.post('/add', express.bodyParser(), auth.protect(), postAddPage);
+  app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
+  app.post('/add', express.bodyParser(), auth.protect(), auth.populateUser(), postAddPage);
 }
 
 module.exports = setup;

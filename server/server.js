@@ -2,7 +2,6 @@ var express = require('express'),
     fs      = require('fs'),
     hogan   = require('hogan-express'),
     path    = require('path'),
-    auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
     log     = require('toss/common/log');
 
@@ -48,8 +47,8 @@ if (fs.existsSync(partialsDir)) {
 app.set('layout', 'layouts/default.html');
 
 require('toss/home/routes')(app);
-require('toss/user/routes')(app, express, auth);
-require('toss/page/routes')(app, express, auth);
+require('toss/user/routes')(app, express);
+require('toss/page/routes')(app, express);
 
 var server = app.listen(config.port, function() {
   log.info('Listening on port %d', server.address().port);

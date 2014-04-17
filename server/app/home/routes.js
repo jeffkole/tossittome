@@ -1,6 +1,7 @@
 var fs      = require('fs'),
     hogan   = require('hogan.js'),
     path    = require('path'),
+    auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     userDao = require('toss/user/dao');
@@ -59,7 +60,7 @@ function getExtension(request, response) {
 }
 
 function setup(app) {
-  app.get('/', getHome);
+  app.get('/', auth.populateUser(), getHome);
   app.get('/extension.crx', getExtension);
 }
 
