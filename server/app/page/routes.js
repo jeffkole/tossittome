@@ -43,7 +43,7 @@ function getNextPages(request, response) {
   });
 }
 
-function renderTossLogin(response) {
+function renderTossLogin(request, response) {
   response.setHeader('Content-Type', 'application/javascript');
   response.render('toss_login.js', {
     host: request.get('host'),
@@ -51,7 +51,7 @@ function renderTossLogin(response) {
   });
 }
 
-function renderCatchSelection(response, locals) {
+function renderCatchSelection(request, response, locals) {
   locals.layout = null;
   response.setHeader('Content-Type', 'application/javascript');
   response.render('catcher_selection.js', locals);
@@ -61,7 +61,7 @@ function renderCatchSelection(response, locals) {
 function initiateToss(request, response) {
   if (!request.cookies.token) {
     log.info('User not logged in. Sending to login');
-    renderTossLogin(response);
+    renderTossLogin(request, response);
     return;
   }
 
@@ -78,7 +78,7 @@ function initiateToss(request, response) {
 
   if (tosserToken != request.cookies.token) {
     log.info('Mismatched tokens');
-    renderTossLogin(response);
+    renderTossLogin(request, response);
     return;
   }
 
@@ -90,12 +90,12 @@ function initiateToss(request, response) {
     }
     else if (catchers.noTosser) {
       log.info('No tosser found with token "%s"', tosserToken);
-      renderTossLogin(response);
+      renderTossLogin(request, response);
       db.closeConnection(connection);
     }
     else {
       // Take the tosser to the next step in the process... selecting a catcher
-      renderCatchSelection(response, {
+      renderCatchSelection(request, response, {
         host: request.get('host'),
         url: url,
         title: title,
