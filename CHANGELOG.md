@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.2.4 (in progress)
+------
+### Server
+* Updates to the styling
+
 v1.2.3
 ------
 ### Server
