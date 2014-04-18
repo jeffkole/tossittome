@@ -134,7 +134,7 @@ gulp.task('test', function() {
   if (args.g || args.grep) {
     options.grep = args.g || args.grep;
   }
-  gulp.src('test/server/app/**/*.js')
+  gulp.src(['test/server/suite.js', 'test/server/app/**/*.js'])
       .pipe(mocha(options));
   if (args.w || args.watch) {
     gulp.watch(['server/app/**/*.js', 'test/server/app/**/*.js'], ['test']);

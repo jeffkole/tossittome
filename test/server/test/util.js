@@ -39,11 +39,33 @@ function deletePages(done) {
   });
 }
 
+function resetAutoIncrement(table, /* tables,... */ cb) {
+  var tables = [table];
+  if (arguments.length > 2) {
+    tables = Array.prototype.slice.call(arguments, 0, -1);
+    cb = arguments[arguments.length - 1];
+  }
+  var count = 0;
+  tables.forEach(function(table) {
+    var connection = db.getConnection();
+    connection.query('alter table ' + table + ' auto_increment=1', function(error) {
+      if (error) { throw error; }
+      db.closeConnection(connection, function() {
+        count++
+        if (count === tables.length) {
+          cb();
+        }
+      });
+    });
+  });
+}
+
 module.exports = {
-  pass            : pass,
-  fail            : fail,
-  handle          : handle,
-  deleteCatchers  : deleteCatchers,
-  deleteUsers     : deleteUsers,
-  deletePages     : deletePages
+  pass               : pass,
+  fail               : fail,
+  handle             : handle,
+  deleteCatchers     : deleteCatchers,
+  deleteUsers        : deleteUsers,
+  deletePages        : deletePages,
+  resetAutoIncrement : resetAutoIncrement
 };
