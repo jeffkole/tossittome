@@ -13,10 +13,10 @@
   </head>
   <body>
     <header class="px-responsive">
-      <div class="measure wrap">
-        <h1><a href="/">TossItTo.Me!</a></h1>
+      <div class="clearfix measure wrap">
+        <h1 class="left"><a href="/">TossItTo.Me!</a></h1>
         {{#user}}
-        <div class="small right-align">Logged in as: {{ email }}</div>
+        <p class="small clearfix right-align mt1">{{ email }} <a href="/logout">sign out</a></p>
         {{/user}}
       </div>
     </header>
@@ -26,7 +26,7 @@
     </main>
 
     <footer class="px-responsive">
-      <div class="measure wrap">
+      <div class="measure wrap mt2">
         <p>&copy; Jeff Kolesky</p>
       </div>
     </footer>
