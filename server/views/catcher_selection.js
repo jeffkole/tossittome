@@ -2,12 +2,13 @@
   function sendToss(catcherToken) {
     try {
       var request = new XMLHttpRequest();
-      request.open('GET', 'http://{{ host }}/toss/new?' +
+      request.open('POST', 'http://{{ host }}/toss', true);
+      request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+      var params =
         '&t={{ tosserToken }}' +
         '&u=' + encodeURIComponent('{{ url }}') +
         '&i=' + encodeURIComponent('{{ title }}') +
-        '&c=' + catcherToken,
-        true);
+        '&c=' + catcherToken;
       request.onreadystatechange = function() {
         try {
           if (request.readyState != 4) { return; }
@@ -22,7 +23,7 @@
           // TODO: run a backup request
         }
       };
-      request.send(null);
+      request.send(params);
     }
     catch (exception) {
       // TODO: run a backup request

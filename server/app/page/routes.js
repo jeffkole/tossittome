@@ -110,18 +110,18 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  if (!request.query.t ||
-      !request.query.u ||
-      !request.query.i ||
-      !request.query.c) {
+  if (!request.body.t ||
+      !request.body.u ||
+      !request.body.i ||
+      !request.body.c) {
     response.send(400);
     return;
   }
 
-  var tosserToken  = request.query.t;
-  var url          = request.query.u;
-  var title        = request.query.i;
-  var catcherToken = request.query.c;
+  var tosserToken  = request.body.t;
+  var url          = request.body.u;
+  var title        = request.body.i;
+  var catcherToken = request.body.c;
 
   var connection = db.getConnection();
   catcher.checkCatchAuthorization(connection, tosserToken, catcherToken, function(error, catchers) {
@@ -222,7 +222,7 @@ function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
-  app.get('/toss/new', auth.allowOrigin(), completeToss);
+  app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
   app.post('/add', express.bodyParser(), auth.protect(), auth.populateUser(), postAddPage);

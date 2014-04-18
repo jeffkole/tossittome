@@ -20,13 +20,13 @@ function getLogin(request, response) {
 }
 
 function xhrLogin(request, response) {
-  if (!request.query.email || !request.query.password) {
+  if (!request.body.email || !request.body.password) {
     response.send(400);
     return;
   }
 
-  var email    = request.query.email;
-  var password = request.query.password;
+  var email    = request.body.email;
+  var password = request.body.password;
 
   var connection = db.getConnection();
   login.authenticate(connection, email, password, function(error, user) {
@@ -137,7 +137,7 @@ function setup(app, express) {
   app.get('/login', getLogin);
   app.post('/login', express.bodyParser(), postLogin);
 
-  app.get('/xhr/login', auth.allowOrigin(true), xhrLogin);
+  app.post('/xhr/login', express.bodyParser(), auth.allowOrigin(true), xhrLogin);
 
   app.get('/logout', getLogout);
   app.get('/register', getRegister);

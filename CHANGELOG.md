@@ -1,10 +1,14 @@
 Changelog
 =========
 
-v1.2.4 (in progress)
+v2.0.0
 ------
-### Server
+### Server (2.0.0)
 * Updates to the styling
+* Accepts POSTs from extension and bookmarklet
+
+### Extension (2.0.0)
+* Requests login via POST
 
 v1.2.3
 ------

@@ -67,14 +67,15 @@ var tossItToMePop = {
     }
     else {
       var manifest = chrome.runtime.getManifest();
-      var url = tossItToMeBg.tossItToMeUrl + this.loginUri +
-        '?v=' + manifest.version +
+      var url = tossItToMeBg.tossItToMeUrl + this.loginUri + '?v=' + manifest.version;
+      var params =
         '&email=' + encodeURIComponent(loginForm.email.value) +
         '&password=' + encodeURIComponent(loginForm.password.value);
       var request = new XMLHttpRequest();
-      request.open('GET', url, true);
+      request.open('POST', url, true);
+      request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
       request.addEventListener('load', this.processLogin(tossItToMeBg).bind(this), false);
-      request.send(null);
+      request.send(params);
     }
   },
 
