@@ -4,4 +4,3 @@
 * Ensure db access errors are properly handled
 * Ensure userDao.insertUser error message duplicateEmail is checked instead of
   noResults
-* Remove the `<script>` tag added by the bookmarklet when toss is completed

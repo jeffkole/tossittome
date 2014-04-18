@@ -110,5 +110,8 @@
     setTimeout(function() { sendToss('{{ tosserToken }}'); }, 500);
   {{/hasCatchers}}
 
+  {{#scriptId}}
+  document.body.removeChild(document.getElementById('{{ scriptId }}'));
+  {{/scriptId}}
   document.body.appendChild(dialog);
 })();

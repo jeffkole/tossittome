@@ -46,8 +46,9 @@ function getNextPages(request, response) {
 function renderTossLogin(request, response) {
   response.setHeader('Content-Type', 'application/javascript');
   response.render('toss_login.js', {
-    host: request.get('host'),
-    layout: null
+    host     : request.get('host'),
+    scriptId : request.query.s,
+    layout   : null
   });
 }
 
@@ -101,7 +102,8 @@ function initiateToss(request, response) {
         title: title,
         tosserToken: tosserToken,
         hasCatchers: (catchers.length > 1),
-        catchers: catchers
+        catchers: catchers,
+        scriptId: request.query.s
       });
       db.closeConnection(connection);
     }
