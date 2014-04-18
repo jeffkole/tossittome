@@ -1,18 +1,22 @@
-<h1>How to toss pages</h1>
-<p>Drag this to your bookmark bar: <a id="bookmarklet" href="javascript:{{ code }}">TossIt</a> and then click "TossIt" when you are on a page you want to toss to another computer.</p>
-<p>From a mobile device, copy and paste the code below into a new bookmark:</p>
+<h1>What's this?</h1>
+<p>You find an article on your phone, and you want to read it later on your laptop. Or an <a href="http://i.imgur.com/GSqXDdK.jpg">amazing gif</a> that you want your friend to see too. Toss it! To make it magically appear.</p>
+
+<h2>How to toss</h2>
+<p>Drag this bookmarklet to your bookmark bar: <a class="button button-small button-blue" id="bookmarklet" href="javascript:{{ code }}">TossIt</a> Then click "TossIt" when you're on a page you want to toss to another computer.</p>
+<p>From a mobile device, copy the following code and paste it into a new bookmark:</p>
 <form class="clearfix form form-stacked">
-  <textarea class="textarea" style="width: 100%; height: 12rem;">javascript:{{ code }}</textarea>
+  <textarea class="textarea" style="width: 100%; height: 12rem" onclick="this.select();">javascript:{{ code }}</textarea>
 </form>
 
-<h1>How to catch pages</h1>
+<h2>How to catch</h2>
 <p>Pages are caught by a Chrome extension.  Here's how to install it:
 <ol>
-  <li>Download the extension: <a href="/extension.crx">Extension</a>.  Click "ok" when Chrome tells you it refuses to install the extension.</li>
-  <li>In Chrome, navigate to <a href="chrome://extensions">chrome://extensions</a></li>
-  <li>Drag the extension "tossittome.crx" to the Chrome window showing the extension page.</li>
-  <li>Approve the permissions.</li>
+  <li>Download the <a href="./extension.crx">extension</a>.  (when Chrome objects, click "Ok").</li>
+  <li>In Chrome, navigate to <a href="chrome://extensions">chrome://extensions</a>.</li>
+  <li>Drag "tossittome.crx" to the tab with the extensions page open.</li>
+  <li>Grant the permissions.</li>
 </ol>
 </p>
 
-<p><a href="/logout">Logout</a></p>
+<h1>Happy tossing.</h1>
+
