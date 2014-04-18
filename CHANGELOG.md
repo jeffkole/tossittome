@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v1.2.3
+------
+### Server
+* Fixes bugs associated with using request 'host' header
+### Tests
+* Resets `auto_increment` before tests run
+
 v1.2.2
 ------
 ### Server
