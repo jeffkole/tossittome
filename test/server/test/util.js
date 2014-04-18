@@ -51,7 +51,7 @@ function resetAutoIncrement(table, /* tables,... */ cb) {
     connection.query('alter table ' + table + ' auto_increment=1', function(error) {
       if (error) { throw error; }
       db.closeConnection(connection, function() {
-        count++
+        count++;
         if (count === tables.length) {
           cb();
         }
