@@ -17,7 +17,7 @@ SHA=$(basename ${VERSION_DIR})
 
 cd ${VERSION_DIR}
 ./node_modules/.bin/gulp pack-extension
-./node_modules/.bin/gulp scss
+./node_modules/.bin/gulp scss-server
 
 # Recreate current link
 cd ${APP_DIR}
