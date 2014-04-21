@@ -32,11 +32,12 @@ tabindex to 1 for the html element blurs the focus from the anchor.
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
     <script src="popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
   </head>
-  <body>
-    <h1>TossItToMe</h1>
+  <body class="mt1 ml1 mb1 mr1">
+    <h1 class="blue">TossItToMe!</h1>
     <div id="pages">
-      <h2>Caught <span id="num_caught">0</span> pages so far. <a id="clear_link" href="#">Clear</a></h2>
+      <h3>Caught <span id="num_caught">0 pages</span>. <a id="clear_link" href="#">Clear</a></h3>
       <ul id="page_list">
       </ul>
     </div>

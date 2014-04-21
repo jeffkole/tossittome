@@ -26,14 +26,19 @@ var tossItToMePop = {
         if (cookie) {
           tossItToMeBg.withCatches(function(catches) {
             console.log('catches:', catches);
-            document.getElementById('num_caught').innerText = catches.length.toString();
+            if (catches.length == 1) {
+              document.getElementById('num_caught').innerText = catches.length.toString() + " page";
+              }
+              else {
+                document.getElementById('num_caught').innerText = catches.length.toString() + " pages";}
             var ul = document.getElementById('page_list');
             catches.forEach(function(caught) {
               var li = document.createElement('li');
               var a = document.createElement('a');
               a.innerText = caught.title || caught.url;
-              a.href = '#';
+              a.href = caught.url;
               a.addEventListener('click', function(e) {
+                console.log(caught.tabId);
                 chrome.tabs.update(caught.tabId, {'active': true});
                 chrome.windows.update(caught.windowId, {'focused': true});
                 e.stopPropogation();
