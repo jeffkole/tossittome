@@ -40,9 +40,11 @@ var copyExtension = function(env) {
   return function() {
     var deferred = Q.defer();
     var notImageFilter = filter('!**/*.png');
+    var notScssFilter  = filter('!**/*.scss');
     gulp.src('extension/**')
-        .pipe(logFile())
         .pipe(notImageFilter)
+        .pipe(notScssFilter)
+        .pipe(logFile())
         .pipe(replace(/localhost:9999/g, hosts[env]['hostAndPort']))
         .pipe(replace(/localhost/g,      hosts[env]['host']))
         .pipe(notImageFilter.restore())
@@ -72,7 +74,7 @@ var putPackIntoServer = function(env) {
   };
 };
 
-gulp.task('pack-extension', ['clean'], function() {
+gulp.task('pack-extension', ['clean', 'scss-extension'], function() {
   var env = 'prod';
   gutil.log('Env: ' + env);
   copyExtension(env)()
@@ -81,10 +83,16 @@ gulp.task('pack-extension', ['clean'], function() {
     .done();
 });
 
-gulp.task('scss', function() {
+gulp.task('scss-server', function() {
   return gulp.src('server/scss/**/*.scss')
       .pipe(sass())
       .pipe(gulp.dest('server/public/css/'));
+});
+
+gulp.task('scss-extension', function() {
+  return gulp.src('extension/scss/**/*.scss')
+      .pipe(sass())
+      .pipe(gulp.dest('extension/'));
 });
 
 gulp.task('lint-src', function() {
@@ -116,13 +124,13 @@ gulp.task('bump', function() {
       .pipe(gulp.dest('./'));
 });
 
-gulp.task('run', ['scss'], function() {
+gulp.task('run', ['scss-server'], function() {
   nodemon({
       script: 'server/server.js',
       ext   : 'js',
       env   : { 'NODE_ENV': 'development' }
     });
-  gulp.watch('server/scss/**/*.scss', ['scss']);
+  gulp.watch('server/scss/**/*.scss', ['scss-server']);
 });
 
 gulp.task('test', function() {
