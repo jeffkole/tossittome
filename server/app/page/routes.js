@@ -3,6 +3,7 @@ var catcher = require('toss/catcher/catcher'),
     config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     log     = require('toss/common/log'),
+    minify  = require('toss/page/minify'),
     page    = require('toss/page/page');
 
 // Invoked by the extension
@@ -76,6 +77,8 @@ function initiateToss(request, response) {
   var tosserToken  = request.query.t;
   var url          = request.query.u;
   var title        = request.query.i;
+  // Optional query param that will force add some fake catchers (for testing)
+  var numCatchers  = request.query.c || -1;
 
   if (tosserToken != request.cookies.token) {
     log.info('Mismatched tokens');
@@ -95,6 +98,18 @@ function initiateToss(request, response) {
       db.closeConnection(connection);
     }
     else {
+      if (parseInt(numCatchers) === 1) {
+        catchers = [catchers[0]];
+        log.debug('With c=%d, set catchers to %j', numCatchers, catchers);
+      }
+      if (numCatchers > catchers.length) {
+        var numToAdd = numCatchers - catchers.length;
+        for (var i = 0; i < numToAdd; i++) {
+          catchers.push({'token': 'AAAA', 'email': 'foo' + i + '@bar.com'});
+        }
+        log.debug('With c=%d, set catchers to %j', numCatchers, catchers);
+      }
+
       // Take the tosser to the next step in the process... selecting a catcher
       renderCatchSelection(request, response, {
         host: request.get('host'),
@@ -223,7 +238,7 @@ function postAddPage(request, response) {
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
-  app.get('/toss', initiateToss);
+  app.get('/toss', minify.minify(), initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
