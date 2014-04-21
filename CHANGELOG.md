@@ -1,6 +1,16 @@
 Changelog
 =========
 
+v2.0.0
+------
+### Server (2.0.0)
+* Updates to the styling
+* Accepts POSTs from extension and bookmarklet
+* Removes `script` added on bookmarklet initialization
+
+### Extension (2.0.0)
+* Requests login via POST
+
 v1.2.3
 ------
 ### Server

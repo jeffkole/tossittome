@@ -46,8 +46,9 @@ function getNextPages(request, response) {
 function renderTossLogin(request, response) {
   response.setHeader('Content-Type', 'application/javascript');
   response.render('toss_login.js', {
-    host: request.get('host'),
-    layout: null
+    host     : request.get('host'),
+    scriptId : request.query.s,
+    layout   : null
   });
 }
 
@@ -101,7 +102,8 @@ function initiateToss(request, response) {
         title: title,
         tosserToken: tosserToken,
         hasCatchers: (catchers.length > 1),
-        catchers: catchers
+        catchers: catchers,
+        scriptId: request.query.s
       });
       db.closeConnection(connection);
     }
@@ -110,18 +112,18 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  if (!request.query.t ||
-      !request.query.u ||
-      !request.query.i ||
-      !request.query.c) {
+  if (!request.body.t ||
+      !request.body.u ||
+      !request.body.i ||
+      !request.body.c) {
     response.send(400);
     return;
   }
 
-  var tosserToken  = request.query.t;
-  var url          = request.query.u;
-  var title        = request.query.i;
-  var catcherToken = request.query.c;
+  var tosserToken  = request.body.t;
+  var url          = request.body.u;
+  var title        = request.body.i;
+  var catcherToken = request.body.c;
 
   var connection = db.getConnection();
   catcher.checkCatchAuthorization(connection, tosserToken, catcherToken, function(error, catchers) {
@@ -222,7 +224,7 @@ function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
-  app.get('/toss/new', auth.allowOrigin(), completeToss);
+  app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
   app.post('/add', express.bodyParser(), auth.protect(), auth.populateUser(), postAddPage);
