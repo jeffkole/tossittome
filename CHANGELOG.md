@@ -5,6 +5,7 @@ v2.1.0 (in progress)
 ------
 ### Server (2.1.0)
 * Updates the bookmarklet styling to look more like iOS
+* Simplifies the bookmarklet installation process
 
 v2.0.0
 ------
