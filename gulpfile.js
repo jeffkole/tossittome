@@ -124,7 +124,7 @@ gulp.task('bump', function() {
       .pipe(gulp.dest('./'));
 });
 
-gulp.task('run', ['scss-server'], function() {
+gulp.task('run', ['scss-server', 'scss-extension'], function() {
   nodemon({
       script: 'server/server.js',
       ext   : 'js',
