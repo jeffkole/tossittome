@@ -122,13 +122,13 @@ describe('PageRoutes', function() {
     });
   });
 
-  describe('GET /toss/new', function() {
+  describe('POST /toss', function() {
     var completeToss = routes.__get__('completeToss');
     var tosserToken = 'AAAA';
     var catcherToken = 'BBBB';
     var createGoodRequest = function() {
       return http.createRequest({
-        query: {
+        body: {
           t: tosserToken,
           u: 'http://tossitto.me',
           i: 'TossItToMe',
