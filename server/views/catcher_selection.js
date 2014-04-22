@@ -147,10 +147,12 @@
   dialog.appendChild(contents);
 
   {{#hasCatchers}}
+    var fontSize = calculateFontSize();
     var headline = document.createElement('div');
     headline.setAttribute('style', flattenStyle({
       'border-bottom': '1px solid #ccc',
-      'font-size': calculateFontSize() + 'px'
+      'font-size': fontSize + 'px',
+      'font-weight': 'normal'
     }));
     headline.addEventListener('touchmove', function(e) {
       e.preventDefault();
@@ -192,7 +194,6 @@
     }, false);
     contents.appendChild(catchers);
 
-    var fontSize = calculateFontSize();
     /* SVG from jxnblk: https://github.com/jxnblk/loading/blob/master/loading-spin.svg */
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" ' +
@@ -208,7 +209,8 @@
       'text-decoration': 'none',
       'display': 'block',
       'border-bottom': '1px solid #ccc',
-      'font-size': fontSize + 'px'
+      'font-size': fontSize + 'px',
+      'font-weight': 'normal'
     };
     var a;
     {{#catchers}}
@@ -232,7 +234,8 @@
       'text-decoration': 'none',
       'display': 'block',
       'border-top': '1px solid #0096cc',
-      'font-size': calculateFontSize() + 'px'
+      'font-size': fontSize + 'px',
+      'font-weight': 'normal'
     }));
     cancel.href = '#';
     cancel.addEventListener('click', function(e) {
