@@ -1,11 +1,15 @@
 Changelog
 =========
 
-v2.1.0 (in progress)
+v2.1.0
 ------
 ### Server (2.1.0)
 * Updates the bookmarklet styling to look more like iOS
 * Simplifies the bookmarklet installation process
+* Includes the stylistic stylings of Scott Forman
+
+### Extension (2.1.0)
+* Includes the stylistic stylings of Scott Forman
 
 v2.0.0
 ------
