@@ -58,7 +58,7 @@ var tossItToMePop = {
 
   clearLinks: function(tossItToMeBg) {
     document.getElementById('page_list').innerHTML = '';
-    document.getElementById('num_caught').innerText = '0';
+    document.getElementById('num_caught').innerText = '0 pages';
     tossItToMeBg.resetCatches();
   },
 

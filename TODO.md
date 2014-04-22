@@ -7,4 +7,3 @@
 * Render escaped characters properly from page titles
 * Reload a page when clicking on link in popup if since closed
 * Render a page with full history of tossed and received pages
-* Style the popup's login page
