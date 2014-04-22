@@ -27,10 +27,6 @@ function renderLoggedInHome(request, response) {
   });
 }
 
-function renderHistory(request, response) {
-  response.render('history');
-}
-
 function renderAnonymousHome(request, response) {
   response.render('index');
 }
@@ -58,10 +54,6 @@ function getHome(request, response) {
   }
 }
 
-function getHistory(request, response) {
-  renderHistory(request, response);
-}
-
 function getExtension(request, response) {
   response.set('Content-Type', 'application/x-chrome-extension');
   response.download(path.normalize(path.join(__dirname, '../../extension/extension.crx')), 'tossittome.crx');
@@ -69,7 +61,6 @@ function getExtension(request, response) {
 
 function setup(app) {
   app.get('/', auth.populateUser(), getHome);
-  app.get('/history', getHistory);
   app.get('/extension.crx', getExtension);
 }
 

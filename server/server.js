@@ -49,6 +49,7 @@ if (fs.existsSync(partialsDir)) {
 app.set('layout', 'layouts/default.html');
 
 require('toss/home/routes')(app);
+require('toss/history/routes')(app);
 require('toss/user/routes')(app, express);
 require('toss/page/routes')(app, express);
 
