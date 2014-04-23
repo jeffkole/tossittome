@@ -1,6 +1,10 @@
 #!/bin/bash -e
 
-echo "post receive"
+echo "Post receive"
+
+GIT_REPO=${PWD}
+echo "Executing in ${GIT_REPO}"
+
 REVS=""
 read REVS
 if [[ "$REVS" == "" ]]; then
@@ -13,6 +17,8 @@ NEW=$(echo ${REVS} | cut -d' ' -f2)
 REF=$(echo ${REVS} | cut -d' ' -f3)
 BRANCH=$(basename ${REF})
 
+echo "Old: ${OLD}; New: ${NEW}; Ref: ${REF}; Branch: ${BRANCH}"
+
 APP_DIR=/var/www/tossittome
 VERSION_DIR=${APP_DIR}/.versions/${NEW}
 mkdir -p ${VERSION_DIR}
@@ -20,6 +26,14 @@ git --work-tree=${VERSION_DIR} checkout -f $BRANCH
 
 echo "Files checked out to ${VERSION_DIR}"
 cd ${VERSION_DIR}
-./bin/deploy.sh ${APP_DIR} ${VERSION_DIR}
+./bin/deploy.sh ${APP_DIR} ${VERSION_DIR} ${GIT_REPO}
+
+RET_VAL=$?
+if [[ ${RET_VAL} -gt 0 ]]; then
+  echo "Failure during deploy: ${RET_VAL}"
+  exit ${RET_VAL}
+else
+  echo "All good"
+fi
 
 exit 0
