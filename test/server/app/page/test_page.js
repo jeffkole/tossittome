@@ -8,7 +8,7 @@ describe('Page', function() {
   before(util.deleteUsers);
   before(util.deletePages);
   after(util.deleteUsers);
-  after(util.deletePages);
+  afterEach(util.deletePages);
 
   var testTosser = {
     email    : 'foo@bar.com',
@@ -80,13 +80,35 @@ describe('Page', function() {
   });
 
   describe('#getNextPages()', function() {
+    before(function(done) {
+      var connection = db.getConnection();
+      page.addPage(connection,
+                   testTosser.token,
+                   testCatcher.token,
+                   'http://tossitto.me',
+                   'Tossing Back and Forth', function(error, p) {
+        util.handle(error);
+        page.addPage(connection,
+                     testTosser.token,
+                     testCatcher.token,
+                     'http://tossitto.us',
+                     'Tossing Here and There', function(error, p) {
+          util.handle(error);
+          db.closeConnection(connection, done);
+        });
+      });
+    });
+
     it('should fetch multiple pages for a valid user', function(done) {
       var connection = db.getConnection();
       page.getNextPages(connection, testCatcher.token, function(error, pages) {
         util.handle(error);
         pages.should.be.an.Array;
-        pages.length.should.equal(1);
-        pages[0].title.should.equal('Tossing Back and Forth');
+        pages.length.should.equal(2);
+        pages[0].should.have.property('title', 'Tossing Back and Forth');
+        pages[0].should.have.property('tosser');
+        pages[0].tosser.should.have.property('id');
+        pages[0].tosser.should.have.property('email');
         db.closeConnection(connection, done);
       });
     });

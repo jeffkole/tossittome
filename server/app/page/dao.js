@@ -14,7 +14,8 @@ function insertPage(connection, tosserId, catcherId, url, title, cb) {
 
 function fetchNextPages(connection, catcherId, cb) {
   connection.query(
-      'select id, url, title from pages where catcher_id=? and served_at is null order by created_at for update',
+      'select id, user_id as tosser_id, url, title ' +
+      'from pages where catcher_id=? and served_at is null order by created_at for update',
       catcherId,
       function(error, pages) {
         if (error) {

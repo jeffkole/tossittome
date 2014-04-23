@@ -38,6 +38,8 @@ describe('PageDAO', function() {
           pages.length.should.equal(2);
           pages[0].url.should.equal('http://tossitto.me');
           pages[1].url.should.equal('http://tossitto.us');
+          pages[0].should.have.property('tosser_id', 1);
+          pages[1].should.have.property('tosser_id', 1);
           db.closeConnection(connection, done);
         });
       });

@@ -41,7 +41,33 @@ function getNextPages(connection, token, cb) {
       if (pages.noResults) {
         return cb(null, { noResults: true });
       }
-      return cb(null, pages);
+      var tosserIds =
+        pages.map(function(page) { return page.tosser_id; })
+             .filter(function(value, index, self) { return self.indexOf(value) === index; });
+      // Fill the page tosser property with the user data about the tossers
+      userDao.fetchUserById(connection, tosserIds, function(error, users) {
+        if (error) {
+          return cb(error);
+        }
+        if (users.noResults) {
+          return cb(null, { noResults: true });
+        }
+        // Treat the results like an array even if it is just a single object
+        if (tosserIds.length === 1) {
+          users = [users];
+        }
+        var userIdMap = {};
+        users.forEach(function(user) {
+          userIdMap[user.id] = {
+            id    : user.id,
+            email : user.email
+          };
+        });
+        pages.forEach(function(page) {
+          page.tosser = userIdMap[page.tosser_id];
+        });
+        return cb(null, pages);
+      });
     });
   });
 }
