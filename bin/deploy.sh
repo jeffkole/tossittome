@@ -26,3 +26,9 @@ rm -f current && ln -s .versions/${SHA} current
 # Restart app
 ${VERSION_DIR}/bin/stop
 ${VERSION_DIR}/bin/start
+
+# Delete all but the latest 5 versions
+cd ${APP_DIR}
+echo 'Going to remove old deployed versions'
+ls -t .versions | awk 'NR > 5'
+ls -t .versions | awk 'NR > 5' | xargs -I % rm -rf .versions/%
