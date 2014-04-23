@@ -208,21 +208,26 @@
       'display': 'block',
       'border-bottom': '1px solid #ccc'
     };
-    var a;
-    {{#catchers}}
-      a = document.createElement('a');
+
+    function addCatcher(catcher) {
+      var a = document.createElement('a');
       a.setAttribute('style', flattenStyle(linkStyle, typeStyle));
       a.href = '#';
       a.addEventListener('click', function(e) {
         // Set the loading svg fill to a visible color
         e.target.children[0].style.fill = '#0096cc';
-        sendToss('{{ token }}');
+        sendToss(catcher.token);
         e.preventDefault();
         return false;
       }, false);
-      a.innerHTML = svg + ' {{ email }}';
+      a.innerHTML = svg + ' ' + catcher.email;
       catchers.appendChild(a);
-    {{/catchers}}
+    }
+
+    var catcherData = {{{ catchers_json }}};
+    for (var i = 0; i < catcherData.length; i++) {
+      addCatcher(catcherData[i]);
+    }
 
     var cancel = document.createElement('a');
     cancel.setAttribute('style', flattenStyle({

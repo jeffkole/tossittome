@@ -117,7 +117,10 @@ function initiateToss(request, response) {
         title: title,
         tosserToken: tosserToken,
         hasCatchers: (catchers.length > 1),
-        catchers: catchers,
+        catchers_json: JSON.stringify(catchers.map(function(catcher) { return {
+          email: catcher.email,
+          token: catcher.token
+        }; })),
         scriptId: request.query.s
       });
       db.closeConnection(connection);
