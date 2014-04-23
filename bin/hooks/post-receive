@@ -12,12 +12,19 @@ if [[ "$REVS" == "" ]]; then
   exit 1
 fi
 
+NON_REV='0000000000000000000000000000000000000000'
+
 OLD=$(echo ${REVS} | cut -d' ' -f1)
 NEW=$(echo ${REVS} | cut -d' ' -f2)
 REF=$(echo ${REVS} | cut -d' ' -f3)
 BRANCH=$(basename ${REF})
 
 echo "Old: ${OLD}; New: ${NEW}; Ref: ${REF}; Branch: ${BRANCH}"
+
+if [[ "${NEW}" == "${NON_REV}" ]]; then
+  echo "Deleting branch. No deploy to do."
+  exit 0
+fi
 
 APP_DIR=/var/www/tossittome
 VERSION_DIR=${APP_DIR}/.versions/${NEW}
@@ -32,8 +39,7 @@ RET_VAL=$?
 if [[ ${RET_VAL} -gt 0 ]]; then
   echo "Failure during deploy: ${RET_VAL}"
   exit ${RET_VAL}
-else
-  echo "All good"
 fi
 
+echo "All good"
 exit 0
