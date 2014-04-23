@@ -48,6 +48,7 @@ if (fs.existsSync(partialsDir)) {
 // Set the default layout
 app.set('layout', 'layouts/default.html');
 
+require('toss/admin/routes')(app);
 require('toss/home/routes')(app);
 require('toss/user/routes')(app, express);
 require('toss/page/routes')(app, express);
