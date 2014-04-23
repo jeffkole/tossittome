@@ -44,6 +44,9 @@ var tossItToMePop = {
                 e.stopPropogation();
               }, false);
               li.appendChild(a);
+              if (caught.tosser && caught.tosser.email) {
+                li.appendChild(document.createTextNode(' from ' + caught.tosser.email));
+              }
               ul.appendChild(li);
             });
             document.getElementById('pages').style.display = 'block';
