@@ -78,28 +78,25 @@
     return (calculateFontSize() * multiplier);
   }
 
-  function flattenStyle(style) {
+  function flattenStyle(/* style, style, style,... */) {
     var flat = '';
-    for (var k in style) {
-      flat += (k + ':' + style[k] + '; ');
+    for (var i = 0; i < arguments.length; i++) {
+      var style = arguments[i];
+      for (var k in style) {
+        flat += (k + ':' + style[k] + '; ');
+      }
     }
     return flat;
   }
 
   var bgStyle = {
-    'color': '#111',
     'background-color': hiddenBg,
     'position': 'fixed',
     'top': 0,
     'left': 0,
     'width': '100%',
     'height': '100%',
-    'line-height': 'normal',
-    'font-family': '\'Helvetica Neue\', Helvetica, sans-serif',
-    'font-weight': 'bold',
-    'text-align': 'center',
     'z-index': Math.pow(2, 32) - 3,
-    'font-size': calculateFontSize() + 'px',
     'transition-property': 'background',
     'transition-duration': slideDuration + 'ms'
   };
@@ -111,13 +108,17 @@
     'bottom': hiddenBottom, /* start low to slide in */
     'left': 0,
     'width': '100%',
-    'line-height': 'normal',
-    'font-family': '\'Helvetica Neue\', Helvetica, sans-serif',
-    'text-align': 'center',
     'z-index': Math.pow(2, 32) - 2,
-    'font-size': calculateFontSize() + 'px',
     'transition-property': 'bottom',
     'transition-duration': slideDuration + 'ms'
+  };
+
+  var typeStyle = {
+    'line-height': '220%',
+    'font-family': '\'Helvetica Neue\', Helvetica, sans-serif',
+    'font-weight': 'normal',
+    'text-align': 'center',
+    'font-size': calculateFontSize() + 'px'
   };
 
   var bgId = 'tossItToMe-bg-' + Math.random().toString().slice(2);
@@ -141,8 +142,7 @@
 
   var contents = document.createElement('div');
   contents.setAttribute('style', flattenStyle({
-    'border': '1px solid #0096cc',
-    'line-height': '220%'
+    'border': '1px solid #0096cc'
   }));
   dialog.appendChild(contents);
 
@@ -150,10 +150,8 @@
     var fontSize = calculateFontSize();
     var headline = document.createElement('div');
     headline.setAttribute('style', flattenStyle({
-      'border-bottom': '1px solid #ccc',
-      'font-size': fontSize + 'px',
-      'font-weight': 'normal'
-    }));
+      'border-bottom': '1px solid #ccc'
+    }, typeStyle));
     headline.addEventListener('touchmove', function(e) {
       e.preventDefault();
     }, false);
@@ -208,14 +206,12 @@
       'color': '#0096cc',
       'text-decoration': 'none',
       'display': 'block',
-      'border-bottom': '1px solid #ccc',
-      'font-size': fontSize + 'px',
-      'font-weight': 'normal'
+      'border-bottom': '1px solid #ccc'
     };
     var a;
     {{#catchers}}
       a = document.createElement('a');
-      a.setAttribute('style', flattenStyle(linkStyle));
+      a.setAttribute('style', flattenStyle(linkStyle, typeStyle));
       a.href = '#';
       a.addEventListener('click', function(e) {
         // Set the loading svg fill to a visible color
@@ -233,10 +229,8 @@
       'color': '#0096cc',
       'text-decoration': 'none',
       'display': 'block',
-      'border-top': '1px solid #0096cc',
-      'font-size': fontSize + 'px',
-      'font-weight': 'normal'
-    }));
+      'border-top': '1px solid #0096cc'
+    }, typeStyle));
     cancel.href = '#';
     cancel.addEventListener('click', function(e) {
       cleanup();
@@ -254,6 +248,7 @@
 
   {{^hasCatchers}}
     var headline = document.createElement('div');
+    headline.setAttribute('style', flattenStyle(typeStyle));
     headline.innerText = 'Tossing...';
     contents.appendChild(headline);
     var transitionInMs = 0;
