@@ -6,6 +6,8 @@ v2.1.x (in progress)
 ### Server
 * Improves font styling consistency in the bookmarklet
 * Improves bookmarklet scalability
+* Adds version info to the extension download
+* Adds /admin/version endpoint
 
 v2.1.0
 ------
