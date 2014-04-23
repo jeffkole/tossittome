@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v2.1.x (in progress)
+------
+### Server
+* Improves font styling consistency in the bookmarklet
+* Improves bookmarklet scalability
+
 v2.1.0
 ------
 ### Server (2.1.0)
