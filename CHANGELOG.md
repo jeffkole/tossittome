@@ -9,6 +9,10 @@ v2.1.x (in progress)
 * Adds version info to the extension download
 * Adds /admin/version endpoint
 
+### Infrastructure
+* Updates deploy script to update post-receive hook
+* post-receive hook handles branch deletes
+
 v2.1.0
 ------
 ### Server (2.1.0)
@@ -33,6 +37,7 @@ v1.2.3
 ------
 ### Server
 * Fixes bugs associated with using request 'host' header
+
 ### Tests
 * Resets `auto_increment` before tests run
 
