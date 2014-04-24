@@ -1,10 +1,13 @@
-var catcher = require('toss/catcher/catcher'),
+var path    = require('path'),
+    uglify  = require('uglify-js'),
+    catcher = require('toss/catcher/catcher'),
     auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     log     = require('toss/common/log'),
-    minify  = require('toss/page/minify'),
     page    = require('toss/page/page');
+
+var renderCatcherSelectionFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/catcher_selection.js'))).code;
 
 // Invoked by the extension
 function getNextPages(request, response) {
@@ -55,8 +58,9 @@ function renderTossLogin(request, response) {
 
 function renderCatchSelection(request, response, locals) {
   locals.layout = null;
+  locals.renderCatcherSelectionFn = renderCatcherSelectionFn;
   response.setHeader('Content-Type', 'application/javascript');
-  response.render('catcher_selection.js', locals);
+  response.render('catcher_selection_response.js', locals);
 }
 
 // Invoked by the bookmarklet
@@ -67,24 +71,9 @@ function initiateToss(request, response) {
     return;
   }
 
-  if (!request.query.t ||
-      !request.query.u ||
-      !request.query.i) {
-    response.send(400);
-    return;
-  }
-
-  var tosserToken  = request.query.t;
-  var url          = request.query.u;
-  var title        = request.query.i;
+  var tosserToken = request.cookies.token;
   // Optional query param that will force add some fake catchers (for testing)
-  var numCatchers  = request.query.c || -1;
-
-  if (tosserToken != request.cookies.token) {
-    log.info('Mismatched tokens');
-    renderTossLogin(request, response);
-    return;
-  }
+  var numCatchers = request.query.c || -1;
 
   var connection = db.getConnection();
   catcher.getCatchers(connection, tosserToken, function(error, catchers) {
@@ -113,15 +102,12 @@ function initiateToss(request, response) {
       // Take the tosser to the next step in the process... selecting a catcher
       renderCatchSelection(request, response, {
         host: request.get('host'),
-        url: url,
-        title: title,
-        tosserToken: tosserToken,
-        hasCatchers: (catchers.length > 1),
-        catchers_json: JSON.stringify(catchers.map(function(catcher) { return {
+        catchersJson: JSON.stringify(catchers.map(function(catcher) { return {
           email: catcher.email,
           token: catcher.token
         }; })),
-        scriptId: request.query.s
+        scriptId: request.query.s,
+        forceIframe: request.query.f === 'true'
       });
       db.closeConnection(connection);
     }
@@ -130,15 +116,21 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  if (!request.body.t ||
-      !request.body.u ||
+  // TODO: This won't be an acceptable response to the iframe request
+  if (!request.cookies.token) {
+    log.info('User not logged in. Sending to login');
+    renderTossLogin(request, response);
+    return;
+  }
+
+  if (!request.body.u ||
       !request.body.i ||
       !request.body.c) {
     response.send(400);
     return;
   }
 
-  var tosserToken  = request.body.t;
+  var tosserToken  = request.cookies.token;
   var url          = request.body.u;
   var title        = request.body.i;
   var catcherToken = request.body.c;
@@ -241,7 +233,7 @@ function postAddPage(request, response) {
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
-  app.get('/toss', minify.minify(), initiateToss);
+  app.get('/toss', initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/add', auth.protect(), auth.populateUser(), getAddPage);

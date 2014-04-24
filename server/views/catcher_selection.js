@@ -1,4 +1,4 @@
-(function() {
+function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
   var slideDuration = 500,
       shownBottom   = '0px',
       hiddenBottom  = '-1000px',
@@ -10,9 +10,9 @@
     if (title.substring(0, 13) == '(Tossing...) ') {
       document.title = title.substring(13);
     }
-    {{#scriptId}}
-    document.body.removeChild(document.getElementById('{{ scriptId }}'));
-    {{/scriptId}}
+    if (scriptId) {
+      document.body.removeChild(document.getElementById(scriptId));
+    }
     var bg = document.getElementById(bgId);
     var dialog = document.getElementById(dialogId);
     bg.style.backgroundColor = hiddenBg;
@@ -21,20 +21,28 @@
       document.body.removeChild(dialog);
       document.body.removeChild(bg);
     }, slideDuration);
+
+    // Disinfect the window
+    window.iframeLoadCount = undefined;
+    window.checkFrameLoad = undefined;
   }
 
   function sendToss(catcherToken) {
+    if (forceIframe) {
+      sendTossViaIframe(catcherToken, document.location.href, document.title);
+      return;
+    }
     try {
       var start = (new Date()).getTime();
       // Wait at least this many milliseconds
       var lagTime = 800;
       var request = new XMLHttpRequest();
-      request.open('POST', 'http://{{ host }}/toss', true);
+      request.open('POST', 'http://' + host + '/toss', true);
       request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+      request.withCredentials = true;
       var params =
-        '&t={{ tosserToken }}' +
-        '&u=' + encodeURIComponent('{{ url }}') +
-        '&i=' + encodeURIComponent('{{ title }}') +
+        '&u=' + encodeURIComponent(document.location.href) +
+        '&i=' + encodeURIComponent(document.title) +
         '&c=' + catcherToken;
       request.onreadystatechange = function() {
         try {
@@ -49,14 +57,46 @@
           }
         }
         catch (exception) {
-          // TODO: run a backup request
+          sendTossViaIframe(catcherToken, document.location.href, document.title);
         }
       };
       request.send(params);
     }
     catch (exception) {
-      // TODO: run a backup request
+      sendTossViaIframe(catcherToken, document.location.href, document.title);
     }
+  }
+
+  var iframeId = 'tossItToMe-if-' + Math.random().toString().slice(2);
+
+  // Infect the window so that the variable is visible to the iframe
+  window.iframeLoadCount = 0;
+  window.checkFrameLoad  = function() {
+    // Load count will be 2 after the form submission finished loading
+    if (iframeLoadCount === 2) {
+      document.body.removeChild(document.getElementById(iframeId));
+      cleanup();
+    }
+  };
+
+  function sendTossViaIframe(catcherToken, href, title) {
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute('id', iframeId);
+    iframe.setAttribute('style', 'border: 0; width: 1px; height: 1px; position: absolute; left: 0; top: 0;');
+    iframe.setAttribute('onload', 'iframeLoadCount++; checkFrameLoad();');
+    // The iframe document is not defined until after it is added to the
+    // parent document.
+    document.body.appendChild(iframe);
+    window.frames[iframeId].document.write(
+        '<html><body>' +
+        '<form action="http://' + host + '/toss" method="post">' +
+        '<input type="hidden" name="u" value="' + href + '"/>' +
+        '<input type="hidden" name="i" value="' + title + '"/>' +
+        '<input type="hidden" name="c" value="' + catcherToken + '"/>' +
+        '</form>' +
+        '<scr' + 'ipt>document.forms[0].submit();</scr' + 'ipt>' +
+        '</body></html>'
+        );
   }
 
   function landscape() {
@@ -146,9 +186,10 @@
   }));
   dialog.appendChild(contents);
 
-  {{#hasCatchers}}
+  var headline = document.createElement('div');
+  var transitionInMs;
+  if (catcherData.length > 1) {
     var fontSize = calculateFontSize();
-    var headline = document.createElement('div');
     headline.setAttribute('style', flattenStyle({
       'border-bottom': '1px solid #ccc'
     }, typeStyle));
@@ -209,7 +250,7 @@
       'border-bottom': '1px solid #ccc'
     };
 
-    function addCatcher(catcher) {
+    var addCatcher = function(catcher) {
       var a = document.createElement('a');
       a.setAttribute('style', flattenStyle(linkStyle, typeStyle));
       a.href = '#';
@@ -222,9 +263,8 @@
       }, false);
       a.innerHTML = svg + ' ' + catcher.email;
       catchers.appendChild(a);
-    }
+    };
 
-    var catcherData = {{{ catchers_json }}};
     for (var i = 0; i < catcherData.length; i++) {
       addCatcher(catcherData[i]);
     }
@@ -248,17 +288,16 @@
     cancel.innerText = 'Cancel';
     contents.appendChild(cancel);
     // Initiate the transition a little after the dialog has been loaded
-    var transitionInMs = 100;
-  {{/hasCatchers}}
-
-  {{^hasCatchers}}
-    var headline = document.createElement('div');
+    transitionInMs = 100;
+  }
+  // Only one catcher (ie, the tosser)
+  else {
     headline.setAttribute('style', flattenStyle(typeStyle));
     headline.innerText = 'Tossing...';
     contents.appendChild(headline);
-    var transitionInMs = 0;
-    setTimeout(function() { sendToss('{{ tosserToken }}'); }, (slideDuration + 500));
-  {{/hasCatchers}}
+    transitionInMs = 0;
+    setTimeout(function() { sendToss(catcherData[0].token); }, (slideDuration + 500));
+  }
 
   setTimeout(function() {
     bg.style.backgroundColor = shownBg;
@@ -270,4 +309,4 @@
   // done after the element has been added to the DOM
   hiddenBottom = '-' + dialog.offsetHeight + 'px';
   dialog.style.bottom = hiddenBottom;
-})();
+}

@@ -1,18 +1,15 @@
-function titom1(){
+(function(){
   var d=document,
       s=d.createElement('scr'+'ipt'),
       b=d.body,
       l=d.location,
-      t=d.title;
+      i='titom2';
   try{
     if(!b)throw(0);
-    d.title='(Tossing...) '+d.title;
-    s.setAttribute('id','titom1');
-    s.setAttribute('src',l.protocol+'//{{ host }}/toss?s=titom1&u='+encodeURIComponent(l.href)+'&i='+encodeURIComponent(t)+'&t={{ token }}');
+    s.setAttribute('id',i);
+    s.setAttribute('src',l.protocol+'//{{ host }}/toss?s='+i);
     b.appendChild(s);
   }catch(e){
     alert('Please wait until the page has loaded.');
   }
-};
-titom1();
-void(0)
+})();
