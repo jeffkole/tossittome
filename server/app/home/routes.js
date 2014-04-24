@@ -13,8 +13,7 @@ var extensionInfo = require('../../../extension/manifest.json');
 
 function renderLoggedInHome(request, response) {
   var content = bookmarkletTemplate.render({
-    host  : request.get('host'),
-    token : request.cookies.token
+    host  : request.get('host')
   });
   var code = content.
     replace(/\n/g, " ").
