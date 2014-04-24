@@ -147,11 +147,11 @@ describe('PageRoutes', function() {
       }
     });
 
-    it('should render toss_login.js when no token is in the cookie', function() {
+    it('should send 401 when no token is in the cookie', function() {
       var request = completeRequest(http.createRequest({}));
       var response = http.createResponse();
       completeToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
+      response.statusCode.should.eql(401);
     });
 
     it('should send a 400 response when the required params are missing', function() {

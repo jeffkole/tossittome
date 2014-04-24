@@ -116,10 +116,9 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  // TODO: This won't be an acceptable response to the iframe request
+  // TODO: Have the bookmarklet code catch and handle this
   if (!request.cookies.token) {
-    log.info('User not logged in. Sending to login');
-    renderTossLogin(request, response);
+    response.send(401, 'Not authorized');
     return;
   }
 
