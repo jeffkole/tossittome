@@ -20,7 +20,8 @@ express.logger.token('remote-addr', function(request) {
   if (sock.socket) return sock.socket.remoteAddress;
   return sock.remoteAddress;
 });
-app.use(express.logger());
+express.logger.format('timed-default', express.logger.default + ' ":response-time ms"');
+app.use(express.logger('timed-default'));
 app.use(express.cookieParser());
 
 // assign the hogan engine to .html and .js files
