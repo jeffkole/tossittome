@@ -73,7 +73,7 @@ function renderLoginPopup(host, scriptId) {
   function initiateToss() {
     cleanup();
     var script = document.createElement('scr'+'ipt');
-    var newScriptId = scriptId + '-1';
+    var newScriptId = scriptId + '.1';
     script.setAttribute('id', newScriptId);
     script.setAttribute('src', document.location.protocol + '//' + host + '/toss?s=' + newScriptId);
     document.body.appendChild(script);

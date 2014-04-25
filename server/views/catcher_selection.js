@@ -45,6 +45,10 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
       request.onreadystatechange = function() {
         try {
           if (request.readyState != 4) { return; }
+          if (request.status === 401) {
+            initiateLogin();
+            return;
+          }
           if (request.status != 200) { throw(request.statusText); }
           var duration = (new Date()).getTime() - start;
           if (duration < lagTime) {
@@ -72,6 +76,8 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
   window.checkFrameLoad  = function() {
     // Load count will be 2 after the form submission finished loading
     if (iframeLoadCount === 2) {
+      // TODO: handle the response from the iframe load, whether it be
+      // successful or not
       document.body.removeChild(document.getElementById(iframeId));
       cleanup();
     }
@@ -95,6 +101,17 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
         '<scr' + 'ipt>document.forms[0].submit();</scr' + 'ipt>' +
         '</body></html>'
         );
+  }
+
+  function initiateLogin() {
+    cleanup();
+    var script = document.createElement('scr'+'ipt');
+    var newScriptId = scriptId + '.1';
+    script.setAttribute('id', newScriptId);
+    // Loading the toss again will check the cookie and render the login form if
+    // necessary, which is exactly what we want in this case.
+    script.setAttribute('src', document.location.protocol + '//' + host + '/toss?s=' + newScriptId);
+    document.body.appendChild(script);
   }
 
   function landscape() {

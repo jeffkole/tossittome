@@ -118,7 +118,6 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  // TODO: Have the bookmarklet code catch and handle this
   if (!request.cookies.token) {
     response.send(401, 'Not authorized');
     return;
