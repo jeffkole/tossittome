@@ -8,6 +8,8 @@ v2.1.x (in progress)
 * Improves bookmarklet scalability
 * Adds version info to the extension download
 * Adds /admin/version endpoint
+* Uses XHR for login from bookmarklet
+* Improves the user experience for iOS users
 
 ### Infrastructure
 * Updates deploy script to update post-receive hook

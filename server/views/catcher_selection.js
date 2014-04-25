@@ -13,8 +13,6 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     if (scriptId) {
       document.body.removeChild(document.getElementById(scriptId));
     }
-    var bg = document.getElementById(bgId);
-    var dialog = document.getElementById(dialogId);
     bg.style.backgroundColor = hiddenBg;
     dialog.style.bottom = hiddenBottom;
     setTimeout(function() {

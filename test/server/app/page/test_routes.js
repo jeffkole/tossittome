@@ -46,11 +46,11 @@ describe('PageRoutes', function() {
       }
     });
 
-    it('should render toss_login.js when no token is in the cookie', function() {
+    it('should render login_popup_response.js when no token is in the cookie', function() {
       var request = completeRequest(http.createRequest({}));
       var response = http.createResponse();
       initiateToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
+      response._getRenderView().should.eql('login_popup_response.js');
     });
 
     it('should send 500 on connection error', function() {
@@ -65,7 +65,7 @@ describe('PageRoutes', function() {
       response.statusCode.should.eql(500);
     });
 
-    it('should render toss_login when no tosser is found', function() {
+    it('should render login_popup_response when no tosser is found', function() {
       var catcherMock = {
         getCatchers: sinon.stub().callsArgWith(2, null, { noTosser: true })
       };
@@ -74,7 +74,7 @@ describe('PageRoutes', function() {
       var request = createGoodRequest();
       var response = http.createResponse();
       initiateToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
+      response._getRenderView().should.eql('login_popup_response.js');
     });
 
     it('should render catch_selection on success', function() {

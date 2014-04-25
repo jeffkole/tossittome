@@ -8,6 +8,7 @@ var path    = require('path'),
     page    = require('toss/page/page');
 
 var renderCatcherSelectionFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/catcher_selection.js'))).code;
+var renderLoginPopupFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/login_popup.js'))).code;
 
 // Invoked by the extension
 function getNextPages(request, response) {
@@ -49,10 +50,11 @@ function getNextPages(request, response) {
 
 function renderTossLogin(request, response) {
   response.setHeader('Content-Type', 'application/javascript');
-  response.render('toss_login.js', {
-    host     : request.get('host'),
-    scriptId : request.query.s,
-    layout   : null
+  response.render('login_popup_response.js', {
+    host               : request.get('host'),
+    scriptId           : request.query.s,
+    renderLoginPopupFn : renderLoginPopupFn,
+    layout             : null
   });
 }
 
@@ -179,64 +181,11 @@ function completeToss(request, response) {
   });
 }
 
-// TODO: add ability to choose a catcher
-function getAddPage(request, response) {
-  response.render('add', {
-    url   : request.query.url,
-    title : request.query.title
-  });
-}
-
-// TODO: add ability to choose a catcher
-function postAddPage(request, response) {
-  if (!request.body.url || !request.body.title) {
-    response.send(400);
-    return;
-  }
-
-  var tosserToken  = request.cookies.token;
-  var url          = request.body.url;
-  var title        = request.body.title;
-  // For backwards compatibility, just use the tosser as the catcher
-  var catcherToken = request.body.catcherToken || tosserToken;
-
-  var connection = db.getConnection();
-  connection.beginTransaction(function(error) {
-    if (error) {
-      response.send(500, error);
-      db.closeConnection(connection);
-    }
-    else {
-      page.addPage(connection, tosserToken, catcherToken, url, title, function(error, page) {
-        if (error) {
-          response.send(500, error);
-        }
-        else if (page.noResults) {
-          response.send(400);
-        }
-        else {
-          response.redirect(url);
-        }
-        connection.commit(function(error) {
-          db.closeConnection(connection, function() {
-            if (error) {
-              throw error;
-            }
-          });
-        });
-      });
-    }
-  });
-}
-
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
-
-  app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
-  app.post('/add', express.bodyParser(), auth.protect(), auth.populateUser(), postAddPage);
 }
 
 module.exports = setup;
