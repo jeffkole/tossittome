@@ -1,9 +1,9 @@
 Changelog
 =========
 
-v2.1.x (in progress)
+v2.2.0
 ------
-### Server
+### Server (2.2.0)
 * Improves font styling consistency in the bookmarklet
 * Improves bookmarklet scalability
 * Adds version info to the extension download
