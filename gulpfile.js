@@ -96,7 +96,7 @@ gulp.task('scss-extension', function() {
 });
 
 gulp.task('lint-src', function() {
-  var files = ['server/server.js', 'server/app/**/*.js', 'extension/*.js'];
+  var files = ['server/server.js', 'server/app/**/*.js', 'server/views/**/*.js', '!server/views/**/*_response.js', 'extension/*.js'];
   return gulp.src(files)
       .pipe(jshint())
       .pipe(jshint.reporter('default'));
