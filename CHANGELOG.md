@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v2.2.1
+------
+### Server (2.2.1)
+* Fixes look and feel of bookmarklet login on mobile Chrome
+* Fixes bug when cancelling login from bookmarklet
+
 v2.2.0
 ------
 ### Server (2.2.0)
