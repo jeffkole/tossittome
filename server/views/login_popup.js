@@ -135,7 +135,6 @@ function renderLoginPopup(host, scriptId) {
   };
 
   var typeStyle = {
-    'line-height': '220%',
     'font-family': '\'Helvetica Neue\', Helvetica, sans-serif',
     'font-weight': 'normal',
     'font-size': calculateFontSize() + 'px'
@@ -164,7 +163,8 @@ function renderLoginPopup(host, scriptId) {
     label.setAttribute('for', name);
     label.setAttribute('style', flattenStyle({
       'display': 'block',
-      'width': '100%'
+      'width': '100%',
+      'line-height': '150%'
     }, typeStyle));
     label.appendChild(document.createTextNode(displayName + ':'));
 
@@ -181,9 +181,8 @@ function renderLoginPopup(host, scriptId) {
       '-moz-box-sizing': 'border-box',
       'box-sizing': 'border-box',
       'max-width': '100%',
-      'height': '3rem',
       'line-height': '2rem',
-      'padding': '.5rem',
+      'padding': '0.5rem',
       'border-radius': '.25rem'
     }));
 
