@@ -145,6 +145,7 @@ function renderLoginPopup(host, scriptId) {
   bg.setAttribute('id', bgId);
   bg.setAttribute('style', flattenStyle(bgStyle));
   bg.addEventListener('click', function(e) {
+    window.tossLoginSuccess = undefined;
     cleanup();
     e.preventDefault();
   }, false);
@@ -190,7 +191,7 @@ function renderLoginPopup(host, scriptId) {
     form.appendChild(input);
   }
 
-  if (typeof window.tossLoginSuccess === 'undefined') {
+  if (typeof window.tossLoginSuccess === 'undefined' || window.tossLoginSuccess === 0) {
     window.tossLoginSuccess = 0;
     var form = document.createElement('form');
     form.setAttribute('style', flattenStyle({

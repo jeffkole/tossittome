@@ -23,6 +23,7 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     // Disinfect the window
     window.iframeLoadCount = undefined;
     window.checkFrameLoad = undefined;
+    window.tossLoginSuccess = undefined;
   }
 
   function sendToss(catcherToken) {
