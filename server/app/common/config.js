@@ -11,7 +11,7 @@ var config = {
   },
 
   log: {
-    level    : 'INFO'
+    level    : 'DEBUG'
   },
 
   errors: {
@@ -23,6 +23,7 @@ var config = {
 function setup() {
   if ('production' == process.env.NODE_ENV) {
     config.db.schema = 'tossittome_prod';
+    config.log.level = 'INFO';
     config.errors.exposeStack = false;
 
     production = require(process.env.HOME + '/.ssh/tossittome/production_secrets.json');
