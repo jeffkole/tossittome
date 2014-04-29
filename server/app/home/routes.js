@@ -1,10 +1,7 @@
 var fs      = require('fs'),
     hogan   = require('hogan.js'),
     path    = require('path'),
-    auth    = require('toss/common/auth'),
-    config  = require('toss/common/config'),
-    db      = require('toss/common/db'),
-    userDao = require('toss/user/dao');
+    auth    = require('toss/common/auth');
 
 var bookmarkletTemplate =
   hogan.compile(fs.readFileSync(path.normalize(path.join(__dirname, '../../views/bookmarklet.js')), { encoding: 'UTF-8' }));
@@ -34,22 +31,9 @@ function renderAnonymousHome(request, response) {
 }
 
 function getHome(request, response) {
-  if (request.cookies.token) {
-    var connection = db.getConnection();
-    userDao.fetchUserByToken(connection, request.cookies.token, function(error, user) {
-      if (error) {
-        response.send(500, error);
-      }
-      else if (user.noResults) {
-        // Clear the fraudulent cookie
-        response.clearCookie('token');
-        renderAnonymousHome(request, response);
-      }
-      else {
-        renderLoggedInHome(request, response);
-      }
-      db.closeConnection(connection);
-    });
+  // The user will be populated by the authentication mechanism
+  if (response.locals.user) {
+    renderLoggedInHome(request, response);
   }
   else {
     renderAnonymousHome(request, response);
@@ -63,7 +47,7 @@ function getExtension(request, response) {
 }
 
 function setup(app) {
-  app.get('/', auth.populateUser(), getHome);
+  app.get('/', auth.protect(false), getHome);
   app.get('/extension', getExtension);
 }
 

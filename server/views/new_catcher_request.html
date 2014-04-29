@@ -1,0 +1,15 @@
+<p>Request permission from a friend to send tosses.  When your friend accepts,
+she will be allowed to toss to you, too.  Use this power wisely.  No one wants
+to play catch with a bad tosser.</p>
+
+<section class="measure-narrow wrap">
+{{#error}}
+<p>Please enter an email address of the friend you want to toss to.</p>
+{{/error}}
+<form class="clearfix form form-stacked" action="/catcher/new" method="post">
+  <label for="email">Email:</label>
+  <input class="input" type="email" name="email" placeholder="foo@bar.com"/>
+
+  <input class="button" type="submit" name="request" value="Request" />
+</form>
+</section>
