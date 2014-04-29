@@ -6,26 +6,22 @@ var http   = require('node-mocks-http'),
 
 var routes = rewire('toss/page/routes');
 
+// Adds in functions that are missing from mockRequest
+var completeRequest = function(request) {
+  request.get = function(header) {
+    return '';
+  };
+  return request;
+};
+
 describe('PageRoutes', function() {
   describe('GET /toss', function() {
     var initiateToss = routes.__get__('initiateToss');
     var token = 'AAAA';
     var createGoodRequest = function() {
       return completeRequest(http.createRequest({
-        cookies: { token: token },
-        query: {
-          t: token,
-          u: 'http://tossitto.me',
-          i: 'TossItToMe'
-        }
+        cookies: { token: token }
       }));
-    };
-    // Adds in functions that are missing from mockRequest
-    var completeRequest = function(request) {
-      request.get = function(header) {
-        return '';
-      };
-      return request;
     };
 
     beforeEach(function() {
@@ -50,35 +46,11 @@ describe('PageRoutes', function() {
       }
     });
 
-    it('should render toss_login.js when no token is in the cookie', function() {
+    it('should render login_popup_response.js when no token is in the cookie', function() {
       var request = completeRequest(http.createRequest({}));
       var response = http.createResponse();
       initiateToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
-    });
-
-    it('should send a 400 response when the required params are missing', function() {
-      var request = completeRequest(http.createRequest({
-        cookies: { token: token },
-        query: {}
-      }));
-      var response = http.createResponse();
-      initiateToss(request, response);
-      response.statusCode.should.eql(400);
-    });
-
-    it('should render toss_login.js when tokens are mismatched', function() {
-      var request = completeRequest(http.createRequest({
-        cookies: { token: token },
-        query: {
-          t: 'BBBB',
-          u: 'http://tossitto.me',
-          i: 'TossItToMe'
-        }
-      }));
-      var response = http.createResponse();
-      initiateToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
+      response._getRenderView().should.eql('login_popup_response.js');
     });
 
     it('should send 500 on connection error', function() {
@@ -93,7 +65,7 @@ describe('PageRoutes', function() {
       response.statusCode.should.eql(500);
     });
 
-    it('should render toss_login when no tosser is found', function() {
+    it('should render login_popup_response when no tosser is found', function() {
       var catcherMock = {
         getCatchers: sinon.stub().callsArgWith(2, null, { noTosser: true })
       };
@@ -102,7 +74,7 @@ describe('PageRoutes', function() {
       var request = createGoodRequest();
       var response = http.createResponse();
       initiateToss(request, response);
-      response._getRenderView().should.eql('toss_login.js');
+      response._getRenderView().should.eql('login_popup_response.js');
     });
 
     it('should render catch_selection on success', function() {
@@ -118,23 +90,23 @@ describe('PageRoutes', function() {
       var request = createGoodRequest();
       var response = http.createResponse();
       initiateToss(request, response);
-      response._getRenderView().should.eql('catcher_selection.js');
+      response._getRenderView().should.eql('catcher_selection_response.js');
     });
   });
 
-  describe('GET /toss/new', function() {
+  describe('POST /toss', function() {
     var completeToss = routes.__get__('completeToss');
     var tosserToken = 'AAAA';
     var catcherToken = 'BBBB';
     var createGoodRequest = function() {
-      return http.createRequest({
-        query: {
-          t: tosserToken,
+      return completeRequest(http.createRequest({
+        cookies: { token: tosserToken },
+        body: {
           u: 'http://tossitto.me',
           i: 'TossItToMe',
           c: catcherToken
         }
-      });
+      }));
     };
 
     beforeEach(function() {
@@ -175,8 +147,17 @@ describe('PageRoutes', function() {
       }
     });
 
+    it('should send 401 when no token is in the cookie', function() {
+      var request = completeRequest(http.createRequest({}));
+      var response = http.createResponse();
+      completeToss(request, response);
+      response.statusCode.should.eql(401);
+    });
+
     it('should send a 400 response when the required params are missing', function() {
-      var request = http.createRequest();
+      var request = completeRequest(http.createRequest({
+        cookies: { token: tosserToken }
+      }));
       var response = http.createResponse();
       completeToss(request, response);
       response.statusCode.should.eql(400);

@@ -1,9 +1,14 @@
-var catcher = require('toss/catcher/catcher'),
+var path    = require('path'),
+    uglify  = require('uglify-js'),
+    catcher = require('toss/catcher/catcher'),
     auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     log     = require('toss/common/log'),
     page    = require('toss/page/page');
+
+var renderCatcherSelectionFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/catcher_selection.js'))).code;
+var renderLoginPopupFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/login_popup.js'))).code;
 
 // Invoked by the extension
 function getNextPages(request, response) {
@@ -45,17 +50,19 @@ function getNextPages(request, response) {
 
 function renderTossLogin(request, response) {
   response.setHeader('Content-Type', 'application/javascript');
-  response.render('toss_login.js', {
-    host     : request.get('host'),
-    scriptId : request.query.s,
-    layout   : null
+  response.render('login_popup_response.js', {
+    host               : request.get('host'),
+    scriptId           : request.query.s,
+    renderLoginPopupFn : renderLoginPopupFn,
+    layout             : null
   });
 }
 
 function renderCatchSelection(request, response, locals) {
   locals.layout = null;
+  locals.renderCatcherSelectionFn = renderCatcherSelectionFn;
   response.setHeader('Content-Type', 'application/javascript');
-  response.render('catcher_selection.js', locals);
+  response.render('catcher_selection_response.js', locals);
 }
 
 // Invoked by the bookmarklet
@@ -66,22 +73,9 @@ function initiateToss(request, response) {
     return;
   }
 
-  if (!request.query.t ||
-      !request.query.u ||
-      !request.query.i) {
-    response.send(400);
-    return;
-  }
-
-  var tosserToken  = request.query.t;
-  var url          = request.query.u;
-  var title        = request.query.i;
-
-  if (tosserToken != request.cookies.token) {
-    log.info('Mismatched tokens');
-    renderTossLogin(request, response);
-    return;
-  }
+  var tosserToken = request.cookies.token;
+  // Optional query param that will force add some fake catchers (for testing)
+  var numCatchers = request.query.c || -1;
 
   var connection = db.getConnection();
   catcher.getCatchers(connection, tosserToken, function(error, catchers) {
@@ -95,15 +89,27 @@ function initiateToss(request, response) {
       db.closeConnection(connection);
     }
     else {
+      if (parseInt(numCatchers) === 1) {
+        catchers = [catchers[0]];
+        log.debug('With c=%d, set catchers to %j', numCatchers, catchers);
+      }
+      if (numCatchers > catchers.length) {
+        var numToAdd = numCatchers - catchers.length;
+        for (var i = 0; i < numToAdd; i++) {
+          catchers.push({'token': 'AAAA', 'email': 'foo' + i + '@bar.com'});
+        }
+        log.debug('With c=%d, set catchers to %j', numCatchers, catchers);
+      }
+
       // Take the tosser to the next step in the process... selecting a catcher
       renderCatchSelection(request, response, {
         host: request.get('host'),
-        url: url,
-        title: title,
-        tosserToken: tosserToken,
-        hasCatchers: (catchers.length > 1),
-        catchers: catchers,
-        scriptId: request.query.s
+        catchersJson: JSON.stringify(catchers.map(function(catcher) { return {
+          email: catcher.email,
+          token: catcher.token
+        }; })),
+        scriptId: request.query.s,
+        forceIframe: request.query.f === 'true'
       });
       db.closeConnection(connection);
     }
@@ -112,15 +118,19 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
-  if (!request.body.t ||
-      !request.body.u ||
+  if (!request.cookies.token) {
+    response.send(401, 'Not authorized');
+    return;
+  }
+
+  if (!request.body.u ||
       !request.body.i ||
       !request.body.c) {
     response.send(400);
     return;
   }
 
-  var tosserToken  = request.body.t;
+  var tosserToken  = request.cookies.token;
   var url          = request.body.u;
   var title        = request.body.i;
   var catcherToken = request.body.c;
@@ -170,64 +180,11 @@ function completeToss(request, response) {
   });
 }
 
-// TODO: add ability to choose a catcher
-function getAddPage(request, response) {
-  response.render('add', {
-    url   : request.query.url,
-    title : request.query.title
-  });
-}
-
-// TODO: add ability to choose a catcher
-function postAddPage(request, response) {
-  if (!request.body.url || !request.body.title) {
-    response.send(400);
-    return;
-  }
-
-  var tosserToken  = request.cookies.token;
-  var url          = request.body.url;
-  var title        = request.body.title;
-  // For backwards compatibility, just use the tosser as the catcher
-  var catcherToken = request.body.catcherToken || tosserToken;
-
-  var connection = db.getConnection();
-  connection.beginTransaction(function(error) {
-    if (error) {
-      response.send(500, error);
-      db.closeConnection(connection);
-    }
-    else {
-      page.addPage(connection, tosserToken, catcherToken, url, title, function(error, page) {
-        if (error) {
-          response.send(500, error);
-        }
-        else if (page.noResults) {
-          response.send(400);
-        }
-        else {
-          response.redirect(url);
-        }
-        connection.commit(function(error) {
-          db.closeConnection(connection, function() {
-            if (error) {
-              throw error;
-            }
-          });
-        });
-      });
-    }
-  });
-}
-
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
-
-  app.get('/add', auth.protect(), auth.populateUser(), getAddPage);
-  app.post('/add', express.bodyParser(), auth.protect(), auth.populateUser(), postAddPage);
 }
 
 module.exports = setup;

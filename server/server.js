@@ -20,7 +20,8 @@ express.logger.token('remote-addr', function(request) {
   if (sock.socket) return sock.socket.remoteAddress;
   return sock.remoteAddress;
 });
-app.use(express.logger());
+express.logger.format('timed-default', express.logger.default + ' ":response-time ms"');
+app.use(express.logger('timed-default'));
 app.use(express.cookieParser());
 
 // assign the hogan engine to .html and .js files
@@ -48,6 +49,7 @@ if (fs.existsSync(partialsDir)) {
 // Set the default layout
 app.set('layout', 'layouts/default.html');
 
+require('toss/admin/routes')(app);
 require('toss/home/routes')(app);
 require('toss/history/routes')(app);
 require('toss/user/routes')(app, express);

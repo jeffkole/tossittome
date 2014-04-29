@@ -1,22 +1,27 @@
-<h1>What's this?</h1>
-<p>You find an article on your phone, and you want to read it later on your laptop. Or an <a href="http://i.imgur.com/GSqXDdK.jpg">amazing gif</a> that you want your friend to see too. Toss it! To make it magically appear.</p>
-
 <h2>How to toss</h2>
-<p>Drag this bookmarklet to your bookmark bar: <a class="button button-small button-blue" id="bookmarklet" href="javascript:{{ code }}">TossIt</a> Then click "TossIt" when you're on a page you want to toss to another computer.</p>
-<p>From a mobile device, copy the following code and paste it into a new bookmark:</p>
-<form class="clearfix form form-stacked">
-  <textarea class="textarea" style="width: 100%; height: 12rem" onclick="this.select();">javascript:{{ code }}</textarea>
-</form>
+<p>Drag this bookmarklet to your bookmark bar: <a class="button button-small button-blue" id="bookmarklet" href="javascript:{{{ code }}}">TossIt</a> Then click "TossIt" when you're on a page you want to toss to another computer.</p>
+<p>From an iOS mobile device, follow these steps:
+<ol>
+  <li>Click this link: <a class="button button-small button-blue" href="#javascript:{{{ code }}}">TossIt</a>.</li>
+  <li>Tap the share button at the bottom of the screen. <img src="/images/ios_share_button.png"/></li>
+  <li>Tap "Bookmark" and then "Save". <img src="/images/ios_add_bookmark_button.png"/></li>
+  <li>Tap the bookmarks button at the bottom of the screen. <img src="/images/ios_bookmarks_button.png"/></li>
+  <li>Click the "Edit" link at the bottom.</li>
+  <li>Select the bookmark you just added.</li>
+  <li>Delete all of the text from the address before the word "javascript": <code>http://tossitto.me/#</code>.
+    <p><img src="/images/ios_edit_bookmark.png" width="320"/></p>
+  </li>
+  <li>Click "Done" on the keyboard.</li>
+</ol>
 
 <h2>How to catch</h2>
 <p>Pages are caught by a Chrome extension.  Here's how to install it:
 <ol>
-  <li>Download the <a href="/extension.crx">extension</a>.  (when Chrome objects, click "Ok").</li>
+  <li>Download the <a href="/extension">extension</a>.  (when Chrome objects, click "Ok").</li>
   <li>In Chrome, navigate to <a href="chrome://extensions">chrome://extensions</a>.</li>
-  <li>Drag "tossittome.crx" to the tab with the extensions page open.</li>
+  <li>Drag "tossittome-{{ manifest.version }}.crx" to the tab with the extensions page open.</li>
   <li>Grant the permissions.</li>
 </ol>
 </p>
 
 <h1>Happy tossing.</h1>
-

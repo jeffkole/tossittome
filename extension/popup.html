@@ -32,21 +32,23 @@ tabindex to 1 for the html element blurs the focus from the anchor.
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
     <script src="popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
   </head>
-  <body>
-    <h1>TossItToMe</h1>
+  <body class="mt1 ml1 mb1 mr1">
+    <h1 class="blue h1">TossItToMe!</h1>
     <div id="pages">
-      <h2>Caught <span id="num_caught">0</span> pages so far. <a id="clear_link" href="#">Clear</a></h2>
-      <ul id="page_list">
+      <p class="h5">Caught <span id="num_caught">0 pages</span>. <a id="clear_link" href="#">Clear</a></p>
+      <ul id="page_list" class="small">
       </ul>
     </div>
     <div id="login">
-      <h3>Login</h3>
       <p id="login_error"></p>
-      <form id="login_form">
-        email: <input type="text" name="email" /><br/>
-        password: <input type="password" name="password" /><br/>
-        <input type="submit" name="login" value="login" />
+      <form class="form form-stacked" id="login_form">
+        <label for="email">Email:</label>
+        <input type="text" class="input" name="email" placeholder="foo@bar.com" />
+        <label for="password">Password:</label>
+        <input type="password" class="input" name="password" placeholder="password" />
+        <input type="submit" class="button" name="login" value="Login" />
       </form>
     </div>
   </body>

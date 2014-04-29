@@ -14,8 +14,7 @@ function logout(response) {
 function getLogin(request, response) {
   logout(response);
   response.render('login', {
-    url   : request.query.url,
-    title : request.query.title
+    url : request.query.url
   });
 }
 
@@ -40,6 +39,7 @@ function xhrLogin(request, response) {
       response.json(200, { invalidUser: true });
     }
     else {
+      response.cookie('token', user.token, { maxAge: cookieAge });
       response.json(200, [
         { name: 'token', value: user.token, expirationDate: (Date.now() + cookieAge) }
       ]);
@@ -52,7 +52,8 @@ function postLogin(request, response) {
   log.info('Attempted login with email "%s"', request.body.email);
   if (!request.body.email || !request.body.password) {
     response.render('login', {
-      error: true
+      error : true,
+      url   : request.body.url
     });
     return;
   }
@@ -60,7 +61,6 @@ function postLogin(request, response) {
   var email    = request.body.email;
   var password = request.body.password;
   var url      = request.body.url;
-  var title    = request.body.title;
 
   var connection = db.getConnection();
   login.authenticate(connection, email, password, function(error, user) {
@@ -69,18 +69,20 @@ function postLogin(request, response) {
     }
     else if (user.noResults) {
       response.render('login', {
-        error: true
+        error : true,
+        url   : request.body.url
       });
     }
     else if (user.invalidPassword) {
       response.render('login', {
-        error: true
+        error : true,
+        url   : request.body.url
       });
     }
     else {
       response.cookie('token', user.token, { maxAge: cookieAge });
-      if (url && title) {
-        response.redirect('/add?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title));
+      if (url) {
+        response.redirect(url);
       }
       else {
         response.redirect('/');
@@ -137,7 +139,7 @@ function setup(app, express) {
   app.get('/login', getLogin);
   app.post('/login', express.bodyParser(), postLogin);
 
-  app.post('/xhr/login', express.bodyParser(), auth.allowOrigin(true), xhrLogin);
+  app.post('/xhr/login', express.bodyParser(), auth.allowOrigin(), xhrLogin);
 
   app.get('/logout', getLogout);
   app.get('/register', getRegister);
