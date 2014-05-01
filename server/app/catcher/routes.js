@@ -32,25 +32,45 @@ function postNewCatcherRequest(request, response) {
 }
 
 function getCatcherRequests(request, response) {
-  var userId = response.locals.user.id;
+  var user = response.locals.user;
 
   var connection = db.getConnection();
-  catcher.getCatcherRequests(connection, userId, function(error, catcherRequests) {
+  catcher.getCatchers(connection, user.token, function(error, catchers) {
     if (error) {
       response.send(500, error);
+      db.closeConnection(connection);
     }
-    else if (catcherRequests.noResults) {
-      response.render('catcher_requests', {
-        hasRequests     : false
-      });
+    else if (catchers.noTosser) {
+      // This should *never* occur, since the user has already been authorized
+      response.send(500, 'Invalid user');
+      db.closeConnection(connection);
+    }
+    else if (catchers.noUsers) {
+      response.send(500, 'No catchers found');
+      db.closeConnection(connection);
     }
     else {
-      response.render('catcher_requests', {
-        hasRequests     : true,
-        catcherRequests : catcherRequests
+      // `catchers` includes the logged in user
+      catcher.getCatcherRequests(connection, user.id, function(error, catcherRequests) {
+        if (error) {
+          response.send(500, error);
+        }
+        else if (catcherRequests.noResults) {
+          response.render('catcher_requests', {
+            hasRequests     : false,
+            catchers        : catchers
+          });
+        }
+        else {
+          response.render('catcher_requests', {
+            hasRequests     : true,
+            catchers        : catchers,
+            catcherRequests : catcherRequests
+          });
+        }
+        db.closeConnection(connection);
       });
     }
-    db.closeConnection(connection);
   });
 }
 
