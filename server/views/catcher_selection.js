@@ -166,6 +166,7 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     'color': '#111',
     'background-color': '#fff',
     'position': 'fixed',
+    'top': 'initial',
     'bottom': hiddenBottom, /* start low to slide in */
     'left': 0,
     'width': '100%',

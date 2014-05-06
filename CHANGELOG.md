@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v2.3.1
+------
+### Server (2.3.1)
+* Fixes bookmarklet dialog on technology.nasa.gov
+
 v2.3.0
 ------
 ### Server (2.3.0)
