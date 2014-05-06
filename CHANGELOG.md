@@ -5,6 +5,7 @@ v2.3.0
 ------
 ### Server (2.3.0)
 * Adds ability to add new catchers
+* Cleans up document title from prior bookmarklet behavior
 
 v2.2.1
 ------
