@@ -27,6 +27,11 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
   }
 
   function sendToss(catcherToken) {
+    // Clean up the title from any old bookmarklet behavior
+    var title = document.title;
+    if (title.substring(0, 13) == '(Tossing...) ') {
+      document.title = title.substring(13);
+    }
     if (forceIframe) {
       sendTossViaIframe(catcherToken, document.location.href, document.title);
       return;
