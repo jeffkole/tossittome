@@ -1,5 +1,6 @@
 var catcherDao = require('toss/catcher/dao'),
     token      = require('toss/common/token'),
+    sender     = require('toss/email/sender'),
     userDao    = require('toss/user/dao');
 
 function getCatchers(connection, tosserToken, cb) {
@@ -66,14 +67,20 @@ function checkCatchAuthorization(connection, tosserToken, catcherToken, cb) {
   });
 }
 
-function createNewRequest(connection, requestingUserId, catcherEmail, cb) {
-  var requestToken = token.generate(requestingUserId, catcherEmail);
-  catcherDao.insertCatcherRequest(connection, requestToken, requestingUserId, catcherEmail, function(error, request) {
+function createNewRequest(connection, requestingUser, catcherEmail, cb) {
+  var requestToken = token.generate(requestingUser.id, catcherEmail);
+  catcherDao.insertCatcherRequest(connection, requestToken, requestingUser.id, catcherEmail, function(error, request) {
     if (error) {
       return cb(error);
     }
     // TODO: emit request event
-    return cb(null, request);
+    var responseUri = '/catcher/response/' + requestToken;
+    sender.sendCatcherRequest(catcherEmail, requestingUser, responseUri, function(error, result) {
+      if (error) {
+        return cb(error);
+      }
+      return cb(null, request);
+    });
   });
 }
 

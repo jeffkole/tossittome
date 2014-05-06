@@ -60,7 +60,7 @@ function sendCatcherRequest(toEmail, requestingUser, responseUri, cb) {
     global_merge_vars: [{
       name: 'host', content: config.host
     }, {
-      name: 'requestingUser', content: requestingUser
+      name: 'requestingUser', content: requestingUser.email
     }, {
       name: 'responseUri', content: responseUri
     }]

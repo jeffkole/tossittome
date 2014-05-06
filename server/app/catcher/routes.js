@@ -16,11 +16,11 @@ function postNewCatcherRequest(request, response) {
     return;
   }
 
-  var userId = response.locals.user.id;
-  var email  = request.body.email;
+  var user  = response.locals.user;
+  var email = request.body.email;
 
   var connection = db.getConnection();
-  catcher.createNewRequest(connection, userId, email, function(error, catcherRequest) {
+  catcher.createNewRequest(connection, user, email, function(error, catcherRequest) {
     if (error) {
       response.send(500, error);
     }

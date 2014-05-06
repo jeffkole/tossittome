@@ -60,7 +60,7 @@ function postLogin(request, response) {
 
   var email    = request.body.email;
   var password = request.body.password;
-  var url      = request.body.url;
+  var url      = request.query.url;
 
   var connection = db.getConnection();
   login.authenticate(connection, email, password, function(error, user) {
@@ -69,14 +69,12 @@ function postLogin(request, response) {
     }
     else if (user.noResults) {
       response.render('login', {
-        error : true,
-        url   : request.body.url
+        error : true
       });
     }
     else if (user.invalidPassword) {
       response.render('login', {
-        error : true,
-        url   : request.body.url
+        error : true
       });
     }
     else {
@@ -114,6 +112,7 @@ function postRegister(request, response) {
 
   var email    = request.body.email;
   var password = request.body.password;
+  var url      = request.query.url;
 
   var connection = db.getConnection();
   register.addUser(connection, email, password, function(error, user) {
@@ -129,7 +128,12 @@ function postRegister(request, response) {
     }
     else {
       response.cookie('token', user.token, { maxAge: cookieAge });
-      response.redirect('/');
+      if (url) {
+        response.redirect(url);
+      }
+      else {
+        response.redirect('/');
+      }
     }
     db.closeConnection(connection);
   });
