@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v2.3.0
+------
+### Server (2.3.0)
+* Adds ability to add new catchers
+
 v2.2.1
 ------
 ### Server (2.2.1)
