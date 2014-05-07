@@ -54,6 +54,7 @@ require('toss/common/view_utilities')(app);
 
 require('toss/admin/routes')(app);
 require('toss/home/routes')(app);
+require('toss/history/routes')(app);
 require('toss/user/routes')(app, express);
 require('toss/page/routes')(app, express);
 require('toss/catcher/routes')(app, express);

@@ -13,13 +13,13 @@
   </head>
   <body>
     <header class="px-responsive">
-      <div class="clearfix measure wrap mt1">
+      <div class="clearfix measure-wide wrap mt1">
         <h1 class="left"><a href="/">TossItToMe!</a></h1>
         {{#user}}
-        <p class="small clearfix right-align mt1">{{ email }} <a href="/logout">sign out</a></p>
+        <p class="small clearfix right-align mt1"><a href="/history">history</a> | {{ email }} <a href="/logout">sign out </a></p>
         {{/user}}
       </div>
-      <div class="clearfix measure wrap">
+      <div class="clearfix measure-wide wrap">
       <p class="p">Send links from here to there.</p>
       </div>
       {{#user}}
@@ -33,12 +33,12 @@
       {{/user}}
     </header>
 
-    <main class="measure wrap px-responsive">
+    <main class="measure-wide wrap px-responsive">
     {{{ yield }}}
     </main>
 
     <footer class="px-responsive">
-      <div class="measure wrap mt2">
+      <div class="measure-wide wrap mt2">
         <p>&copy; Jeff Kolesky</p>
       </div>
     </footer>

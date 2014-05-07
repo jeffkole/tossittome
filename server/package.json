@@ -12,6 +12,8 @@
     "object-merge"  : "2.5.1",
     "log"           : "1.4.0",
     "uglify-js"     : "2.4.13",
+    "ent"           : "2.0.0",
+    "moment"        : "2.6.0",
     "mandrill-api"  : "1.0.39"
   }
 }
