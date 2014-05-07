@@ -1,7 +1,20 @@
-<h1>All your tosses</h1>
+<h1>Your Toss History</h1>
 
-{{ #result }}
-{{ title }}
-{{ /result }}
-
-{{ result }}
+<table class="table table-bordered">
+  <tr>
+    <th>When Tossed</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Date Caught</th>
+    <th>Page</th>
+  </tr>
+  {{#result}}
+  <tr>
+    <td>{{created_at}}</td>
+    <td>{{user_id}}</td>
+    <td>{{catcher_id}}</td>
+    <td>{{served_at}}</td>
+    <td><a href={{url}}>{{title}}</a></td>
+  </tr>
+  {{/result}}
+</table>

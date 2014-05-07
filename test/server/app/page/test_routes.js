@@ -372,3 +372,5 @@ describe('PageRoutes', function() {
     });
   });
 });
+
+  describe('GET /history', function() {
