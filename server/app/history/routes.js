@@ -1,7 +1,6 @@
 var moment  = require('moment'),
     ent     = require('ent'),
     auth    = require('toss/common/auth'),
-    config  = require('toss/common/config'),
     db      = require('toss/common/db'),
     userDao = require('toss/user/dao');
 
@@ -46,7 +45,6 @@ function renderHistory(request, response, user) {
   else 
     {
       formatResult(result, user)
-      console.log(result)
       response.render('history', {
         result : result
       });
@@ -81,7 +79,7 @@ function getHistory(request, response) {
 
 
 function setup(app) {
-  app.get('/history', getHistory);
+  app.get('/history', auth.populateUser(), getHistory);
 }
 
 module.exports = setup;
