@@ -181,13 +181,13 @@ function postCatcherResponse(request, response) {
 }
 
 function setup(app, express) {
-  app.get('/catcher', auth.protect(true), getCatcherRequests);
+  app.get('/catcher', auth.protect(), getCatcherRequests);
 
-  app.get('/catcher/new', auth.protect(true), getNewCatcherRequest);
-  app.post('/catcher/new', auth.protect(true), express.bodyParser(), postNewCatcherRequest);
+  app.get('/catcher/new', auth.protect(), getNewCatcherRequest);
+  app.post('/catcher/new', auth.protect(), express.bodyParser(), postNewCatcherRequest);
 
-  app.get('/catcher/response/:token', auth.protect(true), getCatcherResponse);
-  app.post('/catcher/response/:token', auth.protect(true), express.bodyParser(), postCatcherResponse);
+  app.get('/catcher/response/:token', auth.protect(), getCatcherResponse);
+  app.post('/catcher/response/:token', auth.protect(), express.bodyParser(), postCatcherResponse);
 }
 
 module.exports = setup;
