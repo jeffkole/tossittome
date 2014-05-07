@@ -27,6 +27,11 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
   }
 
   function sendToss(catcherToken) {
+    // Clean up the title from any old bookmarklet behavior
+    var title = document.title;
+    if (title.substring(0, 13) == '(Tossing...) ') {
+      document.title = title.substring(13);
+    }
     if (forceIframe) {
       sendTossViaIframe(catcherToken, document.location.href, document.title);
       return;
@@ -161,6 +166,7 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     'color': '#111',
     'background-color': '#fff',
     'position': 'fixed',
+    'top': 'initial',
     'bottom': hiddenBottom, /* start low to slide in */
     'left': 0,
     'width': '100%',

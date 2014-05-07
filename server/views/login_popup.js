@@ -121,6 +121,7 @@ function renderLoginPopup(host, scriptId) {
     'background-color': '#fff',
     'border': '1px solid #0096cc',
     'position': 'fixed',
+    'top': 'initial',
     'bottom': hiddenBottom, /* start low to slide in */
     'left': 0,
     'width': '100%',

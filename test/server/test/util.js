@@ -31,6 +31,14 @@ function deleteUsers(done) {
   });
 }
 
+function deleteCatcherRequests(done) {
+  var connection = db.getConnection();
+  connection.query('delete from catcher_requests', function(error) {
+    if (error) { throw error; }
+    db.closeConnection(connection, done);
+  });
+}
+
 function deletePages(done) {
   var connection = db.getConnection();
   connection.query('delete from pages', function(error) {
@@ -61,11 +69,12 @@ function resetAutoIncrement(table, /* tables,... */ cb) {
 }
 
 module.exports = {
-  pass               : pass,
-  fail               : fail,
-  handle             : handle,
-  deleteCatchers     : deleteCatchers,
-  deleteUsers        : deleteUsers,
-  deletePages        : deletePages,
-  resetAutoIncrement : resetAutoIncrement
+  pass                  : pass,
+  fail                  : fail,
+  handle                : handle,
+  deleteCatchers        : deleteCatchers,
+  deleteCatcherRequests : deleteCatcherRequests,
+  deleteUsers           : deleteUsers,
+  deletePages           : deletePages,
+  resetAutoIncrement    : resetAutoIncrement
 };

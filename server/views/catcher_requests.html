@@ -1,0 +1,31 @@
+<h2>Catchers</h2>
+
+<p>Here are all of the folks to whom you can toss, which always includes yourself.</p>
+<ol>
+{{#catchers}}
+  <li>{{ email }}</li>
+{{/catchers}}
+</ol>
+
+<h2>Catcher Requests</h2>
+
+{{^hasRequests}}
+<p>You have no requests. <a href="/catcher/new">Ask your friends</a> if you can toss to them.</p>
+{{/hasRequests}}
+{{#hasRequests}}
+<p>Your requests for catchers. You can always <a href="/catcher/new">ask more friends</a> to toss to them.</p>
+<table class="wrap full-width">
+  <tr>
+    <th class="left-align">Email</th>
+    <th class="left-align">Requested Date</th>
+    <th class="left-align">Status</th>
+  </tr>
+{{#catcherRequests}}
+  <tr>
+    <td>{{ catcher_email }}</td>
+    <td>{{ created_at }}</td>
+    <td>{{ status }}</td>
+  </tr>
+{{/catcherRequests}}
+</table>
+{{/hasRequests}}

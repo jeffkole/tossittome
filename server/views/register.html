@@ -7,7 +7,7 @@
   <p>Please use a different email address.</p>
   {{/duplicateEmail}}
 {{/error}}
-<form class="clearfix form form-stacked" action="/register" method="post">
+<form class="clearfix form form-stacked" method="post">
   <label for="email">Email:</label>
   <input class="input" type="text" name="email" placeholder="foo@bar.com" />
 
@@ -17,3 +17,4 @@
   <input class="button" type="submit" name="register" value="Register" />
 </form>
 </section>
+<p class="mt1">Already a tosser?  <a href="{{#attachQueryParams}}/login{{/attachQueryParams}}">Login</a> to get started.</p>
