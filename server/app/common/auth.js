@@ -3,6 +3,10 @@ var url     = require('url'),
     userDao = require('toss/user/dao');
 
 function protect(redirect) {
+  // Default to redirect = true
+  if (typeof redirect === 'undefined') {
+    redirect = true;
+  }
   return function(request, response, next) {
     if (request.cookies.token) {
       var connection = db.getConnection();
