@@ -1,7 +1,7 @@
 {
   "name": "tossittome-server",
   "description": "The server component of tossitto.me",
-  "version": "2.2.1",
+  "version": "2.3.1",
   "private": true,
   "dependencies": {
     "express"       : "3.4.8",
@@ -11,6 +11,7 @@
     "hogan-express" : "0.5.2",
     "object-merge"  : "2.5.1",
     "log"           : "1.4.0",
-    "uglify-js"     : "2.4.13"
+    "uglify-js"     : "2.4.13",
+    "mandrill-api"  : "1.0.39"
   }
 }

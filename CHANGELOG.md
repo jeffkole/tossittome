@@ -1,6 +1,17 @@
 Changelog
 =========
 
+v2.3.1
+------
+### Server (2.3.1)
+* Fixes bookmarklet dialog on technology.nasa.gov
+
+v2.3.0
+------
+### Server (2.3.0)
+* Adds ability to add new catchers
+* Cleans up document title from prior bookmarklet behavior
+
 v2.2.1
 ------
 ### Server (2.2.1)

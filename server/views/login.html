@@ -2,7 +2,7 @@
 {{#error}}
 <p>Sorry, the email address or password you entered did not match our records. Please try again.</p>
 {{/error}}
-<form class="clearfix form form-stacked" action="/login" method="post">
+<form class="clearfix form form-stacked" method="post">
   <label for="email">Email:</label>
   <input class="input" type="email" name="email" placeholder="foo@bar.com"/>
 
@@ -10,7 +10,6 @@
   <input class="input" type="password" name="password" placeholder="password"/>
 
   <input class="button" type="submit" name="login" value="Login" />
-
-  <input type="hidden" name="url" value="{{ url }}"/>
 </form>
 </section>
+<p class="mt1">Not yet a tosser?  <a href="{{#attachQueryParams}}/register{{/attachQueryParams}}">Register</a> to become one.</p>

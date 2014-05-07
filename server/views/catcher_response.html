@@ -1,0 +1,21 @@
+<h2>Become A Catcher</h2>
+
+{{# error }}
+  {{# noRequest }}
+  <p>That request was not found.  Perhaps you want to initiate one of your own by <a href="/catcher/new">asking a friend</a>.</p>
+  {{/ noRequest }}
+  {{# notOpen }}
+  <p>The request has already been {{ catcherRequest.status }}.</p>
+  {{/ notOpen }}
+{{/ error }}
+
+{{#hasRequest}}
+<p>When you approve this request to become a catcher, {{ requestingUser.email }} will be able to toss pages to you, and you will be able to toss pages to {{ requestingUser.email }}.</p>
+<section class="measure-narrow wrap">
+<form class="form form-stacked" method="post">
+  <input class="button full-width block mb1" type="submit" name="accept" value="Accept"/>
+  <input class="button full-width block mb1" type="submit" name="reject" value="Reject"/>
+  <input class="button full-width block mb1" type="submit" name="ignore" value="Ignore"/>
+</form>
+</section>
+{{/hasRequest}}

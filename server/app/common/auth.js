@@ -1,18 +1,8 @@
-var db      = require('toss/common/db'),
+var url     = require('url'),
+    db      = require('toss/common/db'),
     userDao = require('toss/user/dao');
 
-function protect() {
-  return function(request, response, next) {
-    if (request.cookies.token) {
-      next();
-    }
-    else {
-      response.redirect('/');
-    }
-  };
-}
-
-function populateUser() {
+function protect(redirect) {
   return function(request, response, next) {
     if (request.cookies.token) {
       var connection = db.getConnection();
@@ -27,9 +17,15 @@ function populateUser() {
         else {
           response.locals.user = user;
         }
-        db.closeConnection(connection);
-        next();
+        db.closeConnection(connection, next);
       });
+    }
+    else if (redirect) {
+      // Add the original destination to the redirect
+      response.redirect(url.format({
+        pathname : '/login',
+        query    : { url : request.originalUrl }
+      }));
     }
     else {
       next();
@@ -55,6 +51,5 @@ function allowOrigin(extensionOnly) {
 
 module.exports = {
   protect      : protect,
-  populateUser : populateUser,
   allowOrigin  : allowOrigin
 };

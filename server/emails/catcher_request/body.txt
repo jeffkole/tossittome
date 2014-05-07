@@ -1,0 +1,7 @@
+Hello!
+
+You have been invited to join Toss It To Me!  *|requestingUser|* is asking your permission to toss pages to you.  In exchange, you will be able to toss pages back.
+
+To approve the request, visit http://*|host|**|responseUri|*.
+
+Toss It To Me!
