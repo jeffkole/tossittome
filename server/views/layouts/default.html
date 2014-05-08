@@ -12,25 +12,23 @@
     <title>Toss It To Me!</title>
   </head>
   <body>
+    {{# user }}
+    <nav class="wrap right-align bg-light-gray">
+    <ul class="list-inline p1">
+      <li class="mr1"><a href="/">Home</a></li>
+      <li class="mr1"><a href="/catcher/new">Add catcher</a></li>
+      <li class="mr1"><a href="/catcher">Show catchers</a></li>
+      <li class="mr1"><a href="/logout">Sign out</a></li>
+    </ul>
+    </nav>
+    {{/ user }}
     <header class="px-responsive">
       <div class="clearfix measure wrap mt1">
         <h1>
           <a href="/"><img class="left mr1" src="/images/icon-128.png" width="64" />Toss It To Me!</a>
           <p>Send links from here to there.</p>
         </h1>
-        {{#user}}
-        <p class="small clearfix right-align mt1">{{ email }} <a href="/logout">sign out</a></p>
-        {{/user}}
       </div>
-      {{#user}}
-      <nav class="measure wrap right-align bg-light-gray">
-        <ul class="list-inline">
-          <li class="mr1"><a href="/">Home</a></li>
-          <li class="mr1"><a href="/catcher/new">Add catcher</a></li>
-          <li class="mr1"><a href="/catcher">Show catchers</a></li>
-        </ul>
-      </nav>
-      {{/user}}
     </header>
 
     <main class="measure wrap px-responsive">
@@ -39,7 +37,7 @@
 
     <footer class="px-responsive">
       <div class="measure wrap mt2">
-        <p>&copy; Jeff Kolesky</p>
+        <p class="small">&copy; Jeff Kolesky</p>
       </div>
     </footer>
   </body>
