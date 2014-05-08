@@ -1,0 +1,33 @@
+<h2>Welcome to Toss It To Me!</h2>
+
+{{# noTosses }}
+<h3>Getting started...</h3>
+<ol>
+  <li><a href="/getting-started/bookmarklet">Install the bookmarklet</a> to toss pages.</li>
+  <li><a href="/getting-started/extension">Install the extension</a> to catch pages.</li>
+  <li>Start tossing!</li>
+</ol>
+{{/ noTosses }}
+
+{{^ noTosses }}
+<h3>Some recent tosses...</h3>
+<table class="wrap full-width">
+  <thead>
+    <tr>
+      <th class="left-align">Page</th>
+      <th class="left-align">Tossed at</th>
+      <th class="left-align">Caught at</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{# tosses }}
+    <tr>
+      <td><a href="{{ url }}">{{ title }}</a></td>
+      <td>{{ created_at }}</td>
+      <td>{{ served_at }}</td>
+    </tr>
+    {{/ tosses }}
+  </tbody>
+</table>
+<p class="right-align"><a href="...">See all &raquo;</a></p>
+{{/ noTosses }}

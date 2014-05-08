@@ -43,7 +43,25 @@ function fetchNextPages(connection, catcherId, cb) {
       });
 }
 
+function fetchTossHistory(connection, tosserId, limit, cb) {
+  connection.query(
+      'select id, url, title, user_id as tosser_id, catcher_id, created_at, served_at ' +
+      'from pages where user_id=? order by created_at desc' +
+      (limit ? ' limit ?' : ''),
+      [tosserId, limit],
+      function(error, pages) {
+        if (error) {
+          return cb(error);
+        }
+        if (pages.length <= 0) {
+          return cb(null, { noResults: true });
+        }
+        return cb(null, pages);
+      });
+}
+
 module.exports = {
-  insertPage     : insertPage,
-  fetchNextPages : fetchNextPages
+  insertPage       : insertPage,
+  fetchNextPages   : fetchNextPages,
+  fetchTossHistory : fetchTossHistory
 };

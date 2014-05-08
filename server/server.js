@@ -30,7 +30,7 @@ app.engine('js',   hogan);
 
 // set .html as the default extension
 app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname, 'views'));
 // Note: Partials and layout are shared across both instances of the hogan
 // engine, so use the extension so there are not conflicts during resolution.
 // For js templates, set the layout to null so that the default layout is not
