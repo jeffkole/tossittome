@@ -9,18 +9,18 @@
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/apple-touch-icon-152x152-precomposed.png" />
     <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/apple-touch-icon-76x76-precomposed.png" />
     <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
-    <title>Toss It To Me</title>
+    <title>Toss It To Me!</title>
   </head>
   <body>
     <header class="px-responsive">
       <div class="clearfix measure wrap mt1">
-        <h1 class="left"><a href="/">TossItToMe!</a></h1>
+        <h1>
+          <a href="/"><img class="left mr1" src="/images/icon-128.png" width="64" />Toss It To Me!</a>
+          <p>Send links from here to there.</p>
+        </h1>
         {{#user}}
         <p class="small clearfix right-align mt1">{{ email }} <a href="/logout">sign out</a></p>
         {{/user}}
-      </div>
-      <div class="clearfix measure wrap">
-      <p class="p">Send links from here to there.</p>
       </div>
       {{#user}}
       <nav class="measure wrap right-align bg-light-gray">
