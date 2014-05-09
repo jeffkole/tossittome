@@ -31,7 +31,9 @@ function renderLoggedInHome(request, response) {
 }
 
 function renderAnonymousHome(request, response) {
-  response.render('index');
+  response.render('index', {
+    layout: 'layouts/skeleton.html'
+  });
 }
 
 function getHome(request, response) {

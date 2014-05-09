@@ -8,8 +8,6 @@
   MIT License http://opensource.org/licenses/MIT
 
 */
-
-
 @import "basscss/reset";
 @import "basscss/type";
 @import "basscss/margins";
@@ -21,4 +19,43 @@
 @import "basscss/positions";
 @import "basscss/theme";
 
+/*
+
+  TEMPO
+
+  Responsive grid system
+  http://jxnblk.github.io/tempo
+
+  Made with love by Jxnblk (c)2014 Brent Jackson
+  MIT License http://opensource.org/licenses/MIT
+
+*/
+@import "tempo/tempo";
+
 .left-align { text-align: left; }
+.min-y100 { min-height: 100%; }
+.table { display: table; }
+.table-cell { display: table-cell; }
+.middle { vertical-align: middle; }
+.x-small, .f6 {
+  font-size: .675rem;
+  line-height: 1.25rem;
+}
+.iphone-mock {
+  background-image: url(/images/tour/iphone_mock.png);
+  width: 256px;
+  height: 504px;
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1px;
+    padding-top: 88px;
+  }
+}
+
+/* Needed for full-window blocks */
+html, body {
+  height: 100%;
+}
