@@ -12,6 +12,7 @@ var gulp    = require('gulp'),
     rename  = require('gulp-rename'),
     replace = require('gulp-replace'),
     sass    = require('gulp-sass'),
+    zip     = require('gulp-zip'),
     Q       = require('q');
 
 var logFile = function() {
@@ -37,21 +38,16 @@ gulp.task('clean', function() {
 });
 
 var copyExtension = function(env) {
-  return function() {
-    var deferred = Q.defer();
-    var notImageFilter = filter('!**/*.png');
-    var notScssFilter  = filter('!**/*.scss');
-    gulp.src('extension/**')
-        .pipe(notImageFilter)
-        .pipe(notScssFilter)
-        .pipe(logFile())
-        .pipe(replace(/localhost:9999/g, hosts[env]['hostAndPort']))
-        .pipe(replace(/localhost/g,      hosts[env]['host']))
-        .pipe(notImageFilter.restore())
-        .pipe(gulp.dest('build/dist/extension/' + env))
-        .pipe(resolve(deferred));
-    return deferred.promise;
-  };
+  var notImageFilter = filter('!**/*.png');
+  var notScssFilter  = filter('!**/*.scss');
+  return gulp.src('extension/**')
+      .pipe(notImageFilter)
+      .pipe(notScssFilter)
+      .pipe(logFile())
+      .pipe(replace(/localhost:9999/g, hosts[env]['hostAndPort']))
+      .pipe(replace(/localhost/g,      hosts[env]['host']))
+      .pipe(notImageFilter.restore())
+      .pipe(gulp.dest('build/dist/extension/' + env));
 };
 var packExtension = function(env) {
   return function() {
@@ -77,10 +73,20 @@ var putPackIntoServer = function(env) {
 gulp.task('pack-extension', ['clean', 'scss-extension'], function() {
   var env = 'prod';
   gutil.log('Env: ' + env);
-  copyExtension(env)()
+  var deferred = Q.defer();
+  copyExtension(env)
+    .pipe(resolve(deferred));
+  deferred.promise
     .then(packExtension(env))
     .then(putPackIntoServer(env))
     .done();
+});
+
+gulp.task('zip-extension', ['clean', 'scss-extension'], function() {
+  var env = 'prod';
+  return copyExtension(env)
+    .pipe(zip(env + '.zip'))
+    .pipe(gulp.dest('build/dist/extension'));
 });
 
 gulp.task('scss-server', function() {
