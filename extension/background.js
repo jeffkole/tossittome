@@ -171,12 +171,12 @@ var tossItToMeBg = {
 };
 
 chrome.runtime.onInstalled.addListener(function() {
-  console.log('TossItToMe installed');
+  console.log('Toss It To Me! installed');
   chrome.storage.local.set({'catches': []});
 });
 
 chrome.runtime.onSuspend.addListener(function() {
-  console.log('About to suspend TossItToMe');
+  console.log('About to suspend Toss It To Me!');
   if (tossItToMeBg.request && tossItToMeBg.request.readyState != 4) {
     tossItToMeBg.request.abort();
     tossItToMeBg.request = null;
