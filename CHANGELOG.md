@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v2.4.0 (in progress)
+------
+### Server (2.4.0)
+* Adds tour to the welcome page
+* Adds small history to the logged in home page
+* Adds getting started links for bookmarklet and extension installations
+
 v2.3.1
 ------
 ### Server (2.3.1)
