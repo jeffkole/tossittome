@@ -128,7 +128,9 @@ gulp.task('run', ['scss-server', 'scss-extension'], function() {
   nodemon({
       script: 'server/server.js',
       ext   : 'js',
-      env   : { 'NODE_ENV': 'development' }
+      env   : { 'NODE_ENV': 'development' },
+      verbose: true,
+      ignore : ['gulpfile.js', '*.sw?', 'graphics/**/*', '*.html']
     });
   gulp.watch('server/scss/**/*.scss', ['scss-server']);
 });
