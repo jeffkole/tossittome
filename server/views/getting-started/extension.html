@@ -1,9 +1,51 @@
 <h2>How to catch</h2>
+<p id="message" class="p1 bg-orange small rounded hidden"></p>
 <p>Pages are caught by a Chrome extension.  Here&rsquo;s how to install it:
 <ol>
-  <li>Download the <a href="/extension">extension</a>.  (when Chrome objects, click &ldquo;Ok&rdquo;)</li>
-  <li>In Chrome, navigate to <a href="chrome://extensions">chrome://extensions</a>.</li>
-  <li>Drag &ldquo;tossittome-{{ manifest.version }}.crx&rdquo; to the tab with the extensions page open.</li>
-  <li>Grant the permissions.</li>
+  <li>Click <button id="install-button" class="button button-small">Add to Chrome</button>.
+    <svg id="loading" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="#0096cc" style="display: none; vertical-align: middle;"><path opacity=".25" d="M16 0 A16 16 0 0 0 16 32 A16 16 0 0 0 16 0 M16 4 A12 12 0 0 1 16 28 A12 12 0 0 1 16 4"/><path d="M16 0 A16 16 0 0 1 32 16 L28 16 A12 12 0 0 0 16 4z"><animateTransform attributeName="transform" type="rotate" from="0 16 16" to="360 16 16" dur="0.8s" repeatCount="indefinite" /></path></svg>
+  </li>
+  <li>Click the &ldquo;Add&rdquo; button to grant the necessary permissions.</li>
+  <li>Start tossing!</li>
 </ol>
 </p>
+<script>
+  (function() {
+    if ('querySelector' in document && 'addEventListener' in window) {
+      var installButton = document.querySelector('#install-button');
+      if (typeof chrome !== 'undefined') {
+        installButton.addEventListener('click', function(e) {
+          document.querySelector('#loading').style.display = 'inline';
+          var message = document.querySelector('#message');
+          message.style.display = 'none';
+          message.innerText = '';
+          chrome.webstore.install('',
+            function() {
+              console.log('Toss It To Me extension installed successfully');
+              document.querySelector('#loading').style.display = 'none';
+              message.innerText = 'Extension installed successfully!';
+              message.style.display = 'block';
+              setTimeout(function() { message.innerText = ''; message.style.display = 'none'; }, 5000);
+            },
+            function(errorMessage) {
+              console.log('Extension install failure: ' + errorMessage);
+              document.querySelector('#loading').style.display = 'none';
+              message.innerHTML = 'Extension installation failed with message: &ldquo;' + errorMessage + '&rdquo;.';
+              message.style.display = 'block';
+            });
+        }, false);
+        if (installButton.classList) {
+          installButton.classList.add('button-blue');
+        }
+        else {
+          installButton.className = installButton.className + ' button-blue';
+        }
+      }
+      else {
+        installButton.addEventListener('click', function(e) {
+          alert('Sorry, Toss It To Me! is only available as a Chrome extension for now.');
+        }, false);
+      }
+    }
+  })();
+</script>
