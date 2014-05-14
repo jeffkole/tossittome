@@ -7,6 +7,7 @@ v2.4.0 (in progress)
 * Adds tour to the welcome page
 * Adds small history to the logged in home page
 * Adds getting started links for bookmarklet and extension installations
+* Distributes the extension through Google Chrome store
 
 v2.3.1
 ------
