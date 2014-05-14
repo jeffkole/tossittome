@@ -1,9 +1,11 @@
-var fs      = require('fs'),
-    hogan   = require('hogan.js'),
-    path    = require('path'),
-    auth    = require('toss/common/auth'),
-    db      = require('toss/common/db'),
-    page    = require('toss/page/page');
+var fs       = require('fs'),
+    hogan    = require('hogan.js'),
+    path     = require('path'),
+    uaparser = require('ua-parser-js'),
+    auth     = require('toss/common/auth'),
+    db       = require('toss/common/db'),
+    log      = require('toss/common/log'),
+    page     = require('toss/page/page');
 
 var bookmarkletTemplate =
   hogan.compile(
@@ -58,8 +60,32 @@ function getBookmarkletInstructions(request, response) {
     replace(/,\s/g, ",").
     replace(/;\s/g, ";").
     trim();
+  var agent = uaparser(request.get('User-Agent'));
+  log.debug('User agent: %j', agent);
+  var desktop =
+    agent.device.type !== 'mobile' &&
+    agent.device.type !== 'tablet';
+  var mobileSafari =
+    agent.device.type === 'mobile' &&
+    agent.device.vendor === 'Apple' &&
+    agent.browser.name === 'Mobile Safari';
+  var mobileChrome =
+    (agent.device.type === 'mobile' &&
+     agent.browser.name === 'Chrome') ||
+    (agent.os.name === 'Android' &&
+     (/^Mobile/i).test(agent.browser.name));
+  if (!desktop && !mobileSafari && !mobileChrome) {
+    desktop = true;
+  }
+  if (desktop && (mobileSafari || mobileChrome)) {
+    desktop = false;
+  }
+  log.debug('Desktop? %s; Mobile Safari? %s; Mobile Chrome? %s', desktop, mobileSafari, mobileChrome);
   response.render('getting-started/bookmarklet', {
-    code : code
+    code : code,
+    desktop : desktop,
+    mobileSafari : mobileSafari,
+    mobileChrome : mobileChrome
   });
 }
 

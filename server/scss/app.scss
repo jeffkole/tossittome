@@ -32,6 +32,8 @@
 */
 @import "tempo/tempo";
 
+@import "kraken/components/tabby";
+
 .left-align { text-align: left; }
 .min-y100 { min-height: 100%; }
 .table { display: table; }
@@ -57,8 +59,52 @@
 .hidden {
   display: none;
 }
+.p05 {
+  padding: 0.5rem;
+}
+.bb1 {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.bb-dark-gray {
+  border-bottom-color: $dark-gray;
+}
 
 /* Needed for full-window blocks */
 html, body {
   height: 100%;
+}
+
+/*
+
+  TABBY styles
+
+*/
+.tabs {
+  list-style: none;
+  padding-left: 0;
+  li {
+    display: inline;
+    white-space: nowrap;
+    a {
+      display: inline-block;
+      padding: 0.5rem;
+    }
+  }
+  li.active {
+    a {
+      color: $light-gray;
+      background-color: $blue;
+    }
+  }
+}
+@media screen and (max-width: 48em) {
+  .tabs {
+    li {
+      display: block;
+      a {
+        display: block;
+      }
+    }
+  }
 }

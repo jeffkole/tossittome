@@ -1,15 +1,142 @@
-<h2>How to toss</h2>
-<p>Drag this bookmarklet to your bookmark bar: <a class="button button-small button-blue" id="bookmarklet" href="javascript:{{{ code }}}">TossIt</a> Then click &ldquo;TossIt&rdquo; when you&rsquo;re on a page you want to toss to another computer.</p>
-<p>From an iOS mobile device, follow these steps:
-<ol>
-  <li>Click this link: <a class="button button-small button-blue" href="#javascript:{{{ code }}}">TossIt</a>.</li>
-  <li>Tap the share button at the bottom of the screen. <img src="/images/ios_share_button.png"/></li>
-  <li>Tap &ldquo;Bookmark&rdquo; and then &ldquo;Save&rdquo; <img src="/images/ios_add_bookmark_button.png"/></li>
-  <li>Tap the bookmarks button at the bottom of the screen. <img src="/images/ios_bookmarks_button.png"/></li>
-  <li>Click the &ldquo;Edit&rdquo; link at the bottom.</li>
-  <li>Select the bookmark you just added.</li>
-  <li>Delete all of the text from the address before the word &ldquo;javascript&rdquo; <code>http://tossitto.me/#</code>.
-    <p><img src="/images/ios_edit_bookmark.png" width="320"/></p>
-  </li>
-  <li>Click &ldquo;Done&rdquo; on the keyboard.</li>
-</ol>
+<h2 class="mb1">How to toss</h2>
+
+<ul class="tabs">
+  <li class="{{# desktop }}active{{/ desktop }}"><a href="#" data-tab="#desktop">Desktop</a></li>
+  <li class="{{# mobileSafari }}active{{/ mobileSafari}}"><a href="#" data-tab="#safari">Mobile Safari</a></li>
+  <li class="{{# mobileChrome }}active{{/ mobileChrome}}"><a href="#" data-tab="#chrome">Mobile Chrome</a></li>
+</ul>
+
+<div class="tabs-content">
+  <div class="tabs-pane {{# desktop }}active{{/ desktop }}" id="desktop">
+    <ol>
+      <li>Drag this bookmarklet to your bookmark bar: <a class="button button-small button-blue" id="bookmarklet" href="javascript:{{{ code }}}">TossIt</a>.</li>
+      <li>Click &ldquo;TossIt&rdquo; when you&rsquo;re on a page you want to toss to another computer.</li>
+    </ol>
+  </div>
+
+  <div class="tabs-pane {{# mobileSafari }}active{{/ mobileSafari }}" id="safari">
+    <p>In Safari on an iOS mobile device, follow these steps:</p>
+
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-12">
+        <p>Click this link: <a class="button button-small button-blue" href="#javascript:{{{ code }}}">TossIt</a>.</p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <div class="oh mb1">
+          <img class="block left mr1" src="/images/getting-started/ios_share_button.png"/>
+          <p class="oh">Tap the share button at the bottom of the screen.</p>
+        </div>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_2.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Tap &ldquo;Bookmark&rdquo; and then &ldquo;Save&rdquo;</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_3.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <div class="oh mb1">
+          <img class="block left mr1" src="/images/getting-started/ios_bookmarks_button.png"/>
+          <p class="oh">Tap the bookmarks button at the bottom of the screen, and then the &ldquo;Edit&rdquo; link at the bottom.</p>
+        </div>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_4.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Select the bookmark you just added.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_5.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Delete all of the text from the address before the word &ldquo;javascript&rdquo;.
+          <br/><code>http://tossitto.me/getting-started/bookmarklet#</code>
+        </p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_6.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Edit &ldquo;Toss It To Me!&rdquo; to &ldquo;Toss&rdquo;, and click &ldquo;Done&rdquo; on the keyboard.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_7.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>From a page you want to toss, touch the bookmarks button at the bottom of the screen, and then tap the &ldquo;Toss&rdquo; bookmarklet.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/safari_8.png" width="320"/></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-pane {{# mobileChrome }}active{{/ mobileChrome }}" id="chrome">
+    <p>In Chrome on a mobile device, follow these steps:</p>
+
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-12">
+        <p>Click this link: <a class="button button-small button-blue" href="#javascript:{{{ code }}}">TossIt</a>.</p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Tap the menu icon, and then the star.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/chrome_2.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Edit &ldquo;Toss It To Me!&rdquo; to &ldquo;Toss&rdquo;.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/chrome_3.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Delete all of the text from the address before the word &ldquo;javascript&rdquo;.
+          <br/><code>http://tossitto.me/getting-started/bookmarklet#</code>
+        </p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/chrome_4.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>Click &ldquo;Save&rdquo;.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/chrome_5.png" width="320"/></p>
+      </div>
+    </div>
+    <div class="row bb1 bb-dark-gray mb1">
+      <div class="col col-6">
+        <p>From a page you want to toss, touch the address bar, type &ldquo;toss&rdquo; and tap the menu item that shows up with a star to its left.</p>
+      </div>
+      <div class="col col-6">
+        <p><img class="fit" src="/images/getting-started/chrome_6.png" width="320"/></p>
+      </div>
+    </div>
+  </div>
+</div>
