@@ -4,11 +4,13 @@ Changelog
 v2.4.0 (in progress)
 ------
 ### Server (2.4.0)
-* Adds tour to the welcome page
-* Adds small history to the logged in home page
-* Adds getting started links for bookmarklet and extension installations
-* Improves bookmarklet instructions
 * Distributes the extension through Google Chrome store
+* General user interface changes
+  * Adds tour to the welcome page
+  * Adds small history to the logged in home page
+  * Adds getting started links for bookmarklet and extension installations
+  * Improves bookmarklet instructions
+  * Adds drop down menus to top-level navigation
 
 v2.3.1
 ------

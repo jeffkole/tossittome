@@ -5,15 +5,29 @@
   </head>
   <body>
     {{# user }}
-    <nav class="wrap right-align bg-light-gray">
-    <ul class="list-inline p1">
-      <li class="mr1"><a href="/">Home</a></li>
-      <li class="mr1"><a href="/catcher/new">Add catcher</a></li>
-      <li class="mr1"><a href="/catcher">Show catchers</a></li>
-      <li class="mr1"><a href="/getting-started/bookmarklet">Install bookmarklet</a></li>
-      <li class="mr1"><a href="/getting-started/extension">Install extension</a></li>
-      <li class="mr1"><a href="/logout">Sign out</a></li>
-    </ul>
+    <nav class="wrap py1 right-align bg-light-gray">
+      <ul class="list-inline mb0">
+        <li class="mr1"><a href="/">Home</a></li>
+        <li class="dropdown mr1">
+          <a class="" href="/catcher">Catchers</a>
+          <div class="dropdown-menu dropdown-right">
+            <ul>
+              <li><a href="/catcher/new">Add catcher</a></li>
+              <li><a href="/catcher">Show catchers</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="dropdown mr1">
+          <a class="" href="/getting-started/bookmarklet">Getting Started</a>
+          <div class="dropdown-menu dropdown-right">
+            <ul>
+              <li><a href="/getting-started/bookmarklet">Install bookmarklet</a></li>
+              <li><a href="/getting-started/extension">Install extension</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="mr1"><a href="/logout">Sign out</a></li>
+      </ul>
     </nav>
     {{/ user }}
     <header class="px-responsive">
@@ -38,8 +52,10 @@
     {{! TODO: wrap all Javascript in one script }}
     <script src="/js/buoy.js"></script>
     <script src="/js/tabby.js"></script>
+    <script src="/js/drop.js"></script>
     <script>
       tabby.init();
+      drop.init();
     </script>
 
     <script>

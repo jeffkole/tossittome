@@ -2,7 +2,8 @@
 //
 // Edit these styles to adjust the look and feel of your site
 
-
+$white: #fff;
+$black: #000;
 $blue: #0096cc;
 $light-gray: #eee;
 $mid-gray: #777;
@@ -13,7 +14,7 @@ $green: #0f6;
 $orange: #fc2;
 
 
-.white { color: #fff; }
+.white { color: $white; }
 .blue { color: $blue; }
 .light-gray { color: $light-gray; }
 .mid-gray { color: $mid-gray; }
@@ -23,7 +24,7 @@ $orange: #fc2;
 .green { color: $green; }
 .orange { color: $orange; }
 
-.bg-white { background-color: #fff; }
+.bg-white { background-color: $white; }
 .bg-blue { background-color: $blue; }
 .bg-light-gray { background-color: $light-gray; }
 .bg-mid-gray { background-color: $mid-gray; }

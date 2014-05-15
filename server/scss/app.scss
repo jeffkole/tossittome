@@ -32,7 +32,9 @@
 */
 @import "tempo/tempo";
 
+@import "kraken/mixins";
 @import "kraken/components/tabby";
+@import "kraken/components/drop-basic";
 
 .left-align { text-align: left; }
 .min-y100 { min-height: 100%; }
@@ -106,5 +108,22 @@ html, body {
         display: block;
       }
     }
+  }
+}
+
+/*
+
+  DROP styles
+
+*/
+.dropdown-menu {
+  ul {
+    margin-bottom: 0;
+    padding-left: 0;
+  }
+
+  li {
+    // Undo the effect of list-inline
+    display: block;
   }
 }
