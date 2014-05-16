@@ -1,4 +1,6 @@
-var url = require('url');
+var moment   = require('moment'),
+    url      = require('url'),
+    log      = require('toss/common/log');
 
 function attachQueryParams(request, response) {
   return function(uri) {
@@ -18,9 +20,21 @@ function attachQueryParams(request, response) {
   };
 }
 
+function relativeTime(date) {
+  // `date` is the JavaScript Date.toString result, which looks like this:
+  // Fri May 16 2014 10:21:44 GMT-0700 (PDT)
+  // moment does not want to deal with that directly anymore, so create the date
+  // manually and pass that to moment:
+  // https://github.com/moment/moment/issues/1407
+  log.debug('relativeTime(%s). date is a %s', date, typeof date);
+  return moment(new Date(date)).fromNow();
+}
+
 function setup(app) {
   app.use(function(request, response, next) {
-    response.locals.attachQueryParams = attachQueryParams(request, response);
+    response.locals.lambdas = response.locals.lambdas || {};
+    response.locals.lambdas.attachQueryParams = attachQueryParams(request, response);
+    response.locals.lambdas.relativeTime = relativeTime;
     next();
   });
 }
