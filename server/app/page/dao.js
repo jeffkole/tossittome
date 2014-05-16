@@ -14,7 +14,7 @@ function insertPage(connection, tosserId, catcherId, url, title, cb) {
 
 function fetchNextPages(connection, catcherId, cb) {
   connection.query(
-      'select id, user_id as tosser_id, url, title ' +
+      'select id, user_id as tosser_id, catcher_id, url, title, created_at, served_at ' +
       'from pages where catcher_id=? and served_at is null order by created_at for update',
       catcherId,
       function(error, pages) {
@@ -46,7 +46,7 @@ function fetchNextPages(connection, catcherId, cb) {
 
 function fetchTossHistory(connection, tosserId, limit, cb) {
   connection.query(
-      'select id, url, title, user_id as tosser_id, catcher_id, created_at, served_at ' +
+      'select id, user_id as tosser_id, catcher_id, url, title, created_at, served_at ' +
       'from pages where user_id=? order by created_at desc' +
       (limit ? ' limit ?' : ''),
       [tosserId, limit],
