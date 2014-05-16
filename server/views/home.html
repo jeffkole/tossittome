@@ -11,24 +11,21 @@
 
 {{^ noTosses }}
 <h3>Some recent tosses...</h3>
-<table class="wrap full-width">
-  <thead>
-    <tr>
-      <th class="left-align">Page</th>
-      <th class="left-align">Tossed at</th>
-      <th class="left-align">Caught at</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{# tosses }}
-    <tr>
-      <td><a href="{{ url }}">{{ title }}</a></td>
-      <td>{{ created_at }}</td>
-      <td>{{ served_at }}</td>
-    </tr>
-    {{/ tosses }}
-  </tbody>
-</table>
+
+<div class="full-width bg-alternate-light-gray">
+  {{# tosses }}
+  <div class="p05 bb1 bb-dark-gray">
+    <p class="h3 mb0"><a href="{{ url }}">{{ title }}</a></p>
+    <p class="f5 mb0">
+      Tossed to {{ catcher.email }} {{# lambdas.relativeTime }}{{ created_at }}{{/ lambdas.relativeTime }}.
+      {{# served }}
+        Caught {{# lambdas.relativeTime }}{{ served_at }}{{/ lambdas.relativeTime }}.
+      {{/ served }}
+    </p>
+  </div>
+  {{/ tosses }}
+</div>
+
 {{! Add in when history page is complete
 <p class="right-align"><a href="...">See all &raquo;</a></p>
 }}

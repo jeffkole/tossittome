@@ -71,6 +71,9 @@
 .bb-dark-gray {
   border-bottom-color: $dark-gray;
 }
+.bg-alternate-light-gray > :nth-child(even) {
+  background-color: $light-gray;
+}
 
 /* Needed for full-window blocks */
 html, body {

@@ -27,6 +27,14 @@ function populateTossersAndCatchers(connection, pages, cb) {
     pages.forEach(function(page) {
       page.tosser  = userIdMap[page.tosser_id];
       page.catcher = userIdMap[page.catcher_id];
+      // Can't use `served_at` as a section with a lambda call inside it, so add
+      // a new field called `served` to use.
+      if (page.served_at) {
+        page.served = true;
+      }
+      else {
+        page.served = false;
+      }
     });
     return cb(null, pages);
   });
