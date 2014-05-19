@@ -37,19 +37,33 @@ var tossItToMePop = {
     request.open('GET', url, true);
     request.addEventListener('load', function(e) {
       if (e.target.status == 401) {
-        // TODO: error out
+        document.getElementById('login').style.display = 'block';
       }
       else if (e.target.status == 200) {
         document.getElementById('page_list').innerHTML = e.target.responseText;
         Array.prototype.forEach.call(document.querySelectorAll('#page_list a'), function(link) {
           link.addEventListener('click', function(e) {
-            chrome.tabs.create({
-              'url': link.href,
-              'active': true
-//            }, function(tab) {
-//              chrome.tabs.executeScript(tab.id, {
-//                code: "document.body.style.backgroundColor = 'red'; var d = document.createElement('h1'); d.innerText = 'Caught!'; document.body.appendChild(d);"
-//            });
+            // Look for the tab to see if it is already open
+            // Remove any hash content, since that ruins Chrome's matching
+            // algorithm
+            var url = link.href;
+            var hashIndex = url.indexOf('#');
+            if (hashIndex > -1) {
+              url = url.substring(0, hashIndex);
+            }
+            chrome.tabs.query({ 'url': url }, function(tabs) {
+              if (tabs.length > 0) {
+                var tab = tabs[0];
+                chrome.tabs.update(tab.id, { active: true });
+                chrome.windows.update(tab.windowId, { focused: true });
+              }
+              else {
+                // Open the page in a new tab if it is not found
+                chrome.tabs.create({
+                  'url': link.href,
+                  'active': true
+                });
+              }
             });
             e.preventDefault();
           }, false);
@@ -57,7 +71,7 @@ var tossItToMePop = {
         document.getElementById('pages').style.display = 'block';
       }
       else {
-        // TODO: error?
+        console.log('Error fetching history', e.target);
       }
     }.bind(this), false);
     request.send(null);
