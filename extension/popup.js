@@ -5,27 +5,22 @@ var tossItToMePop = {
   numNewTabs: 0,
 
   initialize: function() {
+    document.getElementById('login_form').addEventListener('submit',
+      function(e) {
+        this.login();
+        e.preventDefault();
+      }.bind(tossItToMePop), true);
 
-    chrome.runtime.getBackgroundPage(function(bgPageWindow) {
-      var tossItToMeBg = bgPageWindow.tossItToMeBg;
-
-      document.getElementById('login_form').addEventListener('submit',
-        function(e) {
-          this.login(tossItToMeBg);
-          e.preventDefault();
-        }.bind(tossItToMePop), true);
-
-      chrome.cookies.get({
-        url  : tossItToMeBg.tossItToMeUrl + '/',
-        name : 'token'
-      }, function(cookie) {
-        if (cookie) {
-          this.getCatchHistory();
-        }
-        else {
-          document.getElementById('login').style.display = 'block';
-        }
-      }.bind(tossItToMePop));
+    chrome.cookies.get({
+      url  : this.tossItToMeUrl + '/',
+      name : 'token'
+    }, function(cookie) {
+      if (cookie) {
+        this.getCatchHistory();
+      }
+      else {
+        document.getElementById('login').style.display = 'block';
+      }
     }.bind(tossItToMePop));
   },
 
@@ -77,7 +72,7 @@ var tossItToMePop = {
     request.send(null);
   },
 
-  login: function(tossItToMeBg) {
+  login: function() {
     console.log('login attempt');
     document.getElementById('login_error').style.display = 'none';
     var loginForm = document.getElementById('login_form');
@@ -87,19 +82,19 @@ var tossItToMePop = {
     }
     else {
       var manifest = chrome.runtime.getManifest();
-      var url = tossItToMeBg.tossItToMeUrl + this.loginUri + '?v=' + manifest.version;
+      var url = this.tossItToMeUrl + this.loginUri + '?v=' + manifest.version;
       var params =
         '&email=' + encodeURIComponent(loginForm.email.value) +
         '&password=' + encodeURIComponent(loginForm.password.value);
       var request = new XMLHttpRequest();
       request.open('POST', url, true);
       request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-      request.addEventListener('load', this.processLogin(tossItToMeBg).bind(this), false);
+      request.addEventListener('load', this.processLogin().bind(this), false);
       request.send(params);
     }
   },
 
-  processLogin: function(tossItToMeBg) {
+  processLogin: function() {
     return function(e) {
       console.log('login!', e);
       if (e.target.status == 200) {
@@ -113,15 +108,15 @@ var tossItToMePop = {
           console.log('setting cookies:', cookies);
           cookies.forEach(function(cookie) {
             chrome.cookies.set({
-              url            : tossItToMeBg.tossItToMeUrl + '/',
+              url            : this.tossItToMeUrl + '/',
               name           : cookie.name,
               value          : cookie.value,
               // Chrome uses seconds, not milliseconds for cookies
               expirationDate : (cookie.expirationDate / 1000)
             });
           });
-          document.getElementById('pages').style.display = 'block';
           document.getElementById('login').style.display = 'none';
+          this.getCatchHistory();
         }
       }
     };
