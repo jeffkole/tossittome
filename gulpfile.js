@@ -70,7 +70,7 @@ var putPackIntoServer = function(env) {
   };
 };
 
-gulp.task('pack-extension', ['clean', 'scss-extension'], function() {
+gulp.task('pack-extension', ['clean'], function() {
   var env = 'prod';
   gutil.log('Env: ' + env);
   var deferred = Q.defer();
@@ -82,7 +82,7 @@ gulp.task('pack-extension', ['clean', 'scss-extension'], function() {
     .done();
 });
 
-gulp.task('zip-extension', ['clean', 'scss-extension'], function() {
+gulp.task('zip-extension', ['clean'], function() {
   var env = 'prod';
   return copyExtension(env)
     .pipe(zip(env + '.zip'))
@@ -93,12 +93,6 @@ gulp.task('scss-server', function() {
   return gulp.src('server/scss/**/*.scss')
       .pipe(sass())
       .pipe(gulp.dest('server/public/css/'));
-});
-
-gulp.task('scss-extension', function() {
-  return gulp.src('extension/scss/**/*.scss')
-      .pipe(sass())
-      .pipe(gulp.dest('extension/'));
 });
 
 gulp.task('lint-src', function() {
@@ -130,7 +124,7 @@ gulp.task('bump', function() {
       .pipe(gulp.dest('./'));
 });
 
-gulp.task('run', ['scss-server', 'scss-extension'], function() {
+gulp.task('run', ['scss-server'], function() {
   nodemon({
       script: 'server/server.js',
       ext   : 'js',
