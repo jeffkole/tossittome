@@ -49,118 +49,25 @@ var tossItToMeBg = {
   },
 
   openPages: function(pages) {
-    chrome.storage.sync.get({
-      destination: 'toss_window'
-    }, function(options) {
-      if (options.destination === 'toss_window') {
-        chrome.storage.local.get({'catches': []}, function(data) {
-          var catches = data.catches;
-          var windowStats = {};
-          var count = 0;
-          if (catches.length > 0) {
-            catches.forEach(function(page) {
-              chrome.tabs.query({'url': page.tabUrl}, function(tabs) {
-                tabs.forEach(function(tab) {
-                  if (windowStats[tab.windowId] === undefined) {
-                    windowStats[tab.windowId] = 1;
-                  }
-                  else {
-                    windowStats[tab.windowId]++;
-                  }
-                });
-                count++;
-                // All done, now see which window won
-                if (count === catches.length) {
-                  var highCount = -1;
-                  var winningWindowId = -3;
-                  Object.keys(windowStats).forEach(function(windowId) {
-                    if (windowStats[windowId] > highCount) {
-                      winningWindowId = windowId;
-                      highCount = windowStats[windowId];
-                    }
-                  });
-                  winningWindowId = parseInt(winningWindowId);
-                  if (winningWindowId === -3) {
-                    tossItToMeBg.openPagesInNewWindow(pages);
-                  }
-                  else {
-                    tossItToMeBg.openPagesInWindow(pages, winningWindowId);
-                  }
-                }
-              });
-            });
-          }
-          else {
-            tossItToMeBg.openPagesInNewWindow(pages);
-          }
-        });
-      }
-      else {
-        tossItToMeBg.openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
-      }
-    });
-  },
-
-  openPagesInNewWindow: function(pages) {
-    chrome.windows.create({'focused': false}, function(win) {
-      tossItToMeBg.openPagesInWindow(pages, win.id);
-    });
+    tossItToMeBg.openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
+    chrome.browserAction.setBadgeText({ text: pages.length.toString() });
   },
 
   openPagesInWindow: function(pages, windowId) {
-    var count = 0;
     pages.forEach(function(page) {
       console.log("Page url: " + page.url);
       chrome.tabs.create({
         'windowId': windowId,
         'url':      page.url,
         'active':   false
-      }, function(tab) {
-        chrome.windows.update(tab.windowId, {'drawAttention': true});
-        page.tabId = tab.id;
-        page.windowId = tab.windowId;
-        // The final URL of the page may be different from the one loaded during
-        // the catch, so capture that
-        page.tabUrl = tab.url;
-        count++;
-        if (count === pages.length) {
-          tossItToMeBg.saveCatch(pages);
-        }
       });
     });
-  },
-
-  saveCatch: function(responses) {
-    chrome.storage.local.get('catches', function(catches) {
-      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
-      if (catches.catches) {
-        chrome.storage.local.set({'catches': catches.catches.concat(responses)});
-        this.setBadge(catches.catches.length + responses.length);
-      }
-    }.bind(this));
-  },
-
-  setBadge: function(num) {
-    chrome.browserAction.setBadgeText({'text': num.toString()});
-  },
-
-  withCatches: function(doWithCatches) {
-    chrome.storage.local.get('catches', function(catches) {
-      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
-      doWithCatches(catches.catches);
-    });
-  },
-
-  resetCatches: function() {
-    chrome.storage.local.set({'catches': []}, function() {
-      if (chrome.runtime.lastError) { throw chrom.runtime.lastError; }
-      this.setBadge('');
-    }.bind(this));
   },
 
   start: function() {
     console.log('Starting');
     console.log('Creating catcher alarm');
+    this.requestNextPage();
     chrome.alarms.create('catcher', { periodInMinutes : 1 });
   },
 
@@ -172,7 +79,6 @@ var tossItToMeBg = {
 
 chrome.runtime.onInstalled.addListener(function() {
   console.log('Toss It To Me! installed');
-  chrome.storage.local.set({'catches': []});
 });
 
 chrome.runtime.onSuspend.addListener(function() {
@@ -193,10 +99,3 @@ chrome.cookies.onChanged.addListener(function(info) {
     tossItToMeBg.start();
   }
 });
-
-
-var tosser = {
-  simulate: function() {
-    tossItToMeBg.load({target:{status:200, responseText:'[{"url":"http://kolesky.com","title":"Kolesky!"}]'}});
-  }
-};
