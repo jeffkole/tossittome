@@ -131,3 +131,4 @@ var tossItToMePop = {
 document.addEventListener('DOMContentLoaded', function() {
   tossItToMePop.initialize();
 });
+chrome.browserAction.setBadgeText({ text: '' });
