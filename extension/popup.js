@@ -1,17 +1,13 @@
 var tossItToMePop = {
+  tossItToMeUrl: 'http://localhost:9999',
   loginUri: '/xhr/login',
+  catchHistoryUri: '/page/catches',
   numNewTabs: 0,
 
   initialize: function() {
 
     chrome.runtime.getBackgroundPage(function(bgPageWindow) {
       var tossItToMeBg = bgPageWindow.tossItToMeBg;
-
-      document.getElementById('clear_link').addEventListener('click',
-        function(e) {
-          this.clearLinks(tossItToMeBg);
-          e.stopPropogation();
-        }.bind(tossItToMePop), false);
 
       document.getElementById('login_form').addEventListener('submit',
         function(e) {
@@ -24,33 +20,7 @@ var tossItToMePop = {
         name : 'token'
       }, function(cookie) {
         if (cookie) {
-          tossItToMeBg.withCatches(function(catches) {
-            console.log('catches:', catches);
-            if (catches.length == 1) {
-              document.getElementById('num_caught').innerText = catches.length.toString() + ' page';
-            }
-            else {
-              document.getElementById('num_caught').innerText = catches.length.toString() + ' pages';
-            }
-            var ul = document.getElementById('page_list');
-            catches.forEach(function(caught) {
-              var li = document.createElement('li');
-              var a = document.createElement('a');
-              a.innerText = caught.title || caught.url;
-              a.href = caught.url;
-              a.addEventListener('click', function(e) {
-                chrome.tabs.update(caught.tabId, {'active': true});
-                chrome.windows.update(caught.windowId, {'focused': true});
-                e.stopPropogation();
-              }, false);
-              li.appendChild(a);
-              if (caught.tosser && caught.tosser.email) {
-                li.appendChild(document.createTextNode(' from ' + caught.tosser.email));
-              }
-              ul.appendChild(li);
-            });
-            document.getElementById('pages').style.display = 'block';
-          });
+          this.getCatchHistory();
         }
         else {
           document.getElementById('login').style.display = 'block';
@@ -59,10 +29,38 @@ var tossItToMePop = {
     }.bind(tossItToMePop));
   },
 
-  clearLinks: function(tossItToMeBg) {
-    document.getElementById('page_list').innerHTML = '';
-    document.getElementById('num_caught').innerText = '0 pages';
-    tossItToMeBg.resetCatches();
+  getCatchHistory: function() {
+    var manifest = chrome.runtime.getManifest();
+    var url = this.tossItToMeUrl + this.catchHistoryUri + '?v=' + manifest.version;
+    var request = new XMLHttpRequest();
+    request.withCredentials = true;
+    request.open('GET', url, true);
+    request.addEventListener('load', function(e) {
+      if (e.target.status == 401) {
+        // TODO: error out
+      }
+      else if (e.target.status == 200) {
+        document.getElementById('page_list').innerHTML = e.target.responseText;
+        Array.prototype.forEach.call(document.querySelectorAll('#page_list a'), function(link) {
+          link.addEventListener('click', function(e) {
+            chrome.tabs.create({
+              'url': link.href,
+              'active': true
+//            }, function(tab) {
+//              chrome.tabs.executeScript(tab.id, {
+//                code: "document.body.style.backgroundColor = 'red'; var d = document.createElement('h1'); d.innerText = 'Caught!'; document.body.appendChild(d);"
+//            });
+            });
+            e.preventDefault();
+          }, false);
+        });
+        document.getElementById('pages').style.display = 'block';
+      }
+      else {
+        // TODO: error?
+      }
+    }.bind(this), false);
+    request.send(null);
   },
 
   login: function(tossItToMeBg) {

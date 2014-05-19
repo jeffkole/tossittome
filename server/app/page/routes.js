@@ -118,6 +118,7 @@ function initiateToss(request, response) {
 
 // Called by the bookmarklet upon choosing a catcher
 function completeToss(request, response) {
+  // TODO: use the auth.protect function instead, right?
   if (!request.cookies.token) {
     response.send(401, 'Not authorized');
     return;
@@ -180,11 +181,36 @@ function completeToss(request, response) {
   });
 }
 
+function getCatchHistory(request, response) {
+  if (response.locals.user) {
+    var user = response.locals.user;
+    var connection = db.getConnection();
+    page.getCatchHistory(connection, user.id, 5, function(error, catches) {
+      if (error) {
+        response.send(500, error);
+      }
+      else {
+        response.render('extension/catch_history', {
+          noCatches : catches.noResults,
+          catches   : catches,
+          layout    : null
+        });
+      }
+      db.closeConnection(connection);
+    });
+  }
+  else {
+    response.send(401, 'Not authorized');
+  }
+}
+
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
   app.get('/toss', initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
+
+  app.get('/page/catches', auth.allowOrigin(true), auth.protect(false), getCatchHistory);
 }
 
 module.exports = setup;

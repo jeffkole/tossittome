@@ -104,8 +104,28 @@ function getTossHistory(connection, userId, limit, cb) {
   });
 }
 
+function getCatchHistory(connection, userId, limit, cb) {
+  if (arguments.length === 3) {
+    if (typeof limit !== 'function') {
+      throw new Error('Last argument must be a function');
+    }
+    cb = limit;
+    limit = null;
+  }
+  pageDao.fetchCatchHistory(connection, userId, limit, function(error, pages) {
+    if (error) {
+      return cb(error);
+    }
+    if (pages.noResults) {
+      return cb(null, { noResults: true });
+    }
+    return populateTossersAndCatchers(connection, pages, cb);
+  });
+}
+
 module.exports = {
-  addPage        : addPage,
-  getNextPages   : getNextPages,
-  getTossHistory : getTossHistory
+  addPage         : addPage,
+  getNextPages    : getNextPages,
+  getTossHistory  : getTossHistory,
+  getCatchHistory : getCatchHistory
 };

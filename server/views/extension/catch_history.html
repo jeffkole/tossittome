@@ -1,0 +1,10 @@
+{{# noCatches }}
+<p>You have not caught any pages yet.</p>
+{{/ noCatches }}
+
+{{^ noCatches }}
+<h3>Most recently caught pages</h3>
+
+{{> _catch_history }}
+
+{{/ noCatches }}

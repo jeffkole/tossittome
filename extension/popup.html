@@ -6,10 +6,14 @@ tabindex to 1 for the html element blurs the focus from the anchor.
 <html tabindex="1">
   <head>
     <title>Toss It To Me!</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost:9999/css/app.css"/>
     <style>
+      html {
+        font-size: 14px;
+      }
+
       body {
-        min-width: 357px;
-        overflow-x: hidden;
+        min-width: 30rem;
       }
 
       #pages {
@@ -32,14 +36,11 @@ tabindex to 1 for the html element blurs the focus from the anchor.
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
     <script src="popup.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css"/>
   </head>
   <body class="mt1 ml1 mb1 mr1">
-    <h1 class="blue h1">Toss It To Me!</h1>
+    <h1 class="blue h1"><a href="http://localhost:9999/" target="_blank">Toss It To Me!</a></h1>
     <div id="pages">
-      <p class="h5">Caught <span id="num_caught">0 pages</span>. <a id="clear_link" href="#">Clear</a></p>
-      <ul id="page_list" class="small">
-      </ul>
+      <div id="page_list"></div>
     </div>
     <div id="login">
       <p id="login_error"></p>

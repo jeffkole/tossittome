@@ -61,8 +61,26 @@ function fetchTossHistory(connection, tosserId, limit, cb) {
       });
 }
 
+function fetchCatchHistory(connection, catcherId, limit, cb) {
+  connection.query(
+      'select id, user_id as tosser_id, catcher_id, url, title, created_at, served_at ' +
+      'from pages where catcher_id=? and served_at is not null order by served_at desc' +
+      (limit ? ' limit ?' : ''),
+      [catcherId, limit],
+      function(error, pages) {
+        if (error) {
+          return cb(error);
+        }
+        if (pages.length <= 0) {
+          return cb(null, { noResults: true });
+        }
+        return cb(null, pages);
+      });
+}
+
 module.exports = {
-  insertPage       : insertPage,
-  fetchNextPages   : fetchNextPages,
-  fetchTossHistory : fetchTossHistory
+  insertPage        : insertPage,
+  fetchNextPages    : fetchNextPages,
+  fetchTossHistory  : fetchTossHistory,
+  fetchCatchHistory : fetchCatchHistory
 };

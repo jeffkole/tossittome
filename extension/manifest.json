@@ -34,5 +34,7 @@
     "storage",
     "tabs",
     "*://localhost/"
+//    Needed for content page script execution
+//    "<all_urls>"
   ]
 }
