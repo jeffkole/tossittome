@@ -1,8 +1,8 @@
 <div class="full-width bg-alternate-light-gray">
   {{# tosses }}
-  <div class="p05 bb1 bb-dark-gray">
-    <p class="h3 mb0"><a href="{{ url }}">{{ title }}</a></p>
-    <p class="f5 mb0">
+  <div class="p05 bb1 bb-light-gray">
+    <p class="h4 mb0"><a href="{{ url }}">{{{ title }}}</a></p>
+    <p class="f5 mb0 dark-gray">
       Tossed to {{ catcher.email }} {{# lambdas.relativeTime }}{{ created_at }}{{/ lambdas.relativeTime }}.
       {{# served }}
         Caught {{# lambdas.relativeTime }}{{ served_at }}{{/ lambdas.relativeTime }}.
