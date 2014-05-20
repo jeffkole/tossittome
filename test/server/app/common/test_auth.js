@@ -107,6 +107,22 @@ describe('Auth', function() {
       next.called.should.eql(false);
       response._getRedirectUrl().should.eql('/login?url=%2Fdesired-location');
     });
+
+    // Cannot test this because the mock request does not play nicely with
+    // Express' xhr function, which calls `this.get` internally.
+    /*
+    it('should send 401 error for XHR requests instead of redirecting', function() {
+      var request = http.createRequest({
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      var response = http.createResponse();
+      var protect = auth.protect();
+      var next = sinon.spy();
+      protect(request, response, next);
+      next.called.should.eql(false);
+      response.statusCode.should.eql(401);
+    });
+    */
   });
 
   describe('#allowOrigin', function() {

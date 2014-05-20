@@ -25,11 +25,16 @@ function protect(redirect) {
       });
     }
     else if (redirect) {
-      // Add the original destination to the redirect
-      response.redirect(url.format({
-        pathname : '/login',
-        query    : { url : request.originalUrl }
-      }));
+      if (request.xhr) {
+        response.send(401, 'Not authorized');
+      }
+      else {
+        // Add the original destination to the redirect
+        response.redirect(url.format({
+          pathname : '/login',
+          query    : { url : request.originalUrl }
+        }));
+      }
     }
     else {
       next();
