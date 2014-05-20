@@ -26,7 +26,6 @@ function relativeTime(date) {
   // moment does not want to deal with that directly anymore, so create the date
   // manually and pass that to moment:
   // https://github.com/moment/moment/issues/1407
-  log.debug('relativeTime(%s). date is a %s', date, typeof date);
   return moment(new Date(date)).fromNow();
 }
 
