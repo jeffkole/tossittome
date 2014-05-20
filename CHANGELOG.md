@@ -1,9 +1,9 @@
 Changelog
 =========
 
-v2.4.0 (in progress)
+v3.0.0 (in progress)
 ------
-### Server (2.4.0)
+### Server (3.0.0)
 * Distributes the extension through Google Chrome store
 * General user interface changes
   * Adds tour to the welcome page
@@ -11,6 +11,12 @@ v2.4.0 (in progress)
   * Adds getting started links for bookmarklet and extension installations
   * Improves bookmarklet instructions
   * Adds drop down menus to top-level navigation
+* Adds history of tosses and catches
+
+### Extension (3.0.0)
+* Catch history is displayed in popup
+* Historical pages that have been closed are opened from the popup
+* Option to open in toss window has been removed
 
 v2.3.1
 ------
