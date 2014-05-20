@@ -29,11 +29,16 @@ function relativeTime(date) {
   return moment(new Date(date)).fromNow();
 }
 
+function formatDateTime(date) {
+  return moment(new Date(date)).format('LL [at] LT');
+}
+
 function setup(app) {
   app.use(function(request, response, next) {
     response.locals.lambdas = response.locals.lambdas || {};
     response.locals.lambdas.attachQueryParams = attachQueryParams(request, response);
     response.locals.lambdas.relativeTime = relativeTime;
+    response.locals.lambdas.formatDateTime = formatDateTime;
     next();
   });
 }

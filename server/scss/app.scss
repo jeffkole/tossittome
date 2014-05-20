@@ -32,9 +32,11 @@
 */
 @import "tempo/tempo";
 
+@import "kraken/config";
 @import "kraken/mixins";
 @import "kraken/components/tabby";
 @import "kraken/components/drop-basic";
+@import "kraken/components/tables";
 
 .left-align { text-align: left; }
 .min-y100 { min-height: 100%; }

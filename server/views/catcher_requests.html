@@ -14,18 +14,22 @@
 {{/hasRequests}}
 {{#hasRequests}}
 <p>Your requests for catchers. You can always <a href="/catcher/new">ask more friends</a> to toss to them.</p>
-<table class="wrap full-width">
+<table>
+  <thead>
   <tr>
-    <th class="left-align">Email</th>
-    <th class="left-align">Requested Date</th>
-    <th class="left-align">Status</th>
+    <th>Email</th>
+    <th>Requested Date</th>
+    <th>Status</th>
   </tr>
+  </thead>
+  <tbody>
 {{#catcherRequests}}
   <tr>
     <td>{{ catcher_email }}</td>
-    <td>{{ created_at }}</td>
+    <td>{{# lambdas.formatDateTime }}{{ created_at }}{{/ lambdas.formatDateTime }}</td>
     <td>{{ status }}</td>
   </tr>
 {{/catcherRequests}}
+  </tbody>
 </table>
 {{/hasRequests}}
