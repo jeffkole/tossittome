@@ -44,12 +44,12 @@ function fetchNextPages(connection, catcherId, cb) {
       });
 }
 
-function fetchTossHistory(connection, tosserId, limit, cb) {
+function fetchTossHistory(connection, tosserId, start, limit, cb) {
   connection.query(
       'select id, user_id as tosser_id, catcher_id, url, title, created_at, served_at ' +
       'from pages where user_id=? order by created_at desc' +
-      (limit ? ' limit ?' : ''),
-      [tosserId, limit],
+      (limit ? ' limit ?, ?' : ''),
+      [tosserId, start, limit],
       function(error, pages) {
         if (error) {
           return cb(error);

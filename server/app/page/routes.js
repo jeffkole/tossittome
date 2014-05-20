@@ -194,7 +194,6 @@ function getCatchHistory(request, response) {
     }
     start = limit * (pageNumber - 1);
   }
-  log.debug('About to call getCatchHistory(connection, %s, %s, %s) on %s', user.id, start, limit, page);
   page.getCatchHistory(connection, user.id, start, limit, function(error, catches) {
     if (error) {
       response.send(500, error);
@@ -217,8 +216,44 @@ function getCatchHistory(request, response) {
           locals.prevPage = pageNumber - 1;
           locals.pagination = true;
         }
-        response.render('catch_history', locals);
+        response.render('page/catch_history', locals);
       }
+    }
+    db.closeConnection(connection);
+  });
+}
+
+function getTossHistory(request, response) {
+  var user = response.locals.user;
+  var connection = db.getConnection();
+  var start = 0;
+  var limit = (request.xhr ? 5 : 20);
+  var pageNumber = 1;
+  if (request.query.page) {
+    pageNumber = parseInt(request.query.page) || 1;
+    if (pageNumber <= 0) {
+      pageNumber = 1;
+    }
+    start = limit * (pageNumber - 1);
+  }
+  page.getTossHistory(connection, user.id, start, limit, function(error, tosses) {
+    if (error) {
+      response.send(500, error);
+    }
+    else {
+      var locals = {
+        noTosses : tosses.noResults,
+        tosses   : tosses
+      };
+      if (tosses.moreResults) {
+        locals.nextPage = pageNumber + 1;
+        locals.pagination = true;
+      }
+      if (start > 0) {
+        locals.prevPage = pageNumber - 1;
+        locals.pagination = true;
+      }
+      response.render('page/toss_history', locals);
     }
     db.closeConnection(connection);
   });
@@ -231,6 +266,7 @@ function setup(app, express) {
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/page/catches', auth.allowOrigin(true), auth.protect(), getCatchHistory);
+  app.get('/page/tosses', auth.protect(), getTossHistory);
 }
 
 module.exports = setup;

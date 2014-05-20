@@ -18,7 +18,7 @@ var extensionInfo = require('../../../extension/manifest.json');
 function renderLoggedInHome(request, response) {
   var user = response.locals.user;
   var connection = db.getConnection();
-  page.getTossHistory(connection, user.id, 5, function(error, tosses) {
+  page.getTossHistory(connection, user.id, 0, 5, function(error, tosses) {
     if (error) {
       response.send(500, error);
     }
