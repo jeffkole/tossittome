@@ -50,7 +50,13 @@ var tossItToMeBg = {
 
   openPages: function(pages) {
     tossItToMeBg.openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
-    chrome.browserAction.setBadgeText({ text: pages.length.toString() });
+    chrome.browserAction.getBadgeText({}, function(text) {
+      var num = 0;
+      if (text) {
+        num = parseInt(text);
+      }
+      chrome.browserAction.setBadgeText({ text: (num + pages.length).toString() });
+    });
   },
 
   openPagesInWindow: function(pages, windowId) {

@@ -65,6 +65,7 @@ var tossItToMePop = {
           }, false);
         });
         document.getElementById('pages').style.display = 'block';
+        chrome.browserAction.setBadgeText({ text: '' });
       }
       else {
         console.log('Error fetching history', e.target);
@@ -127,4 +128,3 @@ var tossItToMePop = {
 document.addEventListener('DOMContentLoaded', function() {
   tossItToMePop.initialize();
 });
-chrome.browserAction.setBadgeText({ text: '' });
