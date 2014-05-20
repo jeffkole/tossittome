@@ -23,6 +23,7 @@ cd ${VERSION_DIR}
 
 # Recreate current link
 cd ${APP_DIR}
+rm -f previous && ln -s $(readlink current) previous
 rm -f current && ln -s .versions/${SHA} current
 
 # Restart app
