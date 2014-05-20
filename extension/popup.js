@@ -30,6 +30,7 @@ var tossItToMePop = {
     var request = new XMLHttpRequest();
     request.withCredentials = true;
     request.open('GET', url, true);
+    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     request.addEventListener('load', function(e) {
       if (e.target.status == 401) {
         document.getElementById('login').style.display = 'block';

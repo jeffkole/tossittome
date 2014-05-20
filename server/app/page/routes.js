@@ -185,16 +185,41 @@ function getCatchHistory(request, response) {
   if (response.locals.user) {
     var user = response.locals.user;
     var connection = db.getConnection();
-    page.getCatchHistory(connection, user.id, 5, function(error, catches) {
+    var start = 0;
+    var limit = (request.xhr ? 5 : 20);
+    var pageNumber = 1;
+    if (request.query.page) {
+      pageNumber = parseInt(request.query.page) || 1;
+      if (pageNumber <= 0) {
+        pageNumber = 1;
+      }
+      start = limit * (pageNumber - 1);
+    }
+    log.debug('About to call getCatchHistory(connection, %s, %s, %s) on %s', user.id, start, limit, page);
+    page.getCatchHistory(connection, user.id, start, limit, function(error, catches) {
       if (error) {
         response.send(500, error);
       }
       else {
-        response.render('extension/catch_history', {
+        var locals = {
           noCatches : catches.noResults,
-          catches   : catches,
-          layout    : null
-        });
+          catches   : catches
+        };
+        if (request.xhr) {
+          locals.layout = null;
+          response.render('extension/catch_history', locals);
+        }
+        else {
+          if (catches.moreResults) {
+            locals.nextPage = pageNumber + 1;
+            locals.pagination = true;
+          }
+          if (start > 0) {
+            locals.prevPage = pageNumber - 1;
+            locals.pagination = true;
+          }
+          response.render('catch_history', locals);
+        }
       }
       db.closeConnection(connection);
     });

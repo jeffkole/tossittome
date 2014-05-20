@@ -61,12 +61,13 @@ function fetchTossHistory(connection, tosserId, limit, cb) {
       });
 }
 
-function fetchCatchHistory(connection, catcherId, limit, cb) {
+function fetchCatchHistory(connection, catcherId, start, limit, cb) {
+  log.debug('fetchCatchHistory(connection, %s, %s, %s)', catcherId, start, limit);
   connection.query(
       'select id, user_id as tosser_id, catcher_id, url, title, created_at, served_at ' +
       'from pages where catcher_id=? and served_at is not null order by served_at desc' +
-      (limit ? ' limit ?' : ''),
-      [catcherId, limit],
+      (limit ? ' limit ?, ?' : ''),
+      [catcherId, start, limit],
       function(error, pages) {
         if (error) {
           return cb(error);
