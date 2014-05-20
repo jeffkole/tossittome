@@ -3,13 +3,18 @@
 {{/ noTosses }}
 
 {{^ noTosses }}
-<h3>Tossed pages</h3>
+<h2>Tossed pages</h2>
+
+<ul class="list list-inline leading-3 mobile-hide">
+  <li><a class="inline-block px1 light-gray bg-blue rounded" href="/page/tosses">Tossed pages</a></li>
+  <li><a class="inline-block px1 bg-light-gray rounded" href="/page/catches">Caught pages</a></li>
+</ul>
 
 {{> _toss_history }}
 
 {{# pagination }}
 <div class="row mt1 mb1">
-  <div class="col col-6 left-align">
+  <div class="mobile-col mobile-col-6 left-align">
     {{# prevPage }}
     <a href="/page/tosses?page={{ prevPage }}"><button class="button button-small button-blue">Newer</button></a>
     {{/ prevPage }}
@@ -17,7 +22,7 @@
     <button class="button button-small button-gray">Newer</button>
     {{/ prevPage }}
   </div>
-  <div class="col col-6 right-align">
+  <div class="mobile-col mobile-col-6 right-align">
     {{# nextPage }}
     <a href="/page/tosses?page={{ nextPage }}"><button class="button button-small button-blue">Older</button></a>
     {{/ nextPage }}
