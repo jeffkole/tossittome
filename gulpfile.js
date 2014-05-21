@@ -90,8 +90,12 @@ gulp.task('zip-extension', ['clean'], function() {
 });
 
 gulp.task('scss-server', function() {
+  var options = {};
+  if (args.prod || args.production) {
+    options.outputStyle = 'compressed';
+  }
   return gulp.src('server/scss/**/*.scss')
-      .pipe(sass())
+      .pipe(sass(options))
       .pipe(gulp.dest('server/public/css/'));
 });
 

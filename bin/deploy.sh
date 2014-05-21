@@ -19,7 +19,7 @@ fi
 SHA=$(basename ${VERSION_DIR})
 
 cd ${VERSION_DIR}
-./node_modules/.bin/gulp scss-server
+./node_modules/.bin/gulp scss-server --production
 
 # Recreate current link
 cd ${APP_DIR}
