@@ -25,26 +25,26 @@ var tossItToMeBg = {
       var responses = JSON.parse(e.target.responseText);
       if (responses.noCatches) {
         // No catches, so nothing to do
-        console.log('No catches... carry on');
+        console.debug('No catches... carry on');
       }
       else {
         this.openPages(responses);
       }
     }
     else {
-      console.log('Response was errorful');
+      console.debug('Response was errorful');
       this.error(e);
     }
     this.request = null;
   },
 
   error: function(e) {
-    console.log('Response error', e);
+    console.error('Response error', e);
     this.request = null;
   },
 
   abort: function(e) {
-    console.log('Response abort', e);
+    console.warn('Response abort', e);
     this.request = null;
   },
 
@@ -60,8 +60,8 @@ var tossItToMeBg = {
   },
 
   openPagesInWindow: function(pages, windowId) {
+    console.info('Pages to open: %O', pages);
     pages.forEach(function(page) {
-      console.log("Page url: " + page.url);
       chrome.tabs.create({
         'windowId': windowId,
         'url':      page.url,
@@ -71,24 +71,23 @@ var tossItToMeBg = {
   },
 
   start: function() {
-    console.log('Starting');
-    console.log('Creating catcher alarm');
+    console.info('Creating catcher alarm');
     this.requestNextPage();
     chrome.alarms.create('catcher', { periodInMinutes : 1 });
   },
 
   stop: function() {
-    console.log('Clearing catcher alarm');
+    console.info('Clearing catcher alarm');
     chrome.alarms.clear('catcher');
   }
 };
 
 chrome.runtime.onInstalled.addListener(function() {
-  console.log('Toss It To Me! installed');
+  console.info('Toss It To Me! installed');
 });
 
 chrome.runtime.onSuspend.addListener(function() {
-  console.log('About to suspend Toss It To Me!');
+  console.info('About to suspend Toss It To Me!');
   if (tossItToMeBg.request && tossItToMeBg.request.readyState != 4) {
     tossItToMeBg.request.abort();
     tossItToMeBg.request = null;

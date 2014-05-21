@@ -68,14 +68,13 @@ var tossItToMePop = {
         chrome.browserAction.setBadgeText({ text: '' });
       }
       else {
-        console.log('Error fetching history', e.target);
+        console.error('Error fetching history', e.target);
       }
     }.bind(this), false);
     request.send(null);
   },
 
   login: function() {
-    console.log('login attempt');
     document.getElementById('login_error').style.display = 'none';
     var loginForm = document.getElementById('login_form');
     if (!loginForm.email.value.trim() || !loginForm.password.value.trim()) {
@@ -98,7 +97,6 @@ var tossItToMePop = {
 
   processLogin: function() {
     return function(e) {
-      console.log('login!', e);
       if (e.target.status == 200) {
         var response = JSON.parse(e.target.responseText);
         if (response.invalidUser) {
@@ -107,7 +105,7 @@ var tossItToMePop = {
         }
         else {
           var cookies = response;
-          console.log('setting cookies:', cookies);
+          console.debug('setting cookies:', cookies);
           cookies.forEach(function(cookie) {
             chrome.cookies.set({
               url            : this.tossItToMeUrl + '/',

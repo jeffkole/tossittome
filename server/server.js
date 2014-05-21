@@ -52,7 +52,7 @@ app.set('layout', 'layouts/default.html');
 // Expose view utilities to all responses
 require('toss/common/view_utilities')(app);
 
-require('toss/admin/routes')(app);
+require('toss/admin/routes')(app, express);
 require('toss/home/routes')(app);
 require('toss/user/routes')(app, express);
 require('toss/page/routes')(app, express);
