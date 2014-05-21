@@ -17,6 +17,8 @@ v3.0.0 (in progress)
 * Catch history is displayed in popup
 * Historical pages that have been closed are opened from the popup
 * Option to open in toss window has been removed
+* Historical views open pages in new tab or navigate to an already open tab if
+  the extension is active
 
 v2.3.1
 ------
