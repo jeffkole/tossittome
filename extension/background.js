@@ -105,3 +105,31 @@ chrome.cookies.onChanged.addListener(function(info) {
     tossItToMeBg.start();
   }
 });
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.openLink) {
+    // Look for the tab to see if it is already open Remove any hash content,
+    // since that ruins Chrome's matching algorithm
+    var url = request.href;
+    var hashIndex = url.indexOf('#');
+    if (hashIndex > -1) {
+      url = url.substring(0, hashIndex);
+    }
+    chrome.tabs.query({ 'url': url }, function(tabs) {
+      if (tabs.length > 0) {
+        var tab = tabs[0];
+        chrome.tabs.update(tab.id, { active: true });
+        chrome.windows.update(tab.windowId, { focused: true });
+        sendResponse({ alreadyOpened: true });
+      }
+      else {
+        // Open the page in a new tab if it is not found
+        chrome.tabs.create({
+          'url': request.href,
+          'active': true
+        });
+        sendResponse({ alreadyOpened: false });
+      }
+    });
+  }
+});

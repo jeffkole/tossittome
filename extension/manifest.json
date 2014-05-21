@@ -3,7 +3,7 @@
 
   "name": "Toss It To Me!",
   "short_name": "Toss It To Me!",
-  "description": "Tosses URLs from here to there.",
+  "description": "Tosses pages from here to there.",
   "version": "3.0.0",
 
   "icons": {
@@ -16,6 +16,11 @@
     "scripts": ["background.js"],
     "persistent": false
   },
+
+  "content_scripts": [{
+    "matches": ["*://localhost/page/tosses", "*://localhost/page/catches"],
+    "js": ["content_script.js"]
+  }],
 
   "browser_action": {
     "default_icon": {
