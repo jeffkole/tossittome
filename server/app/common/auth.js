@@ -17,11 +17,27 @@ function protect(redirect) {
         else if (user.noResults) {
           // Clear the fraudulent cookie
           response.clearCookie('token');
+          if (redirect) {
+            if (request.xhr) {
+              response.send(401, 'Not authorized');
+            }
+            else {
+              // Add the original destination to the redirect
+              response.redirect(url.format({
+                pathname : '/login',
+                query    : { url : request.originalUrl }
+              }));
+            }
+          }
+          else {
+            next();
+          }
         }
         else {
           response.locals.user = user;
+          next();
         }
-        db.closeConnection(connection, next);
+        db.closeConnection(connection);
       });
     }
     else if (redirect) {

@@ -18,7 +18,7 @@ describe('Auth', function() {
     beforeEach(function() {
       var dbMock = {
         getConnection: sinon.stub(),
-        closeConnection: sinon.stub().callsArg(1)
+        closeConnection: sinon.stub()
       };
       var userDaoMock = {
         fetchUserByToken: sinon.stub()
@@ -38,7 +38,7 @@ describe('Auth', function() {
       var protect = auth.protect(true);
       var next = sinon.spy();
       protect(request, response, next);
-      next.called.should.eql(true);
+      next.called.should.eql(false);
       response.statusCode.should.eql(500);
     });
 
@@ -49,8 +49,28 @@ describe('Auth', function() {
       auth.__set__('userDao', userDaoMock);
 
       var request = createRequestWithCookie();
+      // Mock request does not have an originalUrl field, so create it
+      request.originalUrl = '/desired-location';
       var response = http.createResponse();
       var protect = auth.protect(true);
+      var next = sinon.spy();
+      protect(request, response, next);
+      next.called.should.eql(false);
+      should.not.exist(response.cookies.token);
+      response._getRedirectUrl().should.eql('/login?url=%2Fdesired-location');
+    });
+
+    it('should clear the cookie and call next if the user is not found by the token', function() {
+      var userDaoMock = {
+        fetchUserByToken: sinon.stub().callsArgWith(2, null, { noResults: true })
+      };
+      auth.__set__('userDao', userDaoMock);
+
+      var request = createRequestWithCookie();
+      // Mock request does not have an originalUrl field, so create it
+      request.originalUrl = '/desired-location';
+      var response = http.createResponse();
+      var protect = auth.protect(false);
       var next = sinon.spy();
       protect(request, response, next);
       next.called.should.eql(true);
