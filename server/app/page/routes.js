@@ -205,6 +205,7 @@ function getCatchHistory(request, response) {
       };
       if (request.xhr) {
         locals.layout = null;
+        locals.host = request.get('host');
         response.render('extension/catch_history', locals);
       }
       else {

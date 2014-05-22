@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v3.0.1
+------
+### Server (3.0.1)
+* Fixes bug with catch history link in extension popup
+
+### Extension (3.0.1)
+* Bumps version just for republishing
+
 v3.0.0
 ------
 ### Server (3.0.0)
