@@ -19,6 +19,8 @@ v3.0.0 (in progress)
 * Option to open in toss window has been removed
 * Historical views open pages in new tab or navigate to an already open tab if
   the extension is active
+* Attempts to fix the bug when multiple of the same page are opened
+* Logs info from the extension to the server
 
 v2.3.1
 ------
