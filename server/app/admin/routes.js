@@ -23,7 +23,9 @@ function postLog(request, response) {
   payload.token = user.token;
   payload.version = request.query.v;
 
-  log[level] && log[level]('CLIENT: %j', payload);
+  if (log[level]) {
+    log[level]('CLIENT: %j', payload);
+  }
   response.send(200);
 }
 
