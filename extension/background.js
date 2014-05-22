@@ -1,17 +1,6 @@
 var tossItToMeBg = {
-  tossItToMeUrl: 'http://localhost:9999',
-  pageUri: '/catch',
-
   requestNextPage: function() {
-    var manifest = chrome.runtime.getManifest();
-    var req = new XMLHttpRequest();
-    // Send cookies
-    req.withCredentials = true;
-    req.open("GET", this.tossItToMeUrl + this.pageUri + '?v=' + manifest.version, true);
-    req.addEventListener('load', this.load.bind(this), false);
-    req.addEventListener('error', this.error.bind(this), false);
-    req.addEventListener('abort', this.abort.bind(this), false);
-    req.send(null);
+    TossItToMe.Network.get('/catch', this.load.bind(this));
   },
 
   load: function(e) {
@@ -30,17 +19,8 @@ var tossItToMeBg = {
       }
     }
     else {
-      console.debug('Response was errorful');
-      this.error(e);
+      console.error('Response was errorful', e);
     }
-  },
-
-  error: function(e) {
-    console.error('Response error', e);
-  },
-
-  abort: function(e) {
-    console.warn('Response abort', e);
   },
 
   openPages: function(pages) {

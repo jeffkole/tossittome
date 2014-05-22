@@ -1,9 +1,4 @@
 var tossItToMePop = {
-  tossItToMeUrl: 'http://localhost:9999',
-  loginUri: '/xhr/login',
-  catchHistoryUri: '/page/catches',
-  numNewTabs: 0,
-
   initialize: function() {
     document.getElementById('login_form').addEventListener('submit',
       function(e) {
@@ -12,7 +7,7 @@ var tossItToMePop = {
       }.bind(tossItToMePop), true);
 
     chrome.cookies.get({
-      url  : this.tossItToMeUrl + '/',
+      url  : TossItToMe.Network.baseUrl() + '/',
       name : 'token'
     }, function(cookie) {
       if (cookie) {
@@ -25,13 +20,7 @@ var tossItToMePop = {
   },
 
   getCatchHistory: function() {
-    var manifest = chrome.runtime.getManifest();
-    var url = this.tossItToMeUrl + this.catchHistoryUri + '?v=' + manifest.version;
-    var request = new XMLHttpRequest();
-    request.withCredentials = true;
-    request.open('GET', url, true);
-    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    request.addEventListener('load', function(e) {
+    var onLoad = function(e) {
       if (e.target.status == 401) {
         document.getElementById('login').style.display = 'block';
       }
@@ -70,8 +59,9 @@ var tossItToMePop = {
       else {
         console.error('Error fetching history', e.target);
       }
-    }.bind(this), false);
-    request.send(null);
+    };
+
+    TossItToMe.Network.get('/page/catches', onLoad);
   },
 
   login: function() {
@@ -82,44 +72,45 @@ var tossItToMePop = {
       document.getElementById('login_error').style.display = 'block';
     }
     else {
-      var manifest = chrome.runtime.getManifest();
-      var url = this.tossItToMeUrl + this.loginUri + '?v=' + manifest.version;
-      var params =
-        '&email=' + encodeURIComponent(loginForm.email.value) +
-        '&password=' + encodeURIComponent(loginForm.password.value);
-      var request = new XMLHttpRequest();
-      request.open('POST', url, true);
-      request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-      request.addEventListener('load', this.processLogin().bind(this), false);
-      request.send(params);
+      TossItToMe.Network.post('/xhr/login', this.processLogin.bind(this), {
+        postParams: {
+          'email': loginForm.email.value,
+          'password': loginForm.password.value
+        }
+      });
     }
   },
 
-  processLogin: function() {
-    return function(e) {
-      if (e.target.status == 200) {
-        var response = JSON.parse(e.target.responseText);
-        if (response.invalidUser) {
-          document.getElementById('login_error').innerText = 'Invalid email or password. Try again.';
-          document.getElementById('login_error').style.display = 'block';
-        }
-        else {
-          var cookies = response;
-          console.debug('setting cookies:', cookies);
-          cookies.forEach(function(cookie) {
-            chrome.cookies.set({
-              url            : this.tossItToMeUrl + '/',
-              name           : cookie.name,
-              value          : cookie.value,
-              // Chrome uses seconds, not milliseconds for cookies
-              expirationDate : (cookie.expirationDate / 1000)
-            });
-          });
-          document.getElementById('login').style.display = 'none';
-          this.getCatchHistory();
-        }
-      }
+  processLogin: function(e) {
+    var handleInvalidUser = function() {
+      document.getElementById('login_error').innerText = 'Invalid email or password. Try again.';
+      document.getElementById('login_error').style.display = 'block';
     };
+
+    if (e.target.status === 200) {
+      var response = JSON.parse(e.target.responseText);
+      if (response.invalidUser) {
+        handleInvalidUser();
+      }
+      else {
+        var cookies = response;
+        console.debug('setting cookies:', cookies);
+        cookies.forEach(function(cookie) {
+          chrome.cookies.set({
+            url            : TossItToMe.Network.baseUrl() + '/',
+            name           : cookie.name,
+            value          : cookie.value,
+            // Chrome uses seconds, not milliseconds for cookies
+            expirationDate : (cookie.expirationDate / 1000)
+          });
+        });
+        document.getElementById('login').style.display = 'none';
+        this.getCatchHistory();
+      }
+    }
+    else {
+      handleInvalidUser();
+    }
   }
 };
 

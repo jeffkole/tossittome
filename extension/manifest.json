@@ -13,7 +13,7 @@
   },
 
   "background": {
-    "scripts": ["logging.js", "background.js"],
+    "scripts": ["tossittome.js", "logging.js", "background.js"],
     "persistent": false
   },
 

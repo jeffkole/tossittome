@@ -1,5 +1,6 @@
-window.tossLogger = (function() {
+window.TossItToMe = window.TossItToMe || {};
 
+window.TossItToMe.Logger = (function() {
   var logLevels = {
     'debug': 0,
     'info' : 1,
@@ -9,11 +10,6 @@ window.tossLogger = (function() {
   };
 
   var remoteLogLevel = 'info';
-
-  var manifest = chrome.runtime.getManifest();
-  var url = function(level, message) {
-    return 'http://localhost:9999/admin/log/' + level + '?v=' + manifest.version + '&message=' + encodeURIComponent(message);
-  };
 
   var overrideConsoleFunction = function(logLevel) {
     var originalFn = console[logLevel];
@@ -28,11 +24,10 @@ window.tossLogger = (function() {
         if (arguments.length > 1) {
           payload.arguments = Array.prototype.slice.call(arguments, 1);
         }
-        var request = new XMLHttpRequest();
-        request.open('POST', url(logLevel, message), true);
-        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-        request.send('payload=' + encodeURIComponent(JSON.stringify(payload)));
+        TossItToMe.Network.post('/admin/log/' + logLevel, null, {
+          queryParams: { 'message': message },
+          postParams : { 'payload': JSON.stringify(payload) }
+        });
       }
     };
   };
@@ -59,7 +54,7 @@ window.tossLogger = (function() {
   };
 }());
 
-window.onerror = function(message, url, line, column, error) {
+window.onerror = function(message, file, line, column, error) {
   // From stacktrace.js
   var stackTrace = function(e) {
     return (e.stack + '\n')
@@ -74,18 +69,15 @@ window.onerror = function(message, url, line, column, error) {
 
   var payload = {
     message: message,
-    url: url,
+    file: file,
     line: line,
     column: column,
     stack: stackTrace(error)
   };
-  var manifest = chrome.runtime.getManifest();
-  var tossItToMeUrl = 'http://localhost:9999/admin/error?v=' + manifest.version + '&message=' + encodeURIComponent(message);
-  var request = new XMLHttpRequest();
-  request.open('POST', tossItToMeUrl, true);
-  request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-  request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-  request.send('payload=' + encodeURIComponent(JSON.stringify(payload)));
+  TossItToMe.Network.post('/admin/log/error', null, {
+    queryParams: { 'message': message },
+    postParams : { 'payload': JSON.stringify(payload) }
+  });
 
   // False triggers the default handler to run
   return false;
