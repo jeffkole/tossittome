@@ -1,7 +1,6 @@
 var tossItToMeBg = {
   tossItToMeUrl: 'http://localhost:9999',
   pageUri: '/catch',
-  request: null,
 
   requestNextPage: function() {
     var manifest = chrome.runtime.getManifest();
@@ -13,7 +12,6 @@ var tossItToMeBg = {
     req.addEventListener('error', this.error.bind(this), false);
     req.addEventListener('abort', this.abort.bind(this), false);
     req.send(null);
-    this.request = req;
   },
 
   load: function(e) {
@@ -35,17 +33,14 @@ var tossItToMeBg = {
       console.debug('Response was errorful');
       this.error(e);
     }
-    this.request = null;
   },
 
   error: function(e) {
     console.error('Response error', e);
-    this.request = null;
   },
 
   abort: function(e) {
     console.warn('Response abort', e);
-    this.request = null;
   },
 
   openPages: function(pages) {
@@ -71,9 +66,12 @@ var tossItToMeBg = {
   },
 
   start: function() {
-    console.info('Creating catcher alarm');
-    this.requestNextPage();
-    chrome.alarms.create('catcher', { periodInMinutes : 1 });
+    chrome.alarms.get('catcher', function(alarm) {
+      if (!alarm) {
+        console.info('Creating catcher alarm');
+        chrome.alarms.create('catcher', { periodInMinutes : 1 });
+      }
+    });
   },
 
   stop: function() {
@@ -82,21 +80,31 @@ var tossItToMeBg = {
   }
 };
 
-chrome.runtime.onInstalled.addListener(function() {
-  console.info('Toss It To Me! installed');
+chrome.runtime.onStartup.addListener(function() {
+  console.info('Chrome startup');
+  tossItToMeBg.start();
 });
 
-chrome.runtime.onSuspend.addListener(function() {
-  console.info('About to suspend Toss It To Me!');
-  if (tossItToMeBg.request && tossItToMeBg.request.readyState != 4) {
-    tossItToMeBg.request.abort();
-    tossItToMeBg.request = null;
+chrome.runtime.onInstalled.addListener(function(details) {
+  var message = 'Toss It To Me! ';
+  if (details.reason === 'install') {
+    message += 'installed';
   }
+  else if (details.reason === 'update') {
+    message += 'updated from version ' + details.previousVersion;
+  }
+  else {
+    message += details.reason;
+  }
+  console.info(message);
+  tossItToMeBg.start();
 });
 
-tossItToMeBg.start();
-chrome.alarms.onAlarm.addListener(function() {
-  tossItToMeBg.requestNextPage();
+chrome.alarms.onAlarm.addListener(function(alarm) {
+  console.info(alarm.name + ' alarm triggered');
+  if (alarm.name === 'catcher') {
+    tossItToMeBg.requestNextPage();
+  }
 });
 chrome.cookies.onChanged.addListener(function(info) {
   if (!info.removed) {
