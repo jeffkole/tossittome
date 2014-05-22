@@ -1,7 +1,7 @@
 Changelog
 =========
 
-v3.0.0 (in progress)
+v3.0.0
 ------
 ### Server (3.0.0)
 * Distributes the extension through Google Chrome store
