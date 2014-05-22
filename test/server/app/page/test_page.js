@@ -109,10 +109,8 @@ describe('Page', function() {
         pages.length.should.equal(2);
         pages[0].should.have.property('title', 'Tossing Back and Forth');
         pages[0].should.have.property('tosser');
-        pages[0].tosser.should.have.property('id');
         pages[0].tosser.should.have.property('email');
         pages[0].should.have.property('catcher');
-        pages[0].catcher.should.have.property('id');
         pages[0].catcher.should.have.property('email');
         db.closeConnection(connection, done);
       });
@@ -155,10 +153,8 @@ describe('Page', function() {
         pages.length.should.equal(2);
         pages[0].should.have.property('title', 'Tossing Back and Forth');
         pages[0].should.have.property('tosser');
-        pages[0].tosser.should.have.property('id');
         pages[0].tosser.should.have.property('email');
         pages[0].should.have.property('catcher');
-        pages[0].catcher.should.have.property('id');
         pages[0].catcher.should.have.property('email');
         db.closeConnection(connection, done);
       });

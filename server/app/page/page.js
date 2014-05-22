@@ -22,7 +22,9 @@ function populateTossersAndCatchers(connection, pages, cb) {
     }
     var userIdMap = {};
     users.forEach(function(user) {
-      userIdMap[user.id] = user;
+      userIdMap[user.id] = {
+        email: user.email
+      };
     });
     pages.forEach(function(page) {
       page.tosser  = userIdMap[page.tosser_id];
