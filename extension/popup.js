@@ -1,25 +1,7 @@
-var tossItToMePop = {
-  initialize: function() {
-    document.getElementById('login_form').addEventListener('submit',
-      function(e) {
-        this.login();
-        e.preventDefault();
-      }.bind(tossItToMePop), true);
+window.TossItToMe = window.TossItToMe || {};
 
-    chrome.cookies.get({
-      url  : TossItToMe.Network.baseUrl() + '/',
-      name : 'token'
-    }, function(cookie) {
-      if (cookie) {
-        this.getCatchHistory();
-      }
-      else {
-        document.getElementById('login').style.display = 'block';
-      }
-    }.bind(tossItToMePop));
-  },
-
-  getCatchHistory: function() {
+window.TossItToMe.Popup = (function() {
+  var _getCatchHistory = function() {
     var onLoad = function(e) {
       if (e.target.status == 401) {
         document.getElementById('login').style.display = 'block';
@@ -41,9 +23,9 @@ var tossItToMePop = {
     };
 
     TossItToMe.Network.get('/page/catches', onLoad);
-  },
+  };
 
-  login: function() {
+  var _login = function() {
     document.getElementById('login_error').style.display = 'none';
     var loginForm = document.getElementById('login_form');
     if (!loginForm.email.value.trim() || !loginForm.password.value.trim()) {
@@ -51,16 +33,16 @@ var tossItToMePop = {
       document.getElementById('login_error').style.display = 'block';
     }
     else {
-      TossItToMe.Network.post('/xhr/login', this.processLogin.bind(this), {
+      TossItToMe.Network.post('/xhr/login', _processLogin, {
         postParams: {
           'email': loginForm.email.value,
           'password': loginForm.password.value
         }
       });
     }
-  },
+  };
 
-  processLogin: function(e) {
+  var _processLogin = function(e) {
     var handleInvalidUser = function() {
       document.getElementById('login_error').innerText = 'Invalid email or password. Try again.';
       document.getElementById('login_error').style.display = 'block';
@@ -84,15 +66,39 @@ var tossItToMePop = {
           });
         });
         document.getElementById('login').style.display = 'none';
-        this.getCatchHistory();
+        _getCatchHistory();
       }
     }
     else {
       handleInvalidUser();
     }
-  }
-};
+  };
+
+  var initialize = function() {
+    document.getElementById('login_form').addEventListener('submit',
+      function(e) {
+        _login();
+        e.preventDefault();
+      }, true);
+
+    chrome.cookies.get({
+      url  : TossItToMe.Network.baseUrl() + '/',
+      name : 'token'
+    }, function(cookie) {
+      if (cookie) {
+        _getCatchHistory();
+      }
+      else {
+        document.getElementById('login').style.display = 'block';
+      }
+    });
+  };
+
+  return {
+    initialize : initialize
+  };
+}());
 
 document.addEventListener('DOMContentLoaded', function() {
-  tossItToMePop.initialize();
+  TossItToMe.Popup.initialize();
 });
