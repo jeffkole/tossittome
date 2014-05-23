@@ -18,7 +18,7 @@
   },
 
   "content_scripts": [{
-    "matches": ["*://localhost/page/tosses", "*://localhost/page/catches"],
+    "matches": ["*://localhost/", "*://localhost/page/tosses", "*://localhost/page/catches"],
     "js": ["content_script.js"]
   }],
 

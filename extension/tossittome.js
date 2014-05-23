@@ -85,3 +85,32 @@ window.TossItToMe.ID = (function() {
     getID : getID
   };
 }());
+
+window.TossItToMe.Tabs = (function() {
+  var activateOrOpen = function(url) {
+    // Look for the tab to see if it is already open Remove any hash content,
+    // since that ruins Chrome's matching algorithm
+    var hashIndex = url.indexOf('#');
+    if (hashIndex > -1) {
+      url = url.substring(0, hashIndex);
+    }
+    chrome.tabs.query({ 'url': url }, function(tabs) {
+      if (tabs.length > 0) {
+        var tab = tabs[0];
+        chrome.tabs.update(tab.id, { active: true });
+        chrome.windows.update(tab.windowId, { focused: true });
+      }
+      else {
+        // Open the page in a new tab if it is not found
+        chrome.tabs.create({
+          'url': url,
+          'active': true
+        });
+      }
+    });
+  };
+
+  return {
+    activateOrOpen : activateOrOpen
+  };
+}());
