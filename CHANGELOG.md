@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v3.0.2
+------
+### Extension (3.0.2)
+* Cleans up the code
+* Adds an ID to the extension that is sent back with log messages
+
 v3.0.1
 ------
 ### Server (3.0.1)
