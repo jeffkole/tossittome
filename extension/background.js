@@ -1,12 +1,12 @@
-var tossItToMeBg = {
-  requestNextPage: function() {
-    TossItToMe.Network.get('/catch', this.load.bind(this));
-  },
+window.TossItToMe = window.TossItToMe || {};
 
-  load: function(e) {
+window.TossItToMe.Background = (function() {
+  var _running = false;
+
+  var _load = function(e) {
     if (e.target.status == 401) {
-      // Initiate login
-      this.stop();
+      // Stop polling until the user logs in
+      stop();
     }
     else if (e.target.status == 200) {
       var responses = JSON.parse(e.target.responseText);
@@ -15,16 +15,16 @@ var tossItToMeBg = {
         console.debug('No catches... carry on');
       }
       else {
-        this.openPages(responses);
+        _openPages(responses);
       }
     }
     else {
       console.error('Response was errorful', e);
     }
-  },
+  };
 
-  openPages: function(pages) {
-    tossItToMeBg.openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
+  var _openPages = function(pages) {
+    _openPagesInWindow(pages, chrome.windows.WINDOW_ID_CURRENT);
     chrome.browserAction.getBadgeText({}, function(text) {
       var num = 0;
       if (text) {
@@ -32,9 +32,9 @@ var tossItToMeBg = {
       }
       chrome.browserAction.setBadgeText({ text: (num + pages.length).toString() });
     });
-  },
+  };
 
-  openPagesInWindow: function(pages, windowId) {
+  var _openPagesInWindow = function(pages, windowId) {
     console.info('Pages to open: %O', pages);
     pages.forEach(function(page) {
       chrome.tabs.create({
@@ -43,26 +43,46 @@ var tossItToMeBg = {
         'active':   false
       });
     });
-  },
+  };
 
-  start: function() {
+  var start = function() {
     chrome.alarms.get('catcher', function(alarm) {
       if (!alarm) {
         console.info('Creating catcher alarm');
         chrome.alarms.create('catcher', { periodInMinutes : 1 });
       }
+      _running = true;
     });
-  },
+  };
 
-  stop: function() {
+  var stop = function() {
     console.info('Clearing catcher alarm');
-    chrome.alarms.clear('catcher');
-  }
-};
+    chrome.alarms.clear('catcher', function(wasCleared) {
+      if (wasCleared) {
+        _running = false;
+      }
+    });
+  };
+
+  var isRunning = function() {
+    return _running;
+  };
+
+  var requestNextPage = function() {
+    TossItToMe.Network.get('/catch', _load);
+  };
+
+  return {
+    start : start,
+    stop : stop,
+    isRunning : isRunning,
+    requestNextPage : requestNextPage
+  };
+}());
 
 chrome.runtime.onStartup.addListener(function() {
   console.info('Chrome startup');
-  tossItToMeBg.start();
+  TossItToMe.Background.start();
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {
@@ -77,19 +97,19 @@ chrome.runtime.onInstalled.addListener(function(details) {
     message += details.reason;
   }
   console.info(message);
-  tossItToMeBg.start();
+  TossItToMe.Background.start();
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm) {
   console.info(alarm.name + ' alarm triggered');
   if (alarm.name === 'catcher') {
-    tossItToMeBg.requestNextPage();
+    TossItToMe.Background.requestNextPage();
   }
 });
 chrome.cookies.onChanged.addListener(function(info) {
   if (!info.removed) {
     // If a cookie was created, then restart the poller
-    tossItToMeBg.start();
+    TossItToMe.Background.start();
   }
 });
 
