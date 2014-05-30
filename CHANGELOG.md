@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v3.0.3
+------
+### Server (3.0.3)
+* Adds about page
+
 v3.0.2
 ------
 ### Extension (3.0.2)
