@@ -54,7 +54,10 @@
 
     <footer class="px-responsive">
       <div class="measure wrap mt2">
-        <p class="small">&copy; Jeff Kolesky</p>
+        <ul class="list-inline" class="small">
+          <li>&copy; <a href="{{ jeff-link }}">Jeff Kolesky</a></li>
+          <li class="right"><a href="/info/about">About</a></li>
+        </ul>
       </div>
     </footer>
 
@@ -62,9 +65,11 @@
     <script src="/js/buoy.js"></script>
     <script src="/js/tabby.js"></script>
     <script src="/js/drop.js"></script>
+    <script src="/js/app.js"></script>
     <script>
       tabby.init();
       drop.init();
+      app.init();
     </script>
 
     {{> google-analytics }}

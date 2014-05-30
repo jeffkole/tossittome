@@ -35,6 +35,7 @@ function formatDateTime(date) {
 
 function setup(app) {
   app.use(function(request, response, next) {
+    response.locals['jeff-link'] = 'http://artisanalbytes.com';
     response.locals.lambdas = response.locals.lambdas || {};
     response.locals.lambdas.attachQueryParams = attachQueryParams(request, response);
     response.locals.lambdas.relativeTime = relativeTime;

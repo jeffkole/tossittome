@@ -22,6 +22,12 @@ var config = {
   email: {
     api_key    : 'SPECIFIED_IN_A_SECRET_FILE',
     subaccount : 'TossItToMeDevelopment'
+  },
+
+  contact: {
+    help: {
+      email : 'SPECIFIED_IN_A_SECRET_FILE'
+    }
   }
 
 };
