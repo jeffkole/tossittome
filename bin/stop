@@ -1,11 +1,13 @@
 #!/bin/bash -e
 
-APPLICATION_START=server.js
 PIDFILE=/var/run/tossittome/tossittome.pid
 
 if [ -f $PIDFILE ]; then
   echo "Shutting down tossittome"
-  forever stop $APPLICATION_START
+  # Find the forever process uid... the only way to kill a specific process when
+  # multiple processes share the same script name.
+  FUID=$(forever list --no-colors | grep tossittome | cut -d']' -f2 | cut -d'/' -f1)
+  forever stop $FUID
   rm -f $PIDFILE
 else
   echo "tossittome is not running"
