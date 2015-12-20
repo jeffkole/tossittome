@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v3.0.4
+------
+### Service (3.0.4)
+* Sends tosses back to the server via HTTPS
+
 v3.0.3
 ------
 ### Server (3.0.3)
