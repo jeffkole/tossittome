@@ -41,7 +41,7 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
       // Wait at least this many milliseconds
       var lagTime = 800;
       var request = new XMLHttpRequest();
-      request.open('POST', 'http://' + host + '/toss', true);
+      request.open('POST', 'https://' + host + '/toss', true);
       request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
       request.withCredentials = true;
       var params =
@@ -99,7 +99,7 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     document.body.appendChild(iframe);
     window.frames[iframeId].document.write(
         '<html><body>' +
-        '<form action="http://' + host + '/toss" method="post">' +
+        '<form action="https://' + host + '/toss" method="post">' +
         '<input type="hidden" name="u" value="' + href + '"/>' +
         '<input type="hidden" name="i" value="' + title + '"/>' +
         '<input type="hidden" name="c" value="' + catcherToken + '"/>' +
