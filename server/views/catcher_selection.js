@@ -97,7 +97,10 @@ function renderCatcherSelection(host, catcherData, scriptId, forceIframe) {
     // The iframe document is not defined until after it is added to the
     // parent document.
     document.body.appendChild(iframe);
-    window.frames[iframeId].document.write(
+    var frame = window.frames[iframeId];
+    var doc = (frame.contentWindow || frame.contentDocument);
+    if (doc.document) { doc = doc.document; }
+    doc.write(
         '<html><body>' +
         '<form action="https://' + host + '/toss" method="post">' +
         '<input type="hidden" name="u" value="' + href + '"/>' +
