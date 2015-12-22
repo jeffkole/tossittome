@@ -1,5 +1,6 @@
 var path    = require('path'),
     uglify  = require('uglify-js'),
+    url     = require('url'),
     catcher = require('toss/catcher/catcher'),
     auth    = require('toss/common/auth'),
     config  = require('toss/common/config'),
@@ -9,6 +10,14 @@ var path    = require('path'),
 
 var renderCatcherSelectionFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/catcher_selection.js'))).code;
 var renderLoginPopupFn = uglify.minify(path.normalize(path.join(__dirname, '../../views/login_popup.js'))).code;
+
+function isHtml(request) {
+  // return (request.accepts(['json', 'html']) === 'html');
+  var isHtml = request.query.h === 'true' ||
+    (typeof request.body !== 'undefined' && request.body.h === 'true');
+  log.debug('isHtml? %s; headers: %j', isHtml, request.headers);
+  return isHtml;
+}
 
 // Invoked by the extension
 function getNextPages(request, response) {
@@ -49,6 +58,15 @@ function getNextPages(request, response) {
 }
 
 function renderTossLogin(request, response) {
+  if (isHtml(request)) {
+    var targetUrl = url.format({
+      pathname: '/toss',
+      query: request.query
+    });
+    response.redirect('/login?url=' + encodeURIComponent(targetUrl));
+    return;
+  }
+
   response.setHeader('Content-Type', 'application/javascript');
   response.render('login_popup_response.js', {
     host               : request.get('host'),
@@ -59,6 +77,13 @@ function renderTossLogin(request, response) {
 }
 
 function renderCatchSelection(request, response, locals) {
+  if (isHtml(request)) {
+    // Select the first catcher, so that there is a default radio button chosen
+    locals.catchers[0].checked = true;
+    response.render('toss', locals);
+    return;
+  }
+
   locals.layout = null;
   locals.renderCatcherSelectionFn = renderCatcherSelectionFn;
   response.setHeader('Content-Type', 'application/javascript');
@@ -109,7 +134,11 @@ function initiateToss(request, response) {
           token: catcher.token
         }; })),
         scriptId: request.query.s,
-        forceIframe: request.query.f === 'true'
+        forceIframe: request.query.f === 'true',
+        // These locals are for the html view
+        catchers: catchers,
+        title: request.query.i,
+        url: request.query.u
       });
       db.closeConnection(connection);
     }
@@ -165,7 +194,12 @@ function completeToss(request, response) {
               response.send(400);
             }
             else {
-              response.send(200);
+              if (isHtml(request)) {
+                response.redirect(url);
+              }
+              else {
+                response.send(200);
+              }
             }
             connection.commit(function(error) {
               db.closeConnection(connection, function() {
@@ -263,7 +297,7 @@ function getTossHistory(request, response) {
 function setup(app, express) {
   app.get('/catch', auth.allowOrigin(true), getNextPages);
 
-  app.get('/toss', initiateToss);
+  app.get('/toss', auth.protect(false), initiateToss);
   app.post('/toss', express.bodyParser(), auth.allowOrigin(), completeToss);
 
   app.get('/page/catches', auth.allowOrigin(true), auth.protect(), getCatchHistory);

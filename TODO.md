@@ -7,4 +7,3 @@
   noResults
 * Render escaped characters properly from page titles
 * Render a page with full history of tossed and received pages
-* Fix error that causes tosses to not work on medium.com

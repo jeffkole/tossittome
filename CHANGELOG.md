@@ -1,15 +1,22 @@
 Changelog
 =========
 
+v3.0.6
+------
+### Server (3.0.6)
+* Fixes tossing on pages with strict Content-Security-Policy of script-src.
+  Does so by redirecting to a page where the user can complete the toss.
+  **Note**: Requires an updated bookmarklet to work properly.
+
 v3.0.5
 ------
-### Service (3.0.5)
+### Server (3.0.5)
 * Fixes tossing on pages protected by a Content-Security-Policy of content-src.
   Does so by correctly using an ifram to talk back to the server.
 
 v3.0.4
 ------
-### Service (3.0.4)
+### Server (3.0.4)
 * Sends tosses back to the server via HTTPS
 
 v3.0.3

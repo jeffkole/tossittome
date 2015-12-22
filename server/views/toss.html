@@ -1,0 +1,27 @@
+<section class="measure-narrow wrap">
+
+<p>
+  You are about to toss "{{ title }}". Choose carefully who you want to toss it to!
+</p>
+
+<form class="clearfix form" method="post">
+  <p>Pick a catcher:</p>
+  {{# catchers }}
+  <div>
+    <label>
+      <input class="" type="radio" name="c" value="{{ token }}" {{# checked }}checked{{/ checked }} /> {{ email }}
+    </label>
+  </div>
+  {{/ catchers }}
+
+  <div class="mt2">
+    <input class="button" type="submit" name="toss" value="Toss It!" />
+
+    <a href="{{ url }}">Cancel</a>
+  </div>
+
+  <input type="hidden" name="u" value="{{ url }}" />
+  <input type="hidden" name="i" value="{{ title }}" />
+  <input type="hidden" name="h" value="true" />
+</form>
+</section>
