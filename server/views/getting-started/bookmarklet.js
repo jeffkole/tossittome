@@ -3,7 +3,7 @@
       s=d.createElement('scr'+'ipt'),
       b=d.body,
       l=d.location,
-      i='titom2',
+      i='titom3',
       h=function () {
         l.assign(l.protocol+'//{{ host }}/toss?u='+encodeURIComponent(l.href)+'&i='+encodeURIComponent(d.title)+'&h=true');
       };
