@@ -78,6 +78,18 @@ function renderTossLogin(request, response) {
 
 function renderCatchSelection(request, response, locals) {
   if (isHtml(request)) {
+    // If there is only one catcher, then immediately complete the toss
+    if (locals.catchers.length === 1) {
+      // This is crazy, and I'm not even sure that it *should* work, but it
+      // appears to work.
+      request.body = request.body || {};
+      request.body.u = locals.url;
+      request.body.i = locals.title;
+      request.body.c = locals.catchers[0].token;
+      request.body.h = true;
+      completeToss(request, response);
+      return;
+    }
     // Select the first catcher, so that there is a default radio button chosen
     locals.catchers[0].checked = true;
     response.render('toss', locals);
