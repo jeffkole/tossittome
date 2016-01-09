@@ -36,6 +36,10 @@ function formatDateTime(date) {
 function setup(app) {
   app.use(function(request, response, next) {
     response.locals['jeff-link'] = 'http://artisanalbytes.com';
+    response.locals.host = request.get('host');
+    response.locals.protocol = request.protocol || 'http';
+    response.locals.baseUrl =
+      (response.locals.protocol + '://' + response.locals.host);
     response.locals.lambdas = response.locals.lambdas || {};
     response.locals.lambdas.attachQueryParams = attachQueryParams(request, response);
     response.locals.lambdas.relativeTime = relativeTime;
