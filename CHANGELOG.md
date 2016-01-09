@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v3.0.7
+------
+### Server (3.0.7)
+* For tosses that occur on the raw html page, as redirected by the bookmarklet
+  from foreign code hostile sites (ie, sites that won't let users run
+  bookmarklet code), if there is only one catcher, then the toss is processed
+  immediately.
+
 v3.0.6
 ------
 ### Server (3.0.6)
@@ -12,7 +20,7 @@ v3.0.5
 ------
 ### Server (3.0.5)
 * Fixes tossing on pages protected by a Content-Security-Policy of content-src.
-  Does so by correctly using an ifram to talk back to the server.
+  Does so by correctly using an iframe to talk back to the server.
 
 v3.0.4
 ------
