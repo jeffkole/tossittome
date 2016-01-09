@@ -8,6 +8,7 @@ v3.0.7
   from foreign code hostile sites (ie, sites that won't let users run
   bookmarklet code), if there is only one catcher, then the toss is processed
   immediately.
+* Adds Twitter & OpenGraph meta tags
 
 v3.0.6
 ------
