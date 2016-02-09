@@ -3,7 +3,7 @@ var log = require('toss/common/log');
 function insertPage(connection, tosserId, catcherId, url, title, cb) {
   connection.query(
       'insert into pages (user_id, catcher_id, url, title) values (?, ?, ?, ?)',
-      [tosserId, catcherId, url, title],
+      [tosserId, catcherId, url, title.substring(0, 128)],
       function(error, results) {
         if (error) {
           return cb(error);

@@ -7,5 +7,3 @@
   noResults
 * Render escaped characters properly from page titles
 * Render a page with full history of tossed and received pages
-* Fix failures when the title is too long (like on
-  https://www.reddit.com/r/IAmA/comments/40cmzb/i_am_90_years_old_an_officer_during_wwii_a/)
