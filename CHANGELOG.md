@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v3.0.8
+------
+#### Server (3.0.8)
+* Truncates titles that are longer than 128 characters in length.
+
 v3.0.7
 ------
 ### Server (3.0.7)
