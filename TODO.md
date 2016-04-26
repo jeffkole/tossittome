@@ -7,3 +7,4 @@
   noResults
 * Render escaped characters properly from page titles
 * Render a page with full history of tossed and received pages
+* Add a "tossit" widget others can put on their site
