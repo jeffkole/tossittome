@@ -4,17 +4,17 @@
   "version": "3.0.3",
   "private": true,
   "dependencies": {
-    "express"       : "3.4.8",
-    "mysql"         : "2.1.1",
-    "js-base64"     : "2.1.2",
-    "hogan.js"      : "2.0.0",
-    "hogan-express" : "0.5.2",
-    "object-merge"  : "2.5.1",
-    "log"           : "1.4.0",
-    "uglify-js"     : "2.4.13",
-    "mandrill-api"  : "1.0.39",
-    "ua-parser-js"  : "0.6.2",
-    "underscore"    : "1.6.0",
-    "moment"        : "2.6.0"
+    "express": "3.4.8",
+    "hogan-express": "0.5.2",
+    "hogan.js": "2.0.0",
+    "js-base64": "2.1.2",
+    "log": "1.4.0",
+    "moment": "2.6.0",
+    "mysql": "2.1.1",
+    "object-merge": "2.5.1",
+    "sendgrid": "^2.0.0",
+    "ua-parser-js": "0.6.2",
+    "uglify-js": "2.4.13",
+    "underscore": "1.6.0"
   }
 }
