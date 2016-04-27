@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v3.0.9
+------
+#### Server (3.0.9)
+* Migrates from Mandrill to SendGrid.
+
 v3.0.8
 ------
 #### Server (3.0.8)
